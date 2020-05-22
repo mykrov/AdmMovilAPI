@@ -14,6 +14,8 @@ use Validator;
 class Vendedor extends Controller
 {
     public $successStatus = 200;
+
+    
     public function login(Request $request){
         
         $credenciales = $request->validate([

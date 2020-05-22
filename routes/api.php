@@ -51,6 +51,18 @@ Route::get('/diascredito','DiasCreditoController@GetDiasCredito');
 Route::get('/formapago','FormaPagoController@GetFormaPago');
 Route::get('/cliprecio','CliPrecioController@GetCliPrecio');
 
+
+Route::get('/deuda','DeudaController@GetDeudas');
+Route::get('/deuda/{codigo}','DeudaController@GetDeudaXCliente');
+
+
+//Rutas Pedidos
+Route::post('/pedido','PedidoController@PostPedido');
+
 Route::middleware('auth:api')->group(function () {
     Route::get('/vendedores','Vendedor@listado');
+    Route::get('/vendedorinfo',function (Request $request) {
+        return $request->user();
+    });
 });
+

@@ -175,6 +175,9 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ADMPARAMETROV extends Model
 {
+    protected $primaryKey = null;
+    public $incrementing = false;
+    public $timestamps = false;
     /**
      * The table associated with the model.
      * 
