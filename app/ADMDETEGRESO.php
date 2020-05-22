@@ -38,6 +38,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ADMDETEGRESO extends Model
 {
+    public $timestamps = false;
     /**
      * The table associated with the model.
      * 
