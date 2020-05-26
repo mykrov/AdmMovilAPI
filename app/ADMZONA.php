@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ADMZONA extends Model
 {
-    protected $timestamps = false;
+    public $timestamps = false;
     /**
      * The table associated with the model.
      * 

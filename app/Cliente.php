@@ -120,6 +120,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Cliente extends Model
 {
+    public $timestamps = false;
+   // protected $dateFormat = 'M j Y h:i:s';
     /**
      * The table associated with the model.
      * 

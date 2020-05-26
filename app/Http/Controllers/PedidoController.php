@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use \App\ADMBODEGA;
 use \App\ADMPARAMETROV;
+use \App\ADMPARAMETROBO;
 use \App\Cliente;
 
 
@@ -15,8 +16,7 @@ class PedidoController extends Controller
     {
         $cabecera = $r->cabecera[0];
         $detalles = $r->detalles;
-        
-        
+                
         DB::beginTransaction();
         
         try {
@@ -24,6 +24,7 @@ class PedidoController extends Controller
             $bodega = ADMBODEGA::where('CODIGO','=',$cabecera['bodega'])->first();
             $parametrov = ADMPARAMETROV::first();
             $cliente = Cliente::where('CODIGO','=',$cabecera['cliente'])->first();
+            $parametrobo = ADMPARAMETROBO::first();
 
             //return response()->json($bodega->NOFACTURA);
 
@@ -36,9 +37,9 @@ class PedidoController extends Controller
             
             $cab->TIPO = $cabecera['tipo']; 
             $cab->BODEGA = intval($cabecera['bodega']); 
-            $cab->NUMERO = $bodega->NOFACTURA + 1; //Actualizar el final
+            $cab->NUMERO = $bodega->NOFACTURA + 1; 
             $cab->SERIE = trim($bodega->SERIE); 
-            $cab->SECUENCIAL = $parametrov->SECUENCIAL + 1; //Actualizar el final
+            $cab->SECUENCIAL = $parametrov->SECUENCIAL + 1; 
             $cab->NUMPROCESO = null; 
             $cab->NUMPEDIDO = 0; 
             $cab->NUMGUIA = null; 
@@ -86,7 +87,7 @@ class PedidoController extends Controller
             $cab->ESTADODESPACHO = "N"; 
             $cab->SECAUTOVENTA = null; 
             $cab->NUMCUOTAS = null; 
-            $cab->NUMGUIAREMISION = $bodega->NUMGUIAREMISION + 1; //Actualizar al final
+            $cab->NUMGUIAREMISION = $bodega->NUMGUIAREMISION + 1; 
             $cab->SBTBIENES = $cabecera['subtotal']; 
             $cab->SBTSERVICIOS = 0; 
             $cab->TIPOCLIENTE = trim($cliente->TIPO); 
@@ -173,12 +174,13 @@ class PedidoController extends Controller
                 $d->save();
                
             }
-            
+
             $bodega->save();
             $parametrov->save();
             
             //Guardado de todo en caso de exito en las operaciones.
             DB::commit();
+            return response()->json(["estado"=>"guardado", "Nfactura"=>$cab->NUMERO, "secuencial"=>$cab->SECUENCIAL]);
             
 
         } catch (\Exception $e) {
@@ -189,3 +191,19 @@ class PedidoController extends Controller
         
     }
 }
+
+
+// ADMCABEGRESO
+// ADMDETEGRESO
+
+// ADMCABEGRBOD
+// ADMDETEGRBOD
+
+// ADMDEUDA
+// ADMCREDITO
+
+// ADMCABCOMPROBANTE
+// ADMDETCOMPROBANTE
+
+// ADMITEM
+// ADMITEMBO
