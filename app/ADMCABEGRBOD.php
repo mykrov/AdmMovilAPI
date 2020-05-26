@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Model;
 class ADMCABEGRBOD extends Model
 {
   
-    protected $timestamps = false;
+    public  $timestamps = false;
     /**
      * The table associated with the model.
      * 

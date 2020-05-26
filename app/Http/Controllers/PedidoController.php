@@ -2,16 +2,22 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use \App\ADMBODEGA;
 use \App\ADMPARAMETROV;
 use \App\ADMPARAMETROBO;
 use \App\Cliente;
+use \App\ADMDETEGRBOD;
+use \App\ADMCABEGRBOD;
+use \App\ADMDEUDA;
+use \App\ADMCREDITO;
 
 
 class PedidoController extends Controller
 {
+    
     public function PostPedido(Request $r)
     {
         $cabecera = $r->cabecera[0];
@@ -26,12 +32,12 @@ class PedidoController extends Controller
             $cliente = Cliente::where('CODIGO','=',$cabecera['cliente'])->first();
             $parametrobo = ADMPARAMETROBO::first();
 
-            //return response()->json($bodega->NOFACTURA);
-
             $grabaIva = "N";
             if(floatval($cabecera['iva']) > 0){
                 $grabaIva = "S";
             }
+            
+            $date = Carbon::createFromFormat('d-m-Y',$cabecera['fecha_ingreso']);
             
             $cab = new \App\ADMCABEGRESO();
             
@@ -47,8 +53,8 @@ class PedidoController extends Controller
             $cab->CHOFER = null; 
             $cab->DOCREL = null; 
             $cab->NUMEROREL = null; 
-            $cab->FECHA = $cabecera['fecha_ingreso']; 
-            $cab->FECHAVEN = $cabecera['fecha_ingreso']; //Sumar los dias de credito del Cliente.
+            $cab->FECHA = $date->Format('Y-d-m H:i:s'); 
+            $cab->FECHAVEN = $date->addDays(intval($cliente->DIASCREDIT))->format('Y-d-m H:i:s'); 
             $cab->FECHADES = $cabecera['fecha_ingreso']; 
             $cab->OPERADOR = "ADM"; 
             $cab->CLIENTE = $cabecera['cliente']; 
@@ -127,9 +133,22 @@ class PedidoController extends Controller
             $cab->ESFOMENTO = "N";
 
             $cab->save();
+            //Generar Cabecera de Egreso.
+            $cabEgr = new ADMCABEGRBOD();
+
+            $cabEgr->SECUENCIAL = $cab->SECUENCIAL;
+            $cabEgr->BODEGA = $cab->BODEGA;
+            $cabEgr->TIPO = "FAC";
+            $cabEgr->NUMERO = $cab->NUMERO;
+            $cabEgr->NUMEGRESO = $bodega->NOEGR + 1;
+            $cabEgr->FECHA = $cabecera['fecha_ingreso'];
+            $cabEgr->ESTADO = "P";
+
+            $cabEgr->save();
 
             $bodega->NOFACTURA = $cab->NUMERO;
             $bodega->NUMGUIAREMISION = $cab->NUMGUIAREMISION;
+            $bodega->NOEGR = $bodega->NOEGR + 1;
             $parametrov->SECUENCIAL = $parametrov->SECUENCIAL + 1;
 
             //Procesado de los Detalles.
@@ -142,15 +161,17 @@ class PedidoController extends Controller
                     $grabaIvadet = "S";
                 }
 
+                $itemData = \App\ADMITEM::where('ITEM','=',trim($det['item']))->first();
+
                 $d->SECUENCIAL = intval($cab->SECUENCIAL);
                 $d->LINEA = intval($det['linea']);
                 $d->ITEM = $det['item'];
                 $d->TIPOITEM = $det['tipo_item'];
                 $d->PRECIO = floatval($det['precio']);
-                $d->COSTOP = 0;
-                $d->COSTOU = 0;
-                $d->CANTIU = intval($det['unidades']);
-                $d->CANTIC = intval($det['cajas']);
+                $d->COSTOP = $itemData->COSTOP;
+                $d->COSTOU = $itemData->COSTOU;
+                $d->CANTIU = intval($det['unidades'])  % $itemData->FACTOR;
+                $d->CANTIC = intval($det['cajas']  / $itemData->FACTOR);
                 $d->CANTFUN = intval($det['total_unidades']);
                 $d->CANTDEV = null;
                 $d->SUBTOTAL = floatval($det['subtotal']);
@@ -171,13 +192,112 @@ class PedidoController extends Controller
                 $d->LOTE = null;
                 $d->preciox = 0;
                 $d->serialitem = 0;
+
                 $d->save();
-               
+
+                //Bajar Stock del item.
+                $itemData->STOCK = $itemData->STOCK - $d->CANTFUN;
+                $itemData->save();
+                
+                //Bajar Stock de la Bodega.
+                $itemBog = \App\ADMITEMBOD::where('ITEM',trim($d->ITEM))
+                ->where('BODEGA',$cab->BODEGA)
+                ->first();
+
+                $stockBod = $itemBog->STOCK - $d->CANTFUN;
+
+                $result = DB::table('ADMITEMBOD')
+                            ->where('ITEM', trim($d->ITEM))
+                            ->where('BODEGA',$cab->BODEGA)
+                            ->update([
+                                'STOCK' =>$stockBod,
+                                'ULTFECEGR' => Carbon::now()->Format('Y-d-m')
+                            ]);
+                
+                //Generar el Detalle de Egreso.
+                $detEgr = new ADMDETEGRBOD();
+                $detEgr->SECUENCIAL =$cab->SECUENCIAL;
+                $detEgr->ITEM = $d->ITEM;
+                $detEgr->CANTIU = $d->CANTIU;
+                $detEgr->CANTIC = $d->CANTIC; 
+                $detEgr->COSTOP = $d->COSTOP;
+                $detEgr->COSTOU = $d->COSTOU;
+                
+                $detEgr->save();
             }
 
             $bodega->save();
             $parametrov->save();
             
+            //Generar la Deuda.
+            $deuda = new ADMDEUDA();
+            $deuda->SECUENCIAL = $cab->SECUENCIAL + 1;
+            $deuda->BODEGA = $cab->BODEGA;
+            $deuda->CLIENTE = $cab->CLIENTE;
+            $deuda->TIPO = $cab->TIPO;
+            $deuda->NUMERO = $cab->NUMERO;
+            $deuda->SERIE = $cab->SERIE;
+            $deuda->SECINV = $cab->SECUENCIAL;
+            $deuda->IVA = $cab->IVA;
+            $deuda->MONTO = $cab->NETO;
+            $deuda->CREDITO = $cab->NETO;
+            $deuda->SALDO = 0;
+            $deuda->FECHAEMI = $cab->FECHA;
+            $deuda->FECHAVEN = $cab->FECHAVEN;
+            $deuda->FECHADES = $cab->FECHA;
+            $deuda->OPERADOR = "ADM";
+            $deuda->VENDEDOR = $cab->VENDEDOR;
+            $deuda->OBSERVACION = "Deuda FACELE-App";
+            $deuda->NUMAUTO = "";
+            $deuda->BODEGAFAC = 0;
+            $deuda->SERIEFAC = "";
+            $deuda->NUMEROFAC = 0;
+            $deuda->ACT_SCT = "N";
+            $deuda->montodocumento = 0;
+            $deuda->tipoventa = "";
+            $deuda->mesescredito = 0;
+            $deuda->tipopago = "";
+            $deuda->numeropagos = 0;
+            $deuda->entrada =0;
+            $deuda->valorfinanciado = 0;
+            $deuda->porinteres = 0;
+            $deuda->montointeres = 0;
+            $deuda->totaldeuda = 0;
+            $deuda->seccreditogen = 0;
+            $deuda->secdeudagen = 0;
+            $deuda->numcuotagen = 0;
+            $deuda->porinteresmora = 0;
+            $deuda->basecalculo = 0;
+            $deuda->diasatraso = 0;
+            $deuda->usuarioeli = 0;
+            $deuda->EWEB = "N";
+            $deuda->ESTADOLIQ = "N";
+            
+            //Generar el Credito.
+            $credito = new \App\ADMCREDITO();
+            $credito->SECUENCIAL = $deuda->SECUENCIAL;
+            $credito->BODEGA = $deuda->BODEGA;
+            $credito->CLIENTE = $deuda->CLIENTE;
+            $credito->TIPO = $deuda->TIPO;
+            $credito->NUMERO = $deuda->NUMERO;
+            $credito->SERIE = $deuda->SERIE;
+            $credito->SECINV = $deuda->SECINV;
+            $credito->FECHA = $deuda->FECHA;
+            $credito->MONTO = $deuda->MONTO ;
+            $credito->SALDO = $deuda->MONTO ;
+            $credito->OPERADOR = "ADM";
+            $credito->OBSERVACION = "Credito FACELE-App" ;
+            $credito->VENDEDOR = $deuda->VENDEDOR;
+            $credito->estafirmado = "N";
+            $credito->ACT_SCT = "N";
+            $credito->seccreditogen = 0 ;
+
+            $parametrov = ADMPARAMETROV::first();
+            $deuda->save();
+            $credito->save();
+            $parametrov->SECUENCIAL =  $parametrov->SECUENCIAL + 1;
+            $parametrov->save();
+
             //Guardado de todo en caso de exito en las operaciones.
             DB::commit();
             return response()->json(["estado"=>"guardado", "Nfactura"=>$cab->NUMERO, "secuencial"=>$cab->SECUENCIAL]);
@@ -190,6 +310,7 @@ class PedidoController extends Controller
 
         
     }
+
 }
 
 
@@ -207,3 +328,6 @@ class PedidoController extends Controller
 
 // ADMITEM
 // ADMITEMBO
+
+
+

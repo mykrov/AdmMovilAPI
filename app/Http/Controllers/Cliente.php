@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class Cliente extends Controller
 {
@@ -33,10 +34,8 @@ class Cliente extends Controller
         
         $check = \App\Cliente::where('RUC','=',$datos['RUC'])->count();
         //return response()->json($check);
-        
+        DB::beginTransaction();
         if ($check < 1) {
-
-            DB::beginTransaction();
 
             try {
 
@@ -49,7 +48,9 @@ class Cliente extends Controller
 
                 $standar = \App\Cliente::where('CODIGO','=',$cliBase->CLIENTEMODELOCARRO)->first();
                 $ClientNew  = new \App\Cliente;
-                $dt2 =  Carbon::createFromFormat('Y-m-d H:i:s', $datos['FECHAING'])->format('Y-d-m H:i:s');
+                $dt = Carbon::now();
+                $dt2 = $dt->format('Y-d-m H:i:s');
+                //return response()->json($dt2);
             
                 $ClientNew->CODIGO = $inicial.$codigo;
                 $ClientNew->RAZONSOCIAL = $datos['RAZONSOCIAL'];
@@ -165,10 +166,14 @@ class Cliente extends Controller
                 $ClientNew->CLAVECARRO = $standar->CLAVECARRO;
 
                 $ClientNew->save();
+
                 $cliBase->NUMCLIENTE = $cliBase->NUMCLIENTE +1;
                 $cliBase->save();
+                DB::commit();
+
                 return response()->json(['status'=>'ok','codCliente'=>$inicial.$codigo]);
             } catch (\Exception $e) {
+                
                 DB::rollback();
                 return response()->json(["error"=>["info"=>$e->getMessage()]]);
             }

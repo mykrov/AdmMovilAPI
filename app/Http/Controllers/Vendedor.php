@@ -32,7 +32,7 @@ class Vendedor extends Controller
             Auth::loginUsingId( $vendedorData->CODIGO, TRUE);
             $user = Auth::user();
             $token = $vendedorData->createToken('authToken')->accessToken;
-            return response(['vendedor'=>$vendedorData,'token'=>$token]);
+            return response()->json(['vendedor'=>$vendedorData,'token'=>$token]);
         }
         else{
             return response()->json(['message'=>'ErrorLogin']); 
@@ -66,7 +66,6 @@ class Vendedor extends Controller
                 
             }
         } 
-        
         return response()->json($contador);
     }
 }

@@ -47,6 +47,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ADMCREDITO extends Model
 {
+    public  $timestamps = false;
     /**
      * The table associated with the model.
      * 

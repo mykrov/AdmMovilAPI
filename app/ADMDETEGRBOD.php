@@ -16,6 +16,9 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ADMDETEGRBOD extends Model
 {
+    
+    public $incrementing = false;
+    public $timestamps = false;
     /**
      * The table associated with the model.
      * 
