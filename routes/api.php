@@ -26,6 +26,7 @@ Route::get('/cliente/{id?}','Cliente@byID');
 Route::post('/cliente','Cliente@CreateClient');
 
 Route::get('/items/{bod}','Item@ItemXBodega');
+Route::get('/items/{bod}/{categoria}','Item@ItemBodegaXCategoria');
 Route::get('/categoria','CategoriaController@GetCategorias');
 
 //Rutas Ubicacion
@@ -38,15 +39,16 @@ Route::get('/ruta','RutaController@GetRutas');
 
 //Rutas Configuraciones
 Route::get('/parametro','ParametrosController@GetParametros');
+Route::get('/parambasico','ParametrosController@GetParametrosLite');
 Route::get('/grupocli','GrupoCliController@GetGrupoCli');
 Route::get('/tiposcli','TipoClienteController@GetTipoClientes');
 Route::get('/grupospro','GrupoProductoController@GetGrupoProductos');
 Route::get('/condicomer','CondiComercialesController@GetCondiComer');
 Route::get('/frecuencia','FrecuenciaController@GetFrecuencias');
 Route::get('/tiponego','TipoNegocioController@GetTipoNegocios');
-
 Route::get('/itemtop','ItemTopController@GetItemTop');
 Route::get('/itemxcliente','ItemXClienteController@GetItemXCliente');
+
 Route::get('/diascredito','DiasCreditoController@GetDiasCredito');
 Route::get('/formapago','FormaPagoController@GetFormaPago');
 Route::get('/cliprecio','CliPrecioController@GetCliPrecio');

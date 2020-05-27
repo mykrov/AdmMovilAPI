@@ -15,4 +15,16 @@ class Item extends Controller
 
         return response()->json($items2);
     }
+
+    public function ItemBodegaXCategoria($bodega,$categoria)
+    {
+        
+        $items2 = DB::select(DB::raw("exec SP_ITEMS_APPMOVIL_CATE :Param1,:Param2"),[
+            ':Param1' => $bodega,
+            ':Param2' => $categoria
+        ]);
+
+        return response()->json($items2);
+
+    }
 }
