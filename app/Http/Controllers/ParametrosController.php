@@ -21,7 +21,7 @@ class ParametrosController extends Controller
 
 
         return response()->json(['NOMBRECIA'=>$paramV->NOMBRECIA,
-                                    'IVA'=>$paramV->NOMBRECIA,
+                                    'IVA'=>$paramV->IVA,
                                     'BODEGAPOS'=>$paramV->BODEGAPOS,
                                     'FACLIN'=>$paramV->FACLIN,
                                     'pagina_web'=>$paramBO->pagina_web,

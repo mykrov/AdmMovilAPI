@@ -22,6 +22,12 @@ class Cliente extends Controller
 
     }
 
+    public function BuscarNombre($like)
+    {
+        $clientes = \App\Cliente::where('RAZONSOCIAL', 'like', '%' . $like . '%')->get();
+        return response()->json($clientes);
+    }
+
     public function ClienteXVendedor($vendedor){
         
         $clientes = \App\Cliente::where('VENDEDOR','=',$vendedor)->get();

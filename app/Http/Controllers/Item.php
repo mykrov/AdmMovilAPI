@@ -7,7 +7,8 @@ use Illuminate\Support\Facades\DB;
 
 class Item extends Controller
 {
-    public function ItemXBodega($bodega){
+    public function ItemXBodega($bodega)
+    {
        
         $items2 = DB::select(DB::raw("exec SP_ITEMS_APPMOVIL :Param1"),[
             ':Param1' => $bodega
@@ -26,5 +27,11 @@ class Item extends Controller
 
         return response()->json($items2);
 
+    }
+
+    public function ItemXCodigo($codigo)
+    {
+        $item3 = \App\ADMITEM::where('ITEM',$codigo)->first();
+        return response()->json($item3);
     }
 }

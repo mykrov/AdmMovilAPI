@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Support\Facades\Mail;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -13,6 +14,7 @@ use \App\ADMDETEGRBOD;
 use \App\ADMCABEGRBOD;
 use \App\ADMDEUDA;
 use \App\ADMCREDITO;
+use \App\Mail\FacturaInvoice;
 
 
 class PedidoController extends Controller
@@ -300,8 +302,34 @@ class PedidoController extends Controller
 
             //Guardado de todo en caso de exito en las operaciones.
             DB::commit();
-            return response()->json(["estado"=>"guardado", "Nfactura"=>$cab->NUMERO, "secuencial"=>$cab->SECUENCIAL]);
             
+
+            $order = $cab;
+
+            $pdf = \PDF::loadView('pdfs/pdffactura2',['cabecera'=>$order]);
+
+
+            // $pdf = \PDF::loadView('pdfs.factura', $cab);
+            // return $pdf->download('archivo.pdf');
+
+            try {
+                $cabe = $cab;
+                Mail::send('emails.FacPDF', ['pdf'=>$pdf], function ($mail) use ($pdf) {
+                    $mail->from('carroweb@guidoelectronic.com', 'Manuel Rangel');
+                    $mail->to('salvatorex89@gmail.com');
+                    $mail->subject('Factura PDF');
+                    $mail->attachData($pdf->output(), 'Factura.pdf');
+                });
+                // Mail::to('salvatorex89@gmail.com')
+                // ->send(new FacturaInvoice($order))
+                // ->attachData($pdf->output(),'factura.pdf');
+            } catch (\Exception $e) {
+                return response()->json(["error"=>["info"=>$e->getMessage()]]);;
+            }
+
+
+            return response()->json(["estado"=>"guardado", "Nfactura"=>$cab->NUMERO, "secuencial"=>$cab->SECUENCIAL]);
+           
 
         } catch (\Exception $e) {
             DB::rollback();
@@ -310,6 +338,18 @@ class PedidoController extends Controller
 
         
     }
+
+
+    public function Facturapdf(){
+        $order = \App\ADMCABEGRESO::where('NUMERO',390)
+        ->where('TIPO','FAC')
+        ->first();
+
+        $cliente = Cliente::where('CODIGO','=',$order->CLIENTE)->first();
+
+        return \PDF::loadView('pdfs.pdffactura2',['cabecera'=>$order,'cliente'=>$cliente])->stream('archivo.pdf');
+    }
+
 
 }
 

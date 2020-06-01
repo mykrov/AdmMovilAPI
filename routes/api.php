@@ -24,9 +24,11 @@ Route::get('/cliente','Cliente@listado');
 Route::get('/clientexv/{vendedor}','Cliente@ClienteXVendedor');
 Route::get('/cliente/{id?}','Cliente@byID');
 Route::post('/cliente','Cliente@CreateClient');
+Route::get('/clientelike/{nombre}','Cliente@BuscarNombre');
 
 Route::get('/items/{bod}','Item@ItemXBodega');
 Route::get('/items/{bod}/{categoria}','Item@ItemBodegaXCategoria');
+Route::get('/item/{codigo}','Item@ItemXCodigo');
 Route::get('/categoria','CategoriaController@GetCategorias');
 
 //Rutas Ubicacion
