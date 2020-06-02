@@ -21,6 +21,11 @@
     .detalle td{
         border-bottom: 1px solid;
     }
+
+    .barcod{
+        max-width: 400px;
+        display: block;
+    }
 </style>
 </head>
     <body style="margin: 0; padding: 0;" >
@@ -41,45 +46,53 @@
                                     </tr>
                                     <tr>
                                         <td  width="100%" align="center">
-                                            <h5>RUC: {{ $cliente->RUC }}</h5>
+                                            <h5>RUC: {{ $parametrobo->ruc }}</h5>
                                         </td>
                                     </tr>
                                 </table>
                             </td>
                         </tr>
                         <tr>
-                            <td>
+                            <td >
                                 <table  width ="95%" style="border-radius:6px;border-collapse:separate;border:solid black 1px; font-size:12px;padding-top:20px;padding-bottom:20px;">
                                     <tr>
-                                    <td align="center"><strong>BIROBID S.A</strong></td>
+                                    <td align="center"><strong>{{ $parametrobo->nombrecia }}</strong></td>
                                     </tr>
                                     <tr>
-                                        <td><strong>Dirección Matriz: </strong>asdasdasdasd</td>
+                                        <td><strong>Dirección Matriz: </strong><span style="font-size: 10px">{{ $parametrobo->direccion }}</span></td>
                                     </tr>
                                     <tr>
-                                        <td><strong>Sucursal: </strong>asdasdasdasd</td>
+                                        <td><strong>Sucursal: </strong></td>
                                     </tr>
                                     <tr>
-                                        <td><strong>Obligado a llevar contabilidad: </strong>asdasdasdasd</td>
+                                        <td><strong>Obligado a llevar contabilidad: </strong>Si</td>
                                     </tr>
                                 </table>
                             </td>
-                            <td>
-                                <table style="font-size:12px;" >
+                            <td width="50%">
+                                <table style="font-size:12px;"  width ="50%">
                                     <tr>
                                         <td><strong>Número de Autorización:</strong>
-                                            <p style="font-size: 9; margin-top:2px; paddin-botton:2px;">87978797987878977797979797979</p>
+                                            {{ $cabecera->NUMAUTO }}
                                         </td>
                                     </tr>
-                                    <tr>
+                                    <tr >
                                         <td><strong>Ambiente: </strong>Producción</td>
                                     </tr>
-                                    <tr>
+                                    <tr >
                                         <td><strong>Tipo de Emisión: </strong>Normal</td>
                                     </tr>
                                     <tr>
-                                        <td><strong>Clave de Acceso: </strong>
-                                            <p style="font-size: 9; margin-top:0px;">38192318029389012830810283910283091823981283109</p>
+                                        <td>
+                                            <strong>Clave de Acceso: </strong>
+                                            <p style="font-size: 9; margin-top:0px;">{{ $cabecera->NUMAUTO }}</p>
+                                            <span style="padding-top:0px;margin-top:0px">
+                                                @php
+                                                $generator = new Picqer\Barcode\BarcodeGeneratorSVG();
+                                                $redColor = [255, 0, 0];
+                                                echo '<img style="max-width: 32rem;min-height: 3rem;" src="data:image/png;base64,' . base64_encode($generator->getBarcode($cabecera->NUMAUTO, $generator::TYPE_CODE_128,1,80,'black')) . '"">';
+                                                @endphp
+                                            </span>
                                         </td>
                                     </tr>
                                 </table>
@@ -101,7 +114,7 @@
                                     </tr>
                                     <tr>
                                         <td >
-                                            {{ $cliente->RAZONSOCIAL }}
+                                            <span style="font-size: 10px">{{ $cliente->RAZONSOCIAL }}</span>
                                         </td>
                                     </tr>
                                 </table>
@@ -124,7 +137,7 @@
                                 <table>
                                     <tr>
                                         <td>
-                                            <span style="font-size: 10;">Fecha de Emisión:</span> 11-06-2020
+                                            <span style="font-size: 10;">Fecha de Emisión:</span><span style="font-size: 10px"> {{ $cabecera->FECHA }}</span> 
                                         </td>
                                     </tr>
                                     <tr>
@@ -155,30 +168,16 @@
                             <td>Descuento</td>
                             <td>Total</td>
                         </tr> 
+                        @foreach ($detalles as $item)
                         <tr class="detalle">
-                            <td>C00001</td>
-                            <td>Arroz</td>
-                            <td>37</td>
-                            <td>1.2</td>
-                            <td>0</td>
-                            <td>123</td>
-                        </tr>
-                        <tr class="detalle">
-                            <td>C00001</td>
-                            <td>Arroz</td>
-                            <td>37</td>
-                            <td>1.2</td>
-                            <td>0</td>
-                            <td>123</td>
-                        </tr>
-                        <tr class="detalle">
-                            <td>C00001</td>
-                            <td>Arroz</td>
-                            <td>37</td>
-                            <td>1.2</td>
-                            <td>0</td>
-                            <td>123</td>
-                        </tr>
+                            <td>{{$item->ITEM}}</td>
+                            <td>{{\App\ADMITEM::where(['ITEM' => $item->ITEM])->pluck('NOMBRE')->first()}}</td>
+                            <td>{{intval($item->CANTFUN)}}</td>
+                            <td>{{$item->PRECIO}}</td>
+                            <td>{{$item->DESCUENTO}}</td>
+                            <td>{{$item->NETO}}</td>
+                        </tr>   
+                        @endforeach
                     </table>
                 </td>
             </tr>
@@ -206,7 +205,7 @@
                             <table style="border-radius:6px;border-collapse:separate;border:solid black 1px; font-size:11px;padding:10px 10px 10px 10px;">
                                 <tr>
                                     <td>SubTotal 12%</td>
-                                    <td>01231230</td>
+                                    <td>{{ $cabecera->SUBTOTAL }}</td>
                                 </tr>
                                 <tr>
                                     <td>SubTotal 0%</td>
@@ -225,20 +224,24 @@
                                     <td>0123120</td>
                                 </tr>
                                 <tr>
+                                    <td>Descuentos</td>
+                                    <td>{{ $cabecera->DESCUENTO }}</td>
+                                </tr>
+                                <tr>
                                     <td>ICE</td>
-                                    <td>01231230</td>
+                                    <td>0.0</td>
                                 </tr>
                                 <tr>
                                     <td>Propina</td>
-                                    <td>0012312</td>
+                                    <td>0.0</td>
                                 </tr>
                                 <tr>
                                     <td>IVA 12%</td>
-                                    <td>0123123</td>
+                                    <td>{{ $cabecera->IVA }}</td>
                                 </tr>
                                 <tr>
                                     <td><strong>VALOR TOTAL</strong></td>
-                                    <td>01231230</td>
+                                    <td>{{ $cabecera->SUBTOTAL }}</td>
                                 </tr>
                             </table>
                         </td>
@@ -254,12 +257,18 @@
                 <td>Tiempo</td>
             </tr>
             <tr style="border-top:1px solid;">
-                <td>Sin utilizacion del Sistema Financiero</td>
-                <td>34</td>
+                <td>Sin utilizacion del Sistema Financiero </td>
+                <td>{{ $cabecera->SUBTOTAL }}</td>
                 <td>0</td>
                 <td>Dias</td>
             </tr>
         </table>
+        <div style="max-width: 32rem;min-height: 5rem;">
+           
+        </div>
+        
+
     </body>
+
 </html>
 

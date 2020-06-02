@@ -63,6 +63,10 @@ Route::get('/deuda/{codigo}','DeudaController@GetDeudaXCliente');
 //Rutas Pedidos
 Route::post('/pedido','PedidoController@PostPedido');
 
+
+//Test
+Route::get('/invertir/{cadena}','PedidoController@InvertirCadena');
+
 Route::middleware('auth:api')->group(function () {
     Route::get('/vendedores','Vendedor@listado');
     Route::get('/vendedorinfo',function (Request $request) {

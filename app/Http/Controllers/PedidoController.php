@@ -24,12 +24,14 @@ class PedidoController extends Controller
     {
         $cabecera = $r->cabecera[0];
         $detalles = $r->detalles;
-                
+     
         DB::beginTransaction();
+
+        
         
         try {
         
-            $bodega = ADMBODEGA::where('CODIGO','=',$cabecera['bodega'])->first();
+            $bodega = ADMBODEGA::where('CODIGO','=',(int)$cabecera['bodega'])->first();
             $parametrov = ADMPARAMETROV::first();
             $cliente = Cliente::where('CODIGO','=',$cabecera['cliente'])->first();
             $parametrobo = ADMPARAMETROBO::first();
@@ -83,7 +85,7 @@ class PedidoController extends Controller
             $cab->NUMSERIE = null; 
             $cab->NOCARGA = null; 
             $cab->APLSRI = null; 
-            $cab->NUMAUTO = null; 
+            
             $cab->NUMFISICO = null; 
             $cab->HORA = $cabecera['hora_ingreso']; 
             $cab->NOMBREPC = "ServidorLaravel"; 
@@ -134,7 +136,16 @@ class PedidoController extends Controller
             $cab->NUMPESAJE = 0; 
             $cab->ESFOMENTO = "N";
 
+            $lengh_str = 9;
+            $secuencial_str = strval($cab->NUMERO);
+            $seC_cero = substr("000000000{$secuencial_str}",-$lengh_str);
+            
+            
+            $claveAcc = $this->GenerarClave($seC_cero,$cab->SERIE,$parametrobo->ruc,'01',1,2,$cab->FECHA);
+            $cab->NUMAUTO = $claveAcc;
+
             $cab->save();
+
             //Generar Cabecera de Egreso.
             $cabEgr = new ADMCABEGRBOD();
 
@@ -299,14 +310,18 @@ class PedidoController extends Controller
             $credito->save();
             $parametrov->SECUENCIAL =  $parametrov->SECUENCIAL + 1;
             $parametrov->save();
-
+            
+            
+            
+            //$claveAcc = $this->GenerarClave('001391200','002152','0991503102001','01','1','2','07-02-2020');
+            
             //Guardado de todo en caso de exito en las operaciones.
             DB::commit();
-            
+            //return response()->json(["estado"=>"guardado", "Nfactura"=>$cab->NUMERO, "secuencial"=>$cab->SECUENCIAL]);
 
             $order = $cab;
-
-            $pdf = \PDF::loadView('pdfs/pdffactura2',['cabecera'=>$order]);
+            $detalles = \App\ADMDETEGRESO::where('SECUENCIAL',$cab->SECUENCIAL)->get();
+            $pdf = \PDF::loadView('pdfs/pdffactura2',['cabecera'=>$order,'cliente'=>$cliente,'parametrobo'=>$parametrobo,'detalles'=> $detalles]);
 
 
             // $pdf = \PDF::loadView('pdfs.factura', $cab);
@@ -320,13 +335,9 @@ class PedidoController extends Controller
                     $mail->subject('Factura PDF');
                     $mail->attachData($pdf->output(), 'Factura.pdf');
                 });
-                // Mail::to('salvatorex89@gmail.com')
-                // ->send(new FacturaInvoice($order))
-                // ->attachData($pdf->output(),'factura.pdf');
             } catch (\Exception $e) {
                 return response()->json(["error"=>["info"=>$e->getMessage()]]);;
             }
-
 
             return response()->json(["estado"=>"guardado", "Nfactura"=>$cab->NUMERO, "secuencial"=>$cab->SECUENCIAL]);
            
@@ -339,17 +350,92 @@ class PedidoController extends Controller
         
     }
 
-
     public function Facturapdf(){
-        $order = \App\ADMCABEGRESO::where('NUMERO',390)
+        $order = \App\ADMCABEGRESO::where('NUMERO',133)
         ->where('TIPO','FAC')
         ->first();
 
+        $parametrobo = ADMPARAMETROBO::first();
         $cliente = Cliente::where('CODIGO','=',$order->CLIENTE)->first();
 
-        return \PDF::loadView('pdfs.pdffactura2',['cabecera'=>$order,'cliente'=>$cliente])->stream('archivo.pdf');
+        $detalles = \App\ADMDETEGRESO::where('SECUENCIAL',9174)->get();
+        
+        // $nombresITEMS = DB::table('ADMITEM')
+        //                 ->join('ADMDETEGRESO', function ($join) {
+        //                 $join ->on('ADMITEM.ITEM', '=', 'ADMDETEGRESO.ITEM')
+        //                 ->where('ADMDETEGRESO.SECUENCIAL', '=', 9174);
+        //                 })
+        //                 ->get();
+
+        return \PDF::loadView('pdfs.pdffactura2',['cabecera'=>$order,'cliente'=>$cliente,'parametrobo'=>$parametrobo,'detalles'=> $detalles])->stream('archivo.pdf');
     }
 
+    public function InvertirCadena($cadena)
+    {   
+        $invertida = strrev($cadena);
+        return $invertida;
+    }
+
+    public function SumaPorDigito($string5)
+    {
+        try {
+
+            $pivote = 2;
+            $longitudCadena = strlen($string5);
+            $cantidadTotal = 0;
+            $b = 1;
+
+            $longi = $longitudCadena;
+    
+            for ($i = 0; $i < $longi; $i++) 
+            {
+               if($pivote == 8) {
+                   $pivote = 2;
+                   
+                } 
+               $substr = substr($string5,$i ,1);
+               $temporal = (int)$substr;
+               $b++;
+               $temporal = (int)$temporal * (int)$pivote;
+               $pivote++;
+               $cantidadTotal = (int)$cantidadTotal + (int)$temporal;
+            }
+    
+            $cantidadTotal = 11 - $cantidadTotal % 11;
+            
+            return $cantidadTotal;
+        } catch (\Exception $e) {
+            return response()->json(["error"=>["info"=>$e->getMessage()]]);
+        }
+
+    }
+
+    public function GenerarClave($secuencial6,$Serie6,$ruc,$codDoc,$tipoemision,$ambiente,$fecha_fac){
+        try {
+            $dat = Carbon::now();
+            $dateDMY = $dat->Format('d-m-Y');
+            $obtender_fecha = str_replace('-','',$dateDMY);
+            $codigo_Numerico = '12345678';
+    
+            $ret_claveAcceso = $obtender_fecha.''.$codDoc.''.$ruc.''.$ambiente.''.$Serie6.''.$secuencial6.''.$codigo_Numerico.''.$tipoemision;
+    
+            $cadenaInvertida = $this->InvertirCadena($ret_claveAcceso);
+
+            $res = $this->SumaPorDigito($cadenaInvertida);
+           
+            if (intval($res) == 11) {
+                $ret_claveAcceso = $ret_claveAcceso."0";
+            }elseif(intval($res) == 10){
+                $ret_claveAcceso = $ret_claveAcceso."1";
+            }else{
+                $ret_claveAcceso = $ret_claveAcceso.strval($res);
+            }
+            return $ret_claveAcceso;
+        } catch (\Excepyion $e) {
+            return false;
+        }
+
+    }
 
 }
 
