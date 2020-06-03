@@ -53,7 +53,7 @@ class Vendedor extends Controller
         foreach ($venderores as $ven) {
             if (trim($ven['HASH']) == ''){
                 
-                $claveWeb = $ven['CEDULA'];
+                $claveWeb = $ven['CLAVEWEB'];
 
                 if(trim($claveWeb != '' )){
                     $hashed = Hash::make(trim($claveWeb));

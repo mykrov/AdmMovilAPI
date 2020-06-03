@@ -41,7 +41,7 @@ class PedidoController extends Controller
                 $grabaIva = "S";
             }
             
-            $date = Carbon::createFromFormat('d-m-Y',$cabecera['fecha_ingreso']);
+            $date = Carbon::now();
             
             $cab = new \App\ADMCABEGRESO();
             
@@ -183,8 +183,8 @@ class PedidoController extends Controller
                 $d->PRECIO = floatval($det['precio']);
                 $d->COSTOP = $itemData->COSTOP;
                 $d->COSTOU = $itemData->COSTOU;
-                $d->CANTIU = intval($det['unidades'])  % $itemData->FACTOR;
-                $d->CANTIC = intval($det['cajas']  / $itemData->FACTOR);
+                $d->CANTIU = intval($det['total_unidades'])  % $itemData->FACTOR;
+                $d->CANTIC = intval($det['total_unidades']  / $itemData->FACTOR);
                 $d->CANTFUN = intval($det['total_unidades']);
                 $d->CANTDEV = null;
                 $d->SUBTOTAL = floatval($det['subtotal']);
@@ -206,7 +206,6 @@ class PedidoController extends Controller
                 $d->preciox = 0;
                 $d->serialitem = 0;
 
-                $d->save();
 
                 //Bajar Stock del item.
                 $itemData->STOCK = $itemData->STOCK - $d->CANTFUN;
@@ -236,6 +235,8 @@ class PedidoController extends Controller
                 $detEgr->COSTOP = $d->COSTOP;
                 $detEgr->COSTOU = $d->COSTOU;
                 
+                $d->save();
+                
                 $detEgr->save();
             }
 
@@ -253,8 +254,8 @@ class PedidoController extends Controller
             $deuda->SECINV = $cab->SECUENCIAL;
             $deuda->IVA = $cab->IVA;
             $deuda->MONTO = $cab->NETO;
-            $deuda->CREDITO = $cab->NETO;
-            $deuda->SALDO = 0;
+            $deuda->CREDITO = 0;
+            $deuda->SALDO = $cab->NETO;
             $deuda->FECHAEMI = $cab->FECHA;
             $deuda->FECHAVEN = $cab->FECHAVEN;
             $deuda->FECHADES = $cab->FECHA;
@@ -284,7 +285,7 @@ class PedidoController extends Controller
             $deuda->diasatraso = 0;
             $deuda->usuarioeli = 0;
             $deuda->EWEB = "N";
-            $deuda->ESTADOLIQ = "N";
+            //$deuda->ESTADOLIQ = "N";
             
             //Generar el Credito.
             $credito = new \App\ADMCREDITO();
@@ -310,8 +311,6 @@ class PedidoController extends Controller
             $credito->save();
             $parametrov->SECUENCIAL =  $parametrov->SECUENCIAL + 1;
             $parametrov->save();
-            
-            
             
             //$claveAcc = $this->GenerarClave('001391200','002152','0991503102001','01','1','2','07-02-2020');
             
@@ -360,13 +359,7 @@ class PedidoController extends Controller
 
         $detalles = \App\ADMDETEGRESO::where('SECUENCIAL',9174)->get();
         
-        // $nombresITEMS = DB::table('ADMITEM')
-        //                 ->join('ADMDETEGRESO', function ($join) {
-        //                 $join ->on('ADMITEM.ITEM', '=', 'ADMDETEGRESO.ITEM')
-        //                 ->where('ADMDETEGRESO.SECUENCIAL', '=', 9174);
-        //                 })
-        //                 ->get();
-
+       
         return \PDF::loadView('pdfs.pdffactura2',['cabecera'=>$order,'cliente'=>$cliente,'parametrobo'=>$parametrobo,'detalles'=> $detalles])->stream('archivo.pdf');
     }
 

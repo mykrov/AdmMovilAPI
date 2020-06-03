@@ -61,7 +61,6 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $fechaeli
  * @property string $usuarioeli
  * @property string $EWEB
- * @property string $ESTADOLIQ
  */
 class ADMDEUDA extends Model
 {
@@ -97,6 +96,6 @@ class ADMDEUDA extends Model
     /**
      * @var array
      */
-    protected $fillable = ['BODEGA', 'CLIENTE', 'TIPO', 'NUMERO', 'SERIE', 'SECINV', 'IVA', 'MONTO', 'CREDITO', 'SALDO', 'MULTA', 'MOTIVO', 'FECHAEMI', 'FECHAVEN', 'FECHADES', 'FECHADEP', 'FEVENDES', 'BANCO', 'CUENTA', 'NUMCHQ', 'ESTCHQ', 'INTEGRADO', 'SECCON', 'HORA', 'OPERADOR', 'VENDEDOR', 'OBSERVACION', 'NOMBREPC', 'CAJAC', 'ESTADO', 'NUMAUTO', 'BODEGAFAC', 'SERIEFAC', 'NUMEROFAC', 'FECHAFAC', 'ACT_SCT', 'montodocumento', 'tipoventa', 'mesescredito', 'tipopago', 'numeropagos', 'entrada', 'valorfinanciado', 'porinteres', 'montointeres', 'totaldeuda', 'seccreditogen', 'secdeudagen', 'numcuotagen', 'porinteresmora', 'basecalculo', 'diasatraso', 'fechaeli', 'usuarioeli', 'EWEB', 'ESTADOLIQ'];
+    protected $fillable = ['BODEGA', 'CLIENTE', 'TIPO', 'NUMERO', 'SERIE', 'SECINV', 'IVA', 'MONTO', 'CREDITO', 'SALDO', 'MULTA', 'MOTIVO', 'FECHAEMI', 'FECHAVEN', 'FECHADES', 'FECHADEP', 'FEVENDES', 'BANCO', 'CUENTA', 'NUMCHQ', 'ESTCHQ', 'INTEGRADO', 'SECCON', 'HORA', 'OPERADOR', 'VENDEDOR', 'OBSERVACION', 'NOMBREPC', 'CAJAC', 'ESTADO', 'NUMAUTO', 'BODEGAFAC', 'SERIEFAC', 'NUMEROFAC', 'FECHAFAC', 'ACT_SCT', 'montodocumento', 'tipoventa', 'mesescredito', 'tipopago', 'numeropagos', 'entrada', 'valorfinanciado', 'porinteres', 'montointeres', 'totaldeuda', 'seccreditogen', 'secdeudagen', 'numcuotagen', 'porinteresmora', 'basecalculo', 'diasatraso', 'fechaeli', 'usuarioeli', 'EWEB'];
 
 }

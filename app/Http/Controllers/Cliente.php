@@ -10,7 +10,9 @@ class Cliente extends Controller
 {
     public function listado(){
 
-        $clientes = \App\Cliente::all();
+        $clientes = \App\Cliente::where('ESTADO','=','A')
+        ->select(['CODIGO','RAZONSOCIAL','NEGOCIO','REPRESENTA','RUC','DIRECCION','TELEFONOS','EMAIL','TIPO','PROVINCIA','CANTON','PARROQUIA','SECTOR','RUTA','CUPO','GRUPO','ORDEN','CODFRE','CREDITO','DIA','FECDESDE','FECULTCOM','ESTADO','TDCREDITO','DIASCREDIT','VENDEDOR','FORMAPAG','IVA','CONFINAL','CLASE','OBSERVACION','TIPONEGO','CLAVEFE'])
+        ->simplePaginate(5);
         return response()->json($clientes);
 
     }
