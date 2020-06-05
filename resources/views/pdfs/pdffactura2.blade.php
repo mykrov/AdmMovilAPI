@@ -35,13 +35,16 @@
                     <table border="0" cellpadding="0" cellspacing="0" width="100%">
                         <tr >
                             <td width="50%" height ="120px" align="center" >
-                                <img src="img/descarga.png." alt="" style="max-height: 80px;">
+                                <img src="img/descarga.jpg." alt="" style="max-height: 120px;">
                             </td>
                             <td width="50%">
                                 <table cellpadding="0" cellspacing="0" width="100%" style="border-radius:6px;border-collapse:separate;border:solid black 1px">
                                     <tr style="border: 2px solid black">
                                         <td  width="100%" align="center">
-                                            <h3>FACTURA NÚMERO:{{ $cabecera->NUMERO }}</h3>
+                                            @php
+                                                $newstr = substr_replace($cabecera->SERIE,'-', 3, 0);
+                                            @endphp
+                                            <h5>FACTURA NÚMERO: {{ $newstr.'-'.substr("000000000{$cabecera->NUMERO}",-9)}}</h5>
                                         </td>
                                     </tr>
                                     <tr>
@@ -134,10 +137,15 @@
                                 </table>
                             </td>
                             <td width ="33%">
+                                @php
+                                    $orgDate = $cabecera->FECHA ;  
+                                    $newDate = date("d-m-Y", strtotime($orgDate));  
+                                    
+                                @endphp     
                                 <table>
                                     <tr>
                                         <td>
-                                            <span style="font-size: 10;">Fecha de Emisión:</span><span style="font-size: 10px"> {{ $cabecera->FECHA }}</span> 
+                                            <span style="font-size: 10;">Fecha de Emisión:</span><span style="font-size: 12px"> {{ $newDate }}</span> 
                                         </td>
                                     </tr>
                                     <tr>
@@ -173,9 +181,9 @@
                             <td>{{$item->ITEM}}</td>
                             <td>{{\App\ADMITEM::where(['ITEM' => $item->ITEM])->pluck('NOMBRE')->first()}}</td>
                             <td>{{intval($item->CANTFUN)}}</td>
-                            <td>{{$item->PRECIO}}</td>
+                            <td>{{number_format($item->PRECIO,2,'.',',')}}</td>
                             <td>{{$item->DESCUENTO}}</td>
-                            <td>{{$item->NETO}}</td>
+                            <td>{{number_format($item->SUBTOTAL,2,'.',',')}}</td>
                         </tr>   
                         @endforeach
                     </table>
@@ -187,45 +195,67 @@
                         <td width="65%">
                             <table style="font-size:11px;"  >
                                 <tr>
-                                    <td><strong>Información Adicional<strong></td>
+                                    <td><strong>Información Adicional:<strong></td>
                                 </tr>
                                 <tr>
-                                    <td>Dirección:</td>
+                                    <td>Dirección: {{ $cliente->DIRECCION}}</td>
                                 </tr>
                                 <tr>
-                                    <td>Teléfono:</td>
+                                    <td>Teléfono: {{ $cliente->TELEFONOS}}</td>
                                 </tr>
                                 <tr>
-                                    <td>Email:</td>
+                                    <td>Email: {{ $cliente->EMAIL}}</td>
                                 </tr>
                             </table>
 
                         </td>
+                        @php
+                            $subTotal12 = 0.0;
+                            $subTotal0 = 0.0;
+                            $noObjetoIVA = 0.0;
+                            $excentoIVA = 0.0;
+                            $sinImpuetos = 0.0;
+                            $iva = 0.0;
+                            
+                            foreach ($detalles as $val) {
+                                if ($val['GRAVAIVA'] == 'S') {
+                                    $subTotal12 += $val['SUBTOTAL'];
+                                    $iva += $val['IVA'];
+                                }else{
+                                    $subTotal0 += $val['SUBTOTAL'];
+                                }
+                            }
+                            $sinImpuestos = $subTotal12 + $subTotal0;
+                            $valorTotal = $sinImpuestos + $iva;
+                        @endphp
+
+                       
+                        
                         <td width="35%">
-                            <table style="border-radius:6px;border-collapse:separate;border:solid black 1px; font-size:11px;padding:10px 10px 10px 10px;">
+                            <table style="border-radius:6px;border-collapse:separate;border:solid black 2px; font-size:11px;padding:10px 10px 10px 10px;">
                                 <tr>
                                     <td>SubTotal 12%</td>
-                                    <td>{{ $cabecera->SUBTOTAL }}</td>
+                                    <td>{{ number_format($subTotal12,2,'.',',') }}</td>
                                 </tr>
                                 <tr>
                                     <td>SubTotal 0%</td>
-                                    <td>01231230</td>
+                                    <td>{{ number_format($subTotal0,2,'.',',')  }}</td>
                                 </tr>
                                 <tr>
                                     <td>SubTotal No Objeto de IVA</td>
-                                    <td>01231230</td>
+                                    <td>{{ number_format($noObjetoIVA,2,'.',',')  }}</td>
                                 </tr>
                                 <tr>
                                     <td>SubTotal Excento de IVA</td>
-                                    <td>01231230</td>
+                                    <td>{{ number_format($excentoIVA,2,'.',',')  }}</td>
                                 </tr>
                                 <tr>
                                     <td>SUBTOTAL SIN IMPUESTOS</td>
-                                    <td>0123120</td>
+                                    <td>{{ number_format($sinImpuestos,2,'.',',')  }}</td>
                                 </tr>
                                 <tr>
                                     <td>Descuentos</td>
-                                    <td>{{ $cabecera->DESCUENTO }}</td>
+                                    <td>{{ number_format($cabecera->DESCUENTO,2,'.',',')  }}</td>
                                 </tr>
                                 <tr>
                                     <td>ICE</td>
@@ -237,11 +267,11 @@
                                 </tr>
                                 <tr>
                                     <td>IVA 12%</td>
-                                    <td>{{ $cabecera->IVA }}</td>
+                                    <td>{{ number_format($iva,2,'.',',') }}</td>
                                 </tr>
                                 <tr>
                                     <td><strong>VALOR TOTAL</strong></td>
-                                    <td>{{ $cabecera->SUBTOTAL }}</td>
+                                    <td><strong>{{ number_format($valorTotal,2,'.',',') }}</strong></td>
                                 </tr>
                             </table>
                         </td>
@@ -258,7 +288,7 @@
             </tr>
             <tr style="border-top:1px solid;">
                 <td>Sin utilizacion del Sistema Financiero </td>
-                <td>{{ $cabecera->SUBTOTAL }}</td>
+                <td> {{ number_format($valorTotal,2,'.',',')}}</td>
                 <td>0</td>
                 <td>Dias</td>
             </tr>
