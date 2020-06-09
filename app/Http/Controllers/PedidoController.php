@@ -139,7 +139,6 @@ class PedidoController extends Controller
             $secuencial_str = strval($cab->NUMERO);
             $seC_cero = substr("000000000{$secuencial_str}",-$lengh_str);
             
-            
             $claveAcc = $this->GenerarClave($seC_cero,$cab->SERIE,$parametrobo->ruc,'01',1,2,$cab->FECHA);
             $cab->NUMAUTO = $claveAcc;
 
@@ -182,7 +181,7 @@ class PedidoController extends Controller
                 $d->PRECIO = floatval($det['precio']);
                 $d->COSTOP = $itemData->COSTOP;
                 $d->COSTOU = $itemData->COSTOU;
-                $d->CANTIU = intval($det['total_unidades'])  % $itemData->FACTOR;
+                $d->CANTIU = intval($det['total_unidades']) % $itemData->FACTOR;
                 $d->CANTIC = intval($det['total_unidades']  / $itemData->FACTOR);
                 $d->CANTFUN = intval($det['total_unidades']);
                 $d->CANTDEV = null;
@@ -233,9 +232,9 @@ class PedidoController extends Controller
                 $detEgr->CANTIC = $d->CANTIC; 
                 $detEgr->COSTOP = $d->COSTOP;
                 $detEgr->COSTOU = $d->COSTOU;
+                $detEgr->CANTFUN = $d->CANTFUN;
                 
                 $d->save();
-                
                 $detEgr->save();
             }
 
