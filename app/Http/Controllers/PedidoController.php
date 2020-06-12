@@ -27,14 +27,14 @@ class PedidoController extends Controller
      
         DB::beginTransaction();
 
-        
-        
         try {
         
-            $bodega = ADMBODEGA::where('CODIGO','=',(int)$cabecera['bodega'])->first();
+            $bodega = ADMBODEGA::where('CODIGO','=',$cabecera['bodega'])->first();
             $parametrov = ADMPARAMETROV::first();
             $cliente = Cliente::where('CODIGO','=',$cabecera['cliente'])->first();
             $parametrobo = ADMPARAMETROBO::first();
+
+            //return response()->json($bodega);
 
             $grabaIva = "N";
             if(floatval($cabecera['iva']) > 0){
@@ -57,12 +57,12 @@ class PedidoController extends Controller
             $cab->CHOFER = null; 
             $cab->DOCREL = null; 
             $cab->NUMEROREL = null; 
-            $cab->FECHA = $date->Format('Y-d-m H:i:s'); 
-            $cab->FECHAVEN = $date->addDays(intval($cliente->DIASCREDIT))->format('Y-d-m H:i:s'); 
+            $cab->FECHA = $date->Format('Y-d-m'); 
+            $cab->FECHAVEN = $date->addDays(intval($cliente->DIASCREDIT))->format('Y-d-m'); 
             $cab->FECHADES = $cabecera['fecha_ingreso']; 
             $cab->OPERADOR = "ADM"; 
             $cab->CLIENTE = $cabecera['cliente']; 
-            $cab->VENDEDOR = $cabecera['operador']; 
+            $cab->VENDEDOR = $cabecera['usuario']; 
             $cab->PROVEEDOR = null; 
             $cab->SUBTOTAL = $cabecera['subtotal']; 
             $cab->DESCUENTO = $cabecera['descuento']; 
@@ -85,7 +85,6 @@ class PedidoController extends Controller
             $cab->NUMSERIE = null; 
             $cab->NOCARGA = null; 
             $cab->APLSRI = null; 
-            
             $cab->NUMFISICO = null; 
             $cab->HORA = $cabecera['hora_ingreso']; 
             $cab->NOMBREPC = "ServidorLaravel"; 
@@ -140,7 +139,6 @@ class PedidoController extends Controller
             $secuencial_str = strval($cab->NUMERO);
             $seC_cero = substr("000000000{$secuencial_str}",-$lengh_str);
             
-            
             $claveAcc = $this->GenerarClave($seC_cero,$cab->SERIE,$parametrobo->ruc,'01',1,2,$cab->FECHA);
             $cab->NUMAUTO = $claveAcc;
 
@@ -183,7 +181,7 @@ class PedidoController extends Controller
                 $d->PRECIO = floatval($det['precio']);
                 $d->COSTOP = $itemData->COSTOP;
                 $d->COSTOU = $itemData->COSTOU;
-                $d->CANTIU = intval($det['total_unidades'])  % $itemData->FACTOR;
+                $d->CANTIU = intval($det['total_unidades']) % $itemData->FACTOR;
                 $d->CANTIC = intval($det['total_unidades']  / $itemData->FACTOR);
                 $d->CANTFUN = intval($det['total_unidades']);
                 $d->CANTDEV = null;
@@ -211,7 +209,7 @@ class PedidoController extends Controller
                 $itemData->STOCK = $itemData->STOCK - $d->CANTFUN;
                 $itemData->save();
                 
-                //Bajar Stock de la Bodega.
+                //Bajar Stock de la Bodega del ITEM utilizando otro metodo ya que no posee PK.
                 $itemBog = \App\ADMITEMBOD::where('ITEM',trim($d->ITEM))
                 ->where('BODEGA',$cab->BODEGA)
                 ->first();
@@ -234,9 +232,9 @@ class PedidoController extends Controller
                 $detEgr->CANTIC = $d->CANTIC; 
                 $detEgr->COSTOP = $d->COSTOP;
                 $detEgr->COSTOU = $d->COSTOU;
+                $detEgr->CANTFUN = $d->CANTFUN;
                 
                 $d->save();
-                
                 $detEgr->save();
             }
 
@@ -261,7 +259,7 @@ class PedidoController extends Controller
             $deuda->FECHADES = $cab->FECHA;
             $deuda->OPERADOR = "ADM";
             $deuda->VENDEDOR = $cab->VENDEDOR;
-            $deuda->OBSERVACION = "Deuda FACELE-App";
+            $deuda->OBSERVACION = "Deuda FacBid-App";
             $deuda->NUMAUTO = "";
             $deuda->BODEGAFAC = 0;
             $deuda->SERIEFAC = "";
@@ -300,7 +298,7 @@ class PedidoController extends Controller
             $credito->MONTO = $deuda->MONTO ;
             $credito->SALDO = $deuda->MONTO ;
             $credito->OPERADOR = "ADM";
-            $credito->OBSERVACION = "Credito FACELE-App" ;
+            $credito->OBSERVACION = "Credito FacBid-App" ;
             $credito->VENDEDOR = $deuda->VENDEDOR;
             $credito->estafirmado = "N";
             $credito->ACT_SCT = "N";
@@ -316,59 +314,68 @@ class PedidoController extends Controller
             
             //Guardado de todo en caso de exito en las operaciones.
             DB::commit();
-            //return response()->json(["estado"=>"guardado", "Nfactura"=>$cab->NUMERO, "secuencial"=>$cab->SECUENCIAL]);
 
             $order = $cab;
             $detalles = \App\ADMDETEGRESO::where('SECUENCIAL',$cab->SECUENCIAL)->get();
-            $pdf = \PDF::loadView('pdfs/pdffactura2',['cabecera'=>$order,'cliente'=>$cliente,'parametrobo'=>$parametrobo,'detalles'=> $detalles]);
+            $pdf = \PDF::loadView('pdfs/pdffactura2',['cabecera'=>$order,'cliente'=>$cliente,'parametrobo'=>$parametrobo,'detalles'=>$detalles]);
 
+            $vendedor = \App\ADMVENDEDOR::where('CODIGO','=',$cabecera['usuario'])->first();
+            $vendEmail = $vendedor->email;
 
-            // $pdf = \PDF::loadView('pdfs.factura', $cab);
-            // return $pdf->download('archivo.pdf');
-
-            try {
-                $cabe = $cab;
-                Mail::send('emails.FacPDF', ['pdf'=>$pdf], function ($mail) use ($pdf) {
-                    $mail->from('carroweb@guidoelectronic.com', 'Manuel Rangel');
-                    $mail->to('salvatorex89@gmail.com');
-                    $mail->subject('Factura PDF');
-                    $mail->attachData($pdf->output(), 'Factura.pdf');
-                });
-            } catch (\Exception $e) {
-                return response()->json(["error"=>["info"=>$e->getMessage()]]);;
+            //Validacion de Email del Cliente.
+            $clienteEmail = trim($cliente->EMAIL);
+                     
+            if (filter_var($clienteEmail, FILTER_VALIDATE_EMAIL)) {
+                //Email Valido
+                try {
+                    Mail::send('emails.FacPDF', ['pdf'=>$pdf,'cliente'=>trim($cliente)], function ($mail) use ($pdf,$clienteEmail,$vendEmail) {
+                        $mail->from('mrangel@birobid.com', 'Factura Electronica');
+                        $mail->to($clienteEmail);
+                        $mail->cc($vendEmail);
+                        $mail->subject('Factura PDF');
+                        $mail->attachData($pdf->output(), 'Factura.pdf');
+                    });
+                } catch (\Exception $e) {
+                    return response()->json(["error"=>["info"=>$e->getMessage()]]);;
+                }
+                return response()->json(["estado"=>"guardado", "Nfactura"=>$cab->NUMERO, "secuencial"=>$cab->SECUENCIAL]);
+               
+            } else {
+                //Email No valido
+                try {
+                    Mail::send('emails.FacPDF', ['pdf'=>$pdf,'cliente'=>trim($cliente)], function ($mail) use ($pdf,$vendEmail) {
+                        $mail->from('mrangel@birobid.com', 'Factura Electronica');
+                        $mail->to($vendEmail);
+                        $mail->subject('Factura PDF');
+                        $mail->attachData($pdf->output(), 'Factura.pdf');
+                    });
+                } catch (\Exception $e) {
+                    return response()->json(["error"=>["info"=>$e->getMessage()]]);;
+                }
+                return response()->json(["estado"=>"guardado", "Nfactura"=>$cab->NUMERO, "secuencial"=>$cab->SECUENCIAL]);
+               
             }
-
-            return response()->json(["estado"=>"guardado", "Nfactura"=>$cab->NUMERO, "secuencial"=>$cab->SECUENCIAL]);
-           
 
         } catch (\Exception $e) {
             DB::rollback();
             return response()->json(["error"=>["info"=>$e->getMessage()]]);
         }
-
-        
     }
-
+    
+    //Vista para ver la Generacion de un PDF desde el Navegador.
     public function Facturapdf(){
-        $order = \App\ADMCABEGRESO::where('NUMERO',133)
+        $order = \App\ADMCABEGRESO::where('NUMERO',123)
         ->where('TIPO','FAC')
         ->first();
 
         $parametrobo = ADMPARAMETROBO::first();
         $cliente = Cliente::where('CODIGO','=',$order->CLIENTE)->first();
 
-        $detalles = \App\ADMDETEGRESO::where('SECUENCIAL',9174)->get();
-        
-       
+        $detalles = \App\ADMDETEGRESO::where('SECUENCIAL',6149061)->get();
         return \PDF::loadView('pdfs.pdffactura2',['cabecera'=>$order,'cliente'=>$cliente,'parametrobo'=>$parametrobo,'detalles'=> $detalles])->stream('archivo.pdf');
     }
 
-    public function InvertirCadena($cadena)
-    {   
-        $invertida = strrev($cadena);
-        return $invertida;
-    }
-
+    //Funcion para Clave de Acceso.
     public function SumaPorDigito($string5)
     {
         try {
@@ -403,6 +410,7 @@ class PedidoController extends Controller
 
     }
 
+    //Funcion Principal Clave de Acceso.
     public function GenerarClave($secuencial6,$Serie6,$ruc,$codDoc,$tipoemision,$ambiente,$fecha_fac){
         try {
             $dat = Carbon::now();
@@ -412,7 +420,7 @@ class PedidoController extends Controller
     
             $ret_claveAcceso = $obtender_fecha.''.$codDoc.''.$ruc.''.$ambiente.''.$Serie6.''.$secuencial6.''.$codigo_Numerico.''.$tipoemision;
     
-            $cadenaInvertida = $this->InvertirCadena($ret_claveAcceso);
+            $cadenaInvertida = strrev($ret_claveAcceso);
 
             $res = $this->SumaPorDigito($cadenaInvertida);
            
@@ -432,7 +440,6 @@ class PedidoController extends Controller
 
 }
 
-
 // ADMCABEGRESO
 // ADMDETEGRESO
 
@@ -447,6 +454,3 @@ class PedidoController extends Controller
 
 // ADMITEM
 // ADMITEMBO
-
-
-

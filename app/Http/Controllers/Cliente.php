@@ -12,8 +12,16 @@ class Cliente extends Controller
 
         $clientes = \App\Cliente::where('ESTADO','=','A')
         ->select(['CODIGO','RAZONSOCIAL','NEGOCIO','REPRESENTA','RUC','DIRECCION','TELEFONOS','EMAIL','TIPO','PROVINCIA','CANTON','PARROQUIA','SECTOR','RUTA','CUPO','GRUPO','ORDEN','CODFRE','CREDITO','DIA','FECDESDE','FECULTCOM','ESTADO','TDCREDITO','DIASCREDIT','VENDEDOR','FORMAPAG','IVA','CONFINAL','CLASE','OBSERVACION','TIPONEGO','CLAVEFE'])
-        ->simplePaginate(5);
+        ->simplePaginate(15);
         return response()->json($clientes);
+
+    }
+
+    public function listado2(){
+
+        $clientes2 = \App\Cliente::where('ESTADO','=','A')
+        ->select(['CODIGO','RAZONSOCIAL','NEGOCIO','REPRESENTA','RUC','DIRECCION','TELEFONOS','EMAIL','TIPO','PROVINCIA','CANTON','PARROQUIA','SECTOR','RUTA','CUPO','GRUPO','ORDEN','CODFRE','CREDITO','DIA','FECDESDE','FECULTCOM','ESTADO','TDCREDITO','DIASCREDIT','VENDEDOR','FORMAPAG','IVA','CONFINAL','CLASE','OBSERVACION','TIPONEGO','CLAVEFE'])->get();
+        return response()->json($clientes2);
 
     }
 
@@ -55,9 +63,10 @@ class Cliente extends Controller
                 $codigo = substr("000000{$numeroCli}", -$str_length);
 
                 $standar = \App\Cliente::where('CODIGO','=',$cliBase->CLIENTEMODELOCARRO)->first();
+                //return response()->json($standar);
                 $ClientNew  = new \App\Cliente;
                 $dt = Carbon::now();
-                $dt2 = $dt->format('Y-d-m H:i:s');
+                $dt2 = $dt->format('Y-d-m');
                 //return response()->json($dt2);
             
                 $ClientNew->CODIGO = $inicial.$codigo;
@@ -85,7 +94,7 @@ class Cliente extends Controller
                 $ClientNew->DIA = $standar->DIA;
                 $ClientNew->FECDESDE = $dt2;
                 $ClientNew->FECHAING = $dt2;
-                $ClientNew->FECULTCOM = $standar->FECULTCOM;
+                $ClientNew->FECULTCOM = $dt2;
                 $ClientNew->FECELIMINA = $standar->FECELIMINA;
                 $ClientNew->ESTADO = $standar->ESTADO;
                 $ClientNew->TDCREDITO = $datos['TDCREDITO'];
@@ -103,7 +112,7 @@ class Cliente extends Controller
                 $ClientNew->CODTMP = $standar->CODTMP;
                 $ClientNew->TIPODOC = $datos['TIPODOC'];
                 $ClientNew->TIPOCUENTA = $standar->TIPOCUENTA;
-                $ClientNew->CLIENTEWEB = $standar->CLIENTEWEB;
+                $ClientNew->CLIENTEWEB = $standar->clienteweb;
                 $ClientNew->CODCLIENTEDOMI = $standar->CODCLIENTEDOMI;
                 $ClientNew->CLIENTEDOMI = $standar->CLIENTEDOMI;
                 $ClientNew->REFERENCIA = $datos['REFERENCIA'];

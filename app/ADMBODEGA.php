@@ -57,9 +57,22 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ADMBODEGA extends Model
 {
-    protected $primaryKey = null;
+    //protected $primaryKey = null;
     public $incrementing = false;
     public $timestamps = false;
+      /**
+     * The primary key for the model.
+     * 
+     * @var string
+     */
+    protected $primaryKey = 'CODIGO';
+
+    /**
+     * The "type" of the auto-incrementing ID.
+     * 
+     * @var string
+     */
+    protected $keyType = 'int';
     /**
      * The table associated with the model.
      * 
@@ -70,6 +83,6 @@ class ADMBODEGA extends Model
     /**
      * @var array
      */
-    protected $fillable = ['CODIGO', 'NOMBRE', 'DIRECCION', 'CIUDAD', 'BODEGUERO', 'NOING', 'NOEGR', 'NOFACTURA', 'NOPEDIDO', 'NOCOM', 'NODCOM', 'NOAJI', 'NOAJE', 'NOTRAIN', 'NOTRAEG', 'ESTADO', 'NOOCO', 'NONOTA', 'NCR', 'NCRINT', 'NORETENCION', 'NCRPROV', 'NOCARGAEGRESO', 'NOCARGAINGRESO', 'NUMGUIAREMISION', 'NOPROCESO', 'SERIE', 'NOAUTORIZACIONFAC', 'FECHAVDESDEFAC', 'FECHAVHASTAFAC', 'NOAUTOSRIFAC', 'NOAUTORIZACIONNCR', 'FECHAVDESDENCR', 'FECHAVHASTANCR', 'NOAUTOSRINCR', 'NOAUTORIZACIONNVT', 'FECHAVDESDENVT', 'FECHAVHASTANVT', 'NOAUTOSRINVT', 'NOAUTORIZACIONRET', 'FECHAVDESDERET', 'FECHAVHASTARET', 'NOAUTOSRIRET', 'BODATS', 'NOCONTROLPACIENTE', 'numguiaremisionpos', 'TELEFONO', 'CODIGO_BODEGA', 'NOIMPORTACION'];
+    protected $fillable = ['NOMBRE', 'DIRECCION', 'CIUDAD', 'BODEGUERO', 'NOING', 'NOEGR', 'NOFACTURA', 'NOPEDIDO', 'NOCOM', 'NODCOM', 'NOAJI', 'NOAJE', 'NOTRAIN', 'NOTRAEG', 'ESTADO', 'NOOCO', 'NONOTA', 'NCR', 'NCRINT', 'NORETENCION', 'NCRPROV', 'NOCARGAEGRESO', 'NOCARGAINGRESO', 'NUMGUIAREMISION', 'NOPROCESO', 'SERIE', 'NOAUTORIZACIONFAC', 'FECHAVDESDEFAC', 'FECHAVHASTAFAC', 'NOAUTOSRIFAC', 'NOAUTORIZACIONNCR', 'FECHAVDESDENCR', 'FECHAVHASTANCR', 'NOAUTOSRINCR', 'NOAUTORIZACIONNVT', 'FECHAVDESDENVT', 'FECHAVHASTANVT', 'NOAUTOSRINVT', 'NOAUTORIZACIONRET', 'FECHAVDESDERET', 'FECHAVHASTARET', 'NOAUTOSRIRET', 'BODATS', 'NOCONTROLPACIENTE', 'numguiaremisionpos', 'TELEFONO', 'CODIGO_BODEGA', 'NOIMPORTACION'];
 
 }

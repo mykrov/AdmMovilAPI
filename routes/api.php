@@ -21,6 +21,7 @@ Route::get('/setpassword','Vendedor@SetearPasswordHash');
 
 //Rutas Clientes
 Route::get('/cliente','Cliente@listado');
+Route::get('/clientetodos','Cliente@listado2');
 Route::get('/clientexv/{vendedor}','Cliente@ClienteXVendedor');
 Route::get('/cliente/{id?}','Cliente@byID');
 Route::post('/cliente','Cliente@CreateClient');
@@ -62,6 +63,10 @@ Route::get('/deuda/{codigo}','DeudaController@GetDeudaXCliente');
 
 //Rutas Pedidos
 Route::post('/pedido','PedidoController@PostPedido');
+
+//Facturas por vendedor
+Route::post('/detxvende','FacturasController@GetDetalles');
+Route::post('/factxvende','FacturasController@GetCabeceras');
 
 
 //Test
