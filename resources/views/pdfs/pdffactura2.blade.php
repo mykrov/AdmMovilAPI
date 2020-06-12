@@ -182,7 +182,11 @@
                             <td>{{\App\ADMITEM::where(['ITEM' => $item->ITEM])->pluck('NOMBRE')->first()}}</td>
                             <td>{{intval($item->CANTFUN)}}</td>
                             <td>{{number_format($item->PRECIO,2,'.',',')}}</td>
+<<<<<<< HEAD
                             <td>{{number_format($item->DESCUENTO,2,'.',',')}}</td>
+=======
+                            <td>{{$item->DESCUENTO}}</td>
+>>>>>>> master
                             <td>{{number_format($item->SUBTOTAL,2,'.',',')}}</td>
                         </tr>   
                         @endforeach
@@ -235,6 +239,7 @@
                             <table style="border-radius:6px;border-collapse:separate;border:solid black 2px; font-size:11px;padding:10px 10px 10px 10px;">
                                 <tr>
                                     <td>SubTotal 12%</td>
+<<<<<<< HEAD
                                     <td>{{ number_format($cabecera->SUBTOTAL - $cabecera->SUBTOTAL0,2,'.',',') }}</td>
                                 </tr>
                                 <tr>
@@ -252,6 +257,25 @@
                                 <tr>
                                     <td>SUBTOTAL SIN IMPUESTOS</td>
                                     <td>{{ number_format($cabecera->SUBTOTAL,2,'.',',')  }}</td>
+=======
+                                    <td>{{ number_format($subTotal12,2,'.',',') }}</td>
+                                </tr>
+                                <tr>
+                                    <td>SubTotal 0%</td>
+                                    <td>{{ number_format($subTotal0,2,'.',',')  }}</td>
+                                </tr>
+                                <tr>
+                                    <td>SubTotal No Objeto de IVA</td>
+                                    <td>{{ number_format($noObjetoIVA,2,'.',',')  }}</td>
+                                </tr>
+                                <tr>
+                                    <td>SubTotal Excento de IVA</td>
+                                    <td>{{ number_format($excentoIVA,2,'.',',')  }}</td>
+                                </tr>
+                                <tr>
+                                    <td>SUBTOTAL SIN IMPUESTOS</td>
+                                    <td>{{ number_format($sinImpuestos,2,'.',',')  }}</td>
+>>>>>>> master
                                 </tr>
                                 <tr>
                                     <td>Descuentos</td>
@@ -267,11 +291,19 @@
                                 </tr>
                                 <tr>
                                     <td>IVA 12%</td>
+<<<<<<< HEAD
                                     <td>{{ number_format($cabecera->IVA,2,'.',',') }}</td>
                                 </tr>
                                 <tr>
                                     <td><strong>VALOR TOTAL</strong></td>
                                     <td><strong>{{ number_format($cabecera->NETO,2,'.',',') }}</strong></td>
+=======
+                                    <td>{{ number_format($iva,2,'.',',') }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>VALOR TOTAL</strong></td>
+                                    <td><strong>{{ number_format($valorTotal,2,'.',',') }}</strong></td>
+>>>>>>> master
                                 </tr>
                             </table>
                         </td>
@@ -288,8 +320,12 @@
             </tr>
             <tr style="border-top:1px solid;">
                 <td>Sin utilizacion del Sistema Financiero </td>
+<<<<<<< HEAD
                 <td>{{ number_format($cabecera->NETO,2,'.',',') }}</td>
                 {{-- <td> {{ number_format($valorTotal,2,'.',',')}}</td> --}}
+=======
+                <td> {{ number_format($valorTotal,2,'.',',')}}</td>
+>>>>>>> master
                 <td>0</td>
                 <td>Dias</td>
             </tr>

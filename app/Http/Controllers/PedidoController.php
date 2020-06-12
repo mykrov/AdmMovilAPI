@@ -364,14 +364,22 @@ class PedidoController extends Controller
     
     //Vista para ver la Generacion de un PDF desde el Navegador.
     public function Facturapdf(){
+<<<<<<< HEAD
         $order = \App\ADMCABEGRESO::where('NUMERO',123)
+=======
+        $order = \App\ADMCABEGRESO::where('NUMERO',689120)
+>>>>>>> master
         ->where('TIPO','FAC')
         ->first();
 
         $parametrobo = ADMPARAMETROBO::first();
         $cliente = Cliente::where('CODIGO','=',$order->CLIENTE)->first();
 
+<<<<<<< HEAD
         $detalles = \App\ADMDETEGRESO::where('SECUENCIAL',6149061)->get();
+=======
+        $detalles = \App\ADMDETEGRESO::where('SECUENCIAL',3066663)->get();
+>>>>>>> master
         return \PDF::loadView('pdfs.pdffactura2',['cabecera'=>$order,'cliente'=>$cliente,'parametrobo'=>$parametrobo,'detalles'=> $detalles])->stream('archivo.pdf');
     }
 
