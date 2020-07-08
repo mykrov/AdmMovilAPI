@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -25,11 +26,13 @@ Route::get('/clientetodos','Cliente@listado2');
 Route::get('/clientexv/{vendedor}','Cliente@ClienteXVendedor');
 Route::get('/cliente/{id?}','Cliente@byID');
 Route::post('/cliente','Cliente@CreateClient');
+Route::post('/clienteven','Cliente@CreateClientVen');
 Route::get('/clientelike/{nombre}','Cliente@BuscarNombre');
 
 Route::get('/items/{bod}','Item@ItemXBodega');
 Route::get('/items/{bod}/{categoria}','Item@ItemBodegaXCategoria');
 Route::get('/item/{codigo}','Item@ItemXCodigo');
+Route::get('/itemslike/{like}','Item@ItemsXNombre');
 Route::get('/categoria','CategoriaController@GetCategorias');
 
 //Rutas Ubicacion
@@ -64,9 +67,17 @@ Route::get('/deuda/{codigo}','DeudaController@GetDeudaXCliente');
 //Rutas Pedidos
 Route::post('/pedido','PedidoController@PostPedido');
 
+//Ruta Ventas POS
+Route::post('/ventapos','VentaPos@Pedido');
+Route::get('/rangopre/{it}','RangoPrecio@RangoPrecioItem');
+
 //Facturas por vendedor
 Route::post('/detxvende','FacturasController@GetDetalles');
 Route::post('/factxvende','FacturasController@GetCabeceras');
+
+//FacturasPOS por vendedor
+Route::post('/detxvendepos','VentasController@GetDetalles');
+Route::post('/factxvendepos','VentasController@GetCabeceras');
 
 
 //Test

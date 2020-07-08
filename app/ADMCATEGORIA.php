@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $ESTADO
  * @property string $EWEB
  * @property string $CODIGOSAP
+ * @property string $foto
  */
 class ADMCATEGORIA extends Model
 {
@@ -44,6 +45,6 @@ class ADMCATEGORIA extends Model
     /**
      * @var array
      */
-    protected $fillable = ['NOMBRE', 'ESTADO', 'EWEB', 'CODIGOSAP'];
+    protected $fillable = ['NOMBRE', 'ESTADO', 'EWEB', 'CODIGOSAP','foto'];
 
 }

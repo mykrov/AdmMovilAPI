@@ -23,19 +23,23 @@ class Vendedor extends Controller
             'password' => 'required|string'
         ]);
         
-        $vendedorData = \App\ADMVENDEDOR::where('CODIGO',request('codigo'))
+        $vendedor = \App\ADMVENDEDOR::where('CODIGO',request('codigo'))
         ->where('ESTADO','A')
         ->first();
 
-        if ($vendedorData &&  \Hash::check(request('password'), trim($vendedorData->HASH))){
-           
-            Auth::loginUsingId( $vendedorData->CODIGO, TRUE);
-            $user = Auth::user();
-            $token = $vendedorData->createToken('authToken')->accessToken;
-            return response()->json(['vendedor'=>$vendedorData,'token'=>$token]);
+        //return response()->json($vendedorData);
+        if ($vendedor &&  \Hash::check(request('password'), trim($vendedor->HASH))){
+            try {
+                Auth::loginUsingId($vendedor->CODIGO, TRUE);
+                $user = Auth::user();
+                $token = $vendedor->createToken('authToken')->accessToken;
+                return response()->json(['vendedor'=>$vendedor,'token'=>$token,'ID'=>$user]);
+            } catch (\Throwable $th) {
+                return response()->json(['message'=>$th->getMessage()]);
+            }
         }
         else{
-            return response()->json(['message'=>'ErrorLogin']); 
+            return response()->json(['message'=>'ErrorLogin']);
         }
     }
 
@@ -61,9 +65,7 @@ class Vendedor extends Controller
                     ->where('CODIGO',$ven['CODIGO'])
                     ->update(['HASH' => $hashed]);
                     $contador++;
-
-                }
-                
+                } 
             }
         } 
         return response()->json($contador);

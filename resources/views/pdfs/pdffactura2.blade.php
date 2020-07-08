@@ -138,13 +138,13 @@
                             </td>
                             <td width ="33%">
                                 @php
-                                    $orgDate =  DateTime::createFromFormat('Y-d-m',$cabecera->FECHA) ;  
+                                    $orgDate =  DateTime::createFromFormat('Y-d-m',$cabecera->FECHA);  
                                     //$newDate = date("d-m-Y", $orgDate);
                                 @endphp     
                                 <table>
                                     <tr>
                                         <td>
-                                            <span style="font-size: 10;">Fecha de Emisión:</span><span style="font-size: 12px"> {{ $orgDate->format('d-m-Y') }}</span> 
+                                            <span style="font-size: 10;">Fecha de Emisión:</span><span style="font-size: 12px"> {{ $cabecera->FECHA }}</span> 
                                         </td>
                                     </tr>
                                     <tr>
@@ -296,9 +296,6 @@
         <div style="max-width: 32rem;min-height: 5rem;">
            
         </div>
-        
-
     </body>
-
 </html>
 

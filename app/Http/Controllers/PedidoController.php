@@ -78,7 +78,7 @@ class PedidoController extends Controller
             $cab->ESTADODOC = null; 
             $cab->TIPOVTA = "BIE"; 
             $cab->INTECXC = null; 
-            $cab->OBSERVA = $cabecera['observacion']; 
+            $cab->OBSERVA = "Gracias por su Compra"; 
             $cab->COMENTA = ""; 
             $cab->INTEGRADO = null; 
             $cab->SECCON = 0; //Pendiente, se Actualiza al guardar todo.
@@ -259,7 +259,7 @@ class PedidoController extends Controller
             $deuda->FECHADES = $cab->FECHA;
             $deuda->OPERADOR = "ADM";
             $deuda->VENDEDOR = $cab->VENDEDOR;
-            $deuda->OBSERVACION = "Deuda FacBid-App";
+            $deuda->OBSERVACION = "Gracias por su Compra";
             $deuda->NUMAUTO = "";
             $deuda->BODEGAFAC = 0;
             $deuda->SERIEFAC = "";
@@ -298,7 +298,7 @@ class PedidoController extends Controller
             $credito->MONTO = $deuda->MONTO ;
             $credito->SALDO = $deuda->MONTO ;
             $credito->OPERADOR = "ADM";
-            $credito->OBSERVACION = "Credito FacBid-App" ;
+            $credito->OBSERVACION = "Gracias por su Compra";
             $credito->VENDEDOR = $deuda->VENDEDOR;
             $credito->estafirmado = "N";
             $credito->ACT_SCT = "N";
@@ -364,15 +364,26 @@ class PedidoController extends Controller
     
     //Vista para ver la Generacion de un PDF desde el Navegador.
     public function Facturapdf(){
-        $order = \App\ADMCABEGRESO::where('NUMERO',123)
+        $order = \App\ADMCABEGRESO::where('NUMERO',180)
         ->where('TIPO','FAC')
+        ->orderby('SECUENCIAL','DESC')
         ->first();
 
         $parametrobo = ADMPARAMETROBO::first();
         $cliente = Cliente::where('CODIGO','=',$order->CLIENTE)->first();
 
-        $detalles = \App\ADMDETEGRESO::where('SECUENCIAL',6149061)->get();
+        $detalles = \App\ADMDETEGRESO::where('SECUENCIAL',6149175)->get();
         return \PDF::loadView('pdfs.pdffactura2',['cabecera'=>$order,'cliente'=>$cliente,'parametrobo'=>$parametrobo,'detalles'=> $detalles])->stream('archivo.pdf');
+    }
+
+    //envio de email de test
+
+    public function TestEmail(){
+         Mail::send('emails.TestEmailServer',[], function ($mail) {
+            $mail->from('mrangel@birobid.com', 'Test de Email');
+            $mail->to('salvatorex89@gmail.com');
+            $mail->subject('Test envio email');
+        });
     }
 
     //Funcion para Clave de Acceso.

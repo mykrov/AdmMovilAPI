@@ -83,6 +83,16 @@ class ADMVENDEDOR extends Authenticatable
     /**
      * @var array
      */
+    protected $guarded = ['CODIGO'];
+
+    protected $hidden = [
+        'CLAVEWEB', 'HASH'
+    ];
+
+    public function getAuthPassword()
+    {
+        return $this->HASH;
+    }
     protected $fillable = ['SUPERVISOR', 'TIPO', 'NOMBRE', 'DIRECCION', 'CEDULA', 'TELEFONOS', 'FECHAING', 'OBSERVACION', 'ESTADO', 'VENCOB', 'SECPPC', 'CLAVE', 'PPC', 'PORCOMICOB', 'PORCOMIVEN', 'SECPAGO', 'CUPOCARTERA', 'CLAVEWEB', 'VENDDOMI', 'controlavalorfac', 'valorfacminimo', 'creacliexterno', 'creadespedexterno', 'editaprecio', 'esautoventa', 'bodega', 'REGION', 'email', 'ventop', 'admventa', 'noventa', 'caja', 'numapertura', 'operadormovil', 'CODIGOSAP', 'CODIGOCARGOSAP', 'CodShip', 'apellidos', 'HASH'];
 
 }

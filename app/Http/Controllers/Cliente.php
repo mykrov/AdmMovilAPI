@@ -12,7 +12,8 @@ class Cliente extends Controller
 
         $clientes = \App\Cliente::where('ESTADO','=','A')
         ->select(['CODIGO','RAZONSOCIAL','NEGOCIO','REPRESENTA','RUC','DIRECCION','TELEFONOS','EMAIL','TIPO','PROVINCIA','CANTON','PARROQUIA','SECTOR','RUTA','CUPO','GRUPO','ORDEN','CODFRE','CREDITO','DIA','FECDESDE','FECULTCOM','ESTADO','TDCREDITO','DIASCREDIT','VENDEDOR','FORMAPAG','IVA','CONFINAL','CLASE','OBSERVACION','TIPONEGO','CLAVEFE'])
-        ->simplePaginate(15);
+        ->simplePaginate(100);
+
         return response()->json($clientes);
 
     }
@@ -49,9 +50,23 @@ class Cliente extends Controller
         $datos = $request;
         
         $check = \App\Cliente::where('RUC','=',$datos['RUC'])->count();
-        //return response()->json($check);
+
+        //return response()->json($datos);
+        
         DB::beginTransaction();
         if ($check < 1) {
+
+            if ($datos['REFERENCIA'] == null ) {
+                $datos['REFERENCIA'] = '';
+            }
+
+            if ($datos['OBSERVACION'] == null ) {
+                $datos['OBSERVACION'] = '';
+            }
+
+            if ($datos['GRUPO'] == null ) {
+                $datos['GRUPO'] = '';
+            }
 
             try {
 
@@ -79,7 +94,7 @@ class Cliente extends Controller
                 $ClientNew->FAX = $datos['FAX'];
                 $ClientNew->EMAIL = $datos['EMAIL'];
                 $ClientNew->TIPO = $datos['TIPO'];
-                $ClientNew->CATEGORIA = null;
+                $ClientNew->CATEGORIA = $standar->CATEGORIA;
                 $ClientNew->PROVINCIA = $datos['PROVINCIA'];
                 $ClientNew->CANTON = $datos['CANTON'];
                 $ClientNew->PARROQUIA = $datos['PARROQUIA'];
@@ -111,8 +126,8 @@ class Cliente extends Controller
                 $ClientNew->TIPONEGO = $datos['TIPONEGO'];
                 $ClientNew->CODTMP = $standar->CODTMP;
                 $ClientNew->TIPODOC = $datos['TIPODOC'];
-                $ClientNew->TIPOCUENTA = $standar->TIPOCUENTA;
-                $ClientNew->CLIENTEWEB = $standar->clienteweb;
+                $ClientNew->tipocuenta = $standar->tipocuenta;
+                $ClientNew->CLIENTEWEB = $standar->CLIENTEWEB;
                 $ClientNew->CODCLIENTEDOMI = $standar->CODCLIENTEDOMI;
                 $ClientNew->CLIENTEDOMI = $standar->CLIENTEDOMI;
                 $ClientNew->REFERENCIA = $datos['REFERENCIA'];
@@ -198,5 +213,174 @@ class Cliente extends Controller
             return response()->json(['result'=>'IdentificacionExistente']);
         }
         
+    }
+
+    public function CreateClientVen(Request $request){
+
+        $datos = $request;
+
+        $check = \App\Cliente::where('RUC','=',$datos['RUC'])->count();
+
+        //return response()->json($datos);
+
+        DB::beginTransaction();
+        if ($check < 1) {
+
+            if ($datos['REFERENCIA'] == null ) {
+                $datos['REFERENCIA'] = '';
+            }
+
+            if ($datos['OBSERVACION'] == null ) {
+                $datos['OBSERVACION'] = '';
+            }
+
+            if ($datos['GRUPO'] == null ) {
+                $datos['GRUPO'] = '';
+            }
+
+            try {
+
+                $cliBase = \App\ADMPARAMETROC::first();
+                $inicial = $cliBase->LETRAINI;
+                $numeroCli = $cliBase->NUMCLIENTE + 1;
+
+                $str_length = 6;
+                $codigo = substr("000000{$numeroCli}", -$str_length);
+
+                $standar = \App\Cliente::where('CODIGO','=',$cliBase->CLIENTEMODELOCARRO)->first();
+                //return response()->json($standar);
+                $ClientNew  = new \App\Cliente;
+                $dt = Carbon::now();
+                $dt2 = $dt->format('Y-d-m');
+                //return response()->json($dt2);
+            
+                $ClientNew->CODIGO = $inicial.$codigo;
+                $ClientNew->RAZONSOCIAL = $datos['RAZONSOCIAL'];
+                $ClientNew->NEGOCIO = $standar->NEGOCIO;
+                $ClientNew->REPRESENTA = $datos['RAZONSOCIAL'];
+                $ClientNew->RUC = $datos['RUC'];
+                $ClientNew->DIRECCION = $datos['DIRECCION'];
+                $ClientNew->TELEFONOS = $datos['TELEFONOS'];
+                $ClientNew->FAX = $datos['FAX'];
+                $ClientNew->EMAIL = $datos['EMAIL'];
+                $ClientNew->TIPO = $standar->TIPO;
+                $ClientNew->CATEGORIA = $standar->CATEGORIA;
+                $ClientNew->PROVINCIA = $standar->PROVINCIA;
+                $ClientNew->CANTON = $standar->CANTON;
+                $ClientNew->PARROQUIA = $standar->PARROQUIA;
+                $ClientNew->SECTOR = $standar->SECTOR;
+                $ClientNew->RUTA = $standar->RUTA;
+                $ClientNew->CTACLIENTE = "";
+                $ClientNew->CUPO = 0;
+                $ClientNew->GRUPO = '';
+                $ClientNew->ORDEN = $standar->ORDEN;
+                $ClientNew->CODFRE = $standar->CODFRE;
+                $ClientNew->CREDITO = $standar->CREDITO;
+                $ClientNew->DIA = $standar->DIA;
+                $ClientNew->FECDESDE = $dt2;
+                $ClientNew->FECHAING = $dt2;
+                $ClientNew->FECULTCOM = $dt2;
+                $ClientNew->FECELIMINA = $standar->FECELIMINA;
+                $ClientNew->ESTADO = $standar->ESTADO;
+                $ClientNew->TDCREDITO = $standar->TDCREDITO;
+                $ClientNew->DIASCREDIT = $standar->DIASCREDIT;
+                $ClientNew->VENDEDOR = $datos['VENDEDOR'];
+                $ClientNew->FORMAPAG = $standar->FORMAPAG;
+                $ClientNew->CREDITOA = $standar->CREDITOA;
+                $ClientNew->IVA = $standar->IVA;
+                $ClientNew->BACKORDER = $standar->BACKORDER;
+                $ClientNew->RETENPED = $standar->RETENPED;
+                $ClientNew->CONFINAL = $standar->CONFINAL;
+                $ClientNew->CLASE = $standar->CLASE;
+                $ClientNew->OBSERVACION = '';
+                $ClientNew->TIPONEGO = $standar->TIPONEGO;
+                $ClientNew->CODTMP = $standar->CODTMP;
+                $ClientNew->TIPODOC = $datos['TIPODOC'];
+                $ClientNew->tipocuenta = $standar->TIPOCUENTA;
+                $ClientNew->CLIENTEWEB = $standar->CLIENTEWEB;
+                $ClientNew->CODCLIENTEDOMI = $standar->CODCLIENTEDOMI;
+                $ClientNew->CLIENTEDOMI = $standar->CLIENTEDOMI;
+                $ClientNew->REFERENCIA = "VentasAPP";
+                $ClientNew->TIPOCONTRIBUYENTE = $standar->TIPOCONTRIBUYENTE;
+                $ClientNew->RETIENEFUENTE = $standar->RETIENEFUENTE;
+                $ClientNew->RETIENEIVA = $standar->RETIENEIVA;
+                $ClientNew->ZONA = $standar->ZONA;
+                $ClientNew->FECNAC = $dt2;
+                $ClientNew->FECMOD = $dt2;
+                $ClientNew->OPEMOD = $standar->OPEMOD;
+                $ClientNew->PORDESSUGERIDO = $standar->PORDESSUGERIDO;
+                $ClientNew->EMAILSECUNDARIO = $standar->EMAILSECUNDARIO;
+                $ClientNew->fechaenvioweb = $standar->fechaenvioweb;
+                $ClientNew->FACTURAELECTRONICA = $standar->FACTURAELECTRONICA;
+                $ClientNew->CLAVEFE = $standar->CLAVEFE;
+                $ClientNew->SUBIRWEB = $standar->SUBIRWEB;
+                $ClientNew->TIPOPERSONA = $standar->TIPOPERSONA;
+                $ClientNew->SEXO = $standar->SEXO;
+                $ClientNew->ESTADOCIVIL = $standar->ESTADOCIVIL;
+                $ClientNew->ORIGENINGRESO = $standar->ORIGENINGRESO;
+                $ClientNew->TIPOPAGO = $standar->TIPOPAGO;
+                $ClientNew->FECHADESDE = $dt2;
+                $ClientNew->FECHAHASTA = $dt2;
+                $ClientNew->BENEFICIARIO = $standar->BENEFICIARIO;
+                $ClientNew->NOCONTRATO = $standar->NOCONTRATO;
+                $ClientNew->TIPOPERSONAADICIONAL = $standar->TIPOPERSONAADICIONAL;
+                $ClientNew->GERENTE = $standar->GERENTE;
+                $ClientNew->TELEFONO = $standar->TELEFONO;
+                $ClientNew->CONTACTOPAGO = $standar->CONTACTOPAGO;
+                $ClientNew->CORREO1 = $datos['EMAIL'];
+                $ClientNew->CORREO2 = $standar->CORREO2;
+                $ClientNew->CARGO1 = $standar->CARGO1;
+                $ClientNew->CARGO2 = $standar->CARGO2;
+                $ClientNew->OBSERVACIONADICIONAL = $standar->OBSERVACIONADICIONAL;
+                $ClientNew->PAGOCUOTAS = $standar->PAGOCUOTAS;
+                $ClientNew->NUMCUOTAS = $standar->NUMCUOTAS;
+                $ClientNew->CUOTA1 = $standar->CUOTA1;
+                $ClientNew->CUOTA2 = $standar->CUOTA2;
+                $ClientNew->CUOTA3 = $standar->CUOTA3;
+                $ClientNew->CUOTA4 = $standar->CUOTA4;
+                $ClientNew->CUOTA5 = $standar->CUOTA5;
+                $ClientNew->EJEX = $standar->EJEX;
+                $ClientNew->EJEY = $standar->EJEY;
+                $ClientNew->CLIENTEMOVIL = $standar->CLIENTEMOVIL;
+                $ClientNew->ESTADOPARAWEB = $standar->ESTADOPARAWEB;
+                $ClientNew->CLIRELACIONADO = $standar->CLIRELACIONADO;
+                $ClientNew->VENDEDORAUX = $standar->VENDEDORAUX;
+                $ClientNew->CANAL = $standar->CANAL;
+                $ClientNew->SUBCANAL = $standar->SUBCANAL;
+                $ClientNew->grupocliente = $standar->grupocliente;
+                $ClientNew->grupocredito = $standar->grupocredito;
+                $ClientNew->EWEB = $standar->EWEB;
+                $ClientNew->nombre = $standar->nombre;
+                $ClientNew->FACTURABLE = $standar->FACTURABLE;
+                $ClientNew->DEUDAS = $standar->DEUDAS;
+                $ClientNew->ANTICIPO = $standar->ANTICIPO;
+                $ClientNew->CIUDAD = $standar->CIUDAD;
+                $ClientNew->coordenada = $standar->coordenada;
+                $ClientNew->barrio = $standar->barrio;
+                $ClientNew->tipodocumento = $standar->tipodocumento;
+                $ClientNew->CODIGOSAP = $standar->CODIGOSAP;
+                $ClientNew->CodShip = $standar->CodShip;
+                $ClientNew->longuitud = $standar->longuitud;
+                $ClientNew->latitud = $standar->latitud;
+                $ClientNew->TipoLocalidad = $standar->TipoLocalidad;
+                $ClientNew->numero = $standar->numero;
+                $ClientNew->CORREOCARRO = $standar->CORREOCARRO;
+                $ClientNew->CLAVECARRO = $standar->CLAVECARRO;
+
+                $ClientNew->save();
+
+                $cliBase->NUMCLIENTE = $cliBase->NUMCLIENTE +1;
+                $cliBase->save();
+                DB::commit();
+
+                return response()->json(['status'=>'ok','codCliente'=>$inicial.$codigo]);
+            } catch (\Exception $e) {
+                
+                DB::rollback();
+                return response()->json(["error"=>["info"=>$e->getMessage()]]);
+            }
+        } else {
+            return response()->json(['result'=>'IdentificacionExistente']);
+        }
     }
 }
