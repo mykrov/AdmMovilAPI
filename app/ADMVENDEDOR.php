@@ -48,6 +48,7 @@ use Laravel\Passport\HasApiTokens;
  * @property string $CodShip
  * @property string $apellidos
  * @property string $HASH
+ * @property float $pordes
  */
 class ADMVENDEDOR extends Authenticatable
 {
@@ -93,6 +94,6 @@ class ADMVENDEDOR extends Authenticatable
     {
         return $this->HASH;
     }
-    protected $fillable = ['SUPERVISOR', 'TIPO', 'NOMBRE', 'DIRECCION', 'CEDULA', 'TELEFONOS', 'FECHAING', 'OBSERVACION', 'ESTADO', 'VENCOB', 'SECPPC', 'CLAVE', 'PPC', 'PORCOMICOB', 'PORCOMIVEN', 'SECPAGO', 'CUPOCARTERA', 'CLAVEWEB', 'VENDDOMI', 'controlavalorfac', 'valorfacminimo', 'creacliexterno', 'creadespedexterno', 'editaprecio', 'esautoventa', 'bodega', 'REGION', 'email', 'ventop', 'admventa', 'noventa', 'caja', 'numapertura', 'operadormovil', 'CODIGOSAP', 'CODIGOCARGOSAP', 'CodShip', 'apellidos', 'HASH'];
+    protected $fillable = ['SUPERVISOR', 'TIPO', 'NOMBRE', 'DIRECCION', 'CEDULA', 'TELEFONOS', 'FECHAING', 'OBSERVACION', 'ESTADO', 'VENCOB', 'SECPPC', 'CLAVE', 'PPC', 'PORCOMICOB', 'PORCOMIVEN', 'SECPAGO', 'CUPOCARTERA', 'CLAVEWEB', 'VENDDOMI', 'controlavalorfac', 'valorfacminimo', 'creacliexterno', 'creadespedexterno', 'editaprecio', 'esautoventa', 'bodega', 'REGION', 'email', 'ventop', 'admventa', 'noventa', 'caja', 'numapertura', 'operadormovil', 'CODIGOSAP', 'CODIGOCARGOSAP', 'CodShip', 'apellidos', 'HASH','pordes'];
 
 }

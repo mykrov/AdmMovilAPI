@@ -28,7 +28,7 @@ class Cliente extends Controller
 
     public function byID($id){
 
-        $cliente = \App\Cliente::where('codigo',$id)->get();
+        $cliente = \App\Cliente::where('codigo','like', '%' . $id . '%')->get();
         return response()->json($cliente);
 
     }

@@ -59,9 +59,13 @@ Route::get('/diascredito','DiasCreditoController@GetDiasCredito');
 Route::get('/formapago','FormaPagoController@GetFormaPago');
 Route::get('/cliprecio','CliPrecioController@GetCliPrecio');
 
-
+//Deudas
 Route::get('/deuda','DeudaController@GetDeudas');
 Route::get('/deuda/{codigo}','DeudaController@GetDeudaXCliente');
+
+//Deudas POS
+Route::get('/deudapos','DeudaPosController@GetDeudas');
+Route::get('/deudapos/{codigo}','DeudaPosController@GetDeudaXCliente');
 
 
 //Rutas Pedidos
