@@ -224,7 +224,7 @@ class PagosController extends Controller
                 $numFac = $val['numero'];
                 $montoPagar = round($val['monto'],2);
     
-                $factura = \App\ADMCABEGRESO::where('SECUENCIAL','=',$numFac)
+                $factura = \App\ADMCABEGRESO::where('NUMERO','=',$numFac)
                 ->where('TIPO','=','FAC')
                 ->first();
                 //return response()->json($factura);
