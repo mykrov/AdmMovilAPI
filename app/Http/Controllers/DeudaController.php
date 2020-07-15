@@ -13,6 +13,7 @@ class DeudaController extends Controller
         $deudas = DB::table('ADMDEUDA')
                 ->select(DB::raw("TIPO, NUMERO, BODEGA, SERIE, FECHAEMI, FECHAVEN, CLIENTE, MONTO - IVA AS SUBTOTAL, '0' AS DESCTO, IVA, MONTO, CREDITO, SALDO"))
                 ->where('SALDO', '>', 0)
+                ->whereNull('ESTADO')
                 ->get();
         return response()->json($deudas);
     }
@@ -23,6 +24,7 @@ class DeudaController extends Controller
                 ->select(DB::raw("TIPO, NUMERO, BODEGA, SERIE, FECHAEMI, FECHAVEN, CLIENTE, MONTO - IVA AS SUBTOTAL, '0' AS DESCTO, IVA, MONTO, CREDITO, SALDO"))
                 ->where('SALDO', '>', 0)
                 ->where('CLIENTE','=',$codigo)
+                ->whereNull('ESTADO')
                 ->get();
         return response()->json($deudas);
     }

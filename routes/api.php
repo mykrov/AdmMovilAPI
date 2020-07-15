@@ -3,7 +3,6 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -14,8 +13,6 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
-
 
 Route::post('/login','Vendedor@login');
 Route::get('/setpassword','Vendedor@SetearPasswordHash');
@@ -82,6 +79,9 @@ Route::post('/factxvende','FacturasController@GetCabeceras');
 //FacturasPOS por vendedor
 Route::post('/detxvendepos','VentasController@GetDetalles');
 Route::post('/factxvendepos','VentasController@GetCabeceras');
+
+//Pâgos
+Route::post('/pago','PagosController@Pago');
 
 
 //Test
