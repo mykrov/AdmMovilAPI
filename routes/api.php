@@ -67,6 +67,7 @@ Route::get('/deudapos/{codigo}','DeudaPosController@GetDeudaXCliente');
 
 //Rutas Pedidos
 Route::post('/pedido','PedidoController@PostPedido');
+Route::post('/proforma','PedidoProformaController@PostPedidoProforma');
 
 //Ruta Ventas POS
 Route::post('/ventapos','VentaPos@Pedido');
@@ -80,9 +81,9 @@ Route::post('/factxvende','FacturasController@GetCabeceras');
 Route::post('/detxvendepos','VentasController@GetDetalles');
 Route::post('/factxvendepos','VentasController@GetCabeceras');
 
-//Pâgos
+//Pagos
 Route::post('/pago','PagosController@Pago');
-
+Route::get('/mediospago','MedioPagoController@GetMedioPago');
 
 //Test
 Route::get('/invertir/{cadena}','PedidoController@InvertirCadena');
