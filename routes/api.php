@@ -50,6 +50,7 @@ Route::get('/frecuencia','FrecuenciaController@GetFrecuencias');
 Route::get('/tiponego','TipoNegocioController@GetTipoNegocios');
 Route::get('/itemtop','ItemTopController@GetItemTop');
 Route::get('/itemxcliente','ItemXClienteController@GetItemXCliente');
+Route::get('/bancos','Banco@GetBancos');
 
 Route::get('/diascredito','DiasCreditoController@GetDiasCredito');
 Route::get('/formapago','FormaPagoController@GetFormaPago');
