@@ -25,10 +25,12 @@ Route::post('/cliente','Cliente@CreateClient');
 Route::post('/clienteven','Cliente@CreateClientVen');
 Route::get('/clientelike/{nombre}','Cliente@BuscarNombre');
 
+//Items
 Route::get('/items/{bod}','Item@ItemXBodega');
 Route::get('/items/{bod}/{categoria}','Item@ItemBodegaXCategoria');
 Route::get('/item/{codigo}','Item@ItemXCodigo');
 Route::get('/itemslike/{like}','Item@ItemsXNombre');
+Route::get('/itemsnostock/{bod}','Item@ItemsSinStock');
 Route::get('/categoria','CategoriaController@GetCategorias');
 
 //Rutas Ubicacion
@@ -81,9 +83,20 @@ Route::post('/factxvende','FacturasController@GetCabeceras');
 Route::post('/detxvendepos','VentasController@GetDetalles');
 Route::post('/factxvendepos','VentasController@GetCabeceras');
 
+//Proformas Detalles
+Route::post('/detxproforma','ProformasController@GetDetalles');
+Route::post('/cabxproforma','ProformasController@GetCabeceras');
+
 //Pagos
 Route::post('/pago','PagosController@Pago');
 Route::get('/mediospago','MedioPagoController@GetMedioPago');
+
+//Informe de Pagos
+Route::post('/detpagos','InfoPagoController@GetDetallesPagos');
+Route::post('/cabpagos','InfoPagoController@GetPagoCab');
+
+//Actualizar Ubicacion del Cliente
+Route::post('/actubicacion','UbicacionController@UpdateCoordinates');
 
 //Test
 Route::get('/invertir/{cadena}','PedidoController@InvertirCadena');

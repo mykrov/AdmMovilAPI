@@ -57,4 +57,20 @@ class Item extends Controller
        
         return response()->json($items4);
     }
+
+    public function ItemsSinStock()
+    {       
+        $page = \Request::input('page', 1);  
+        $paginate = 200;  
+      
+        $data = DB::select(DB::raw("exec SP_ITEMS_APP_NOSTOCK :Param1"),[
+            ':Param1' => $bodega
+        ]);  
+      
+        $offSet = ($page * $paginate) - $paginate;  
+        $itemsForCurrentPage = array_slice($data, $offSet, $paginate, true);  
+        $data = new \Illuminate\Pagination\LengthAwarePaginator($itemsForCurrentPage, count($data), $paginate, $page); 
+
+        return response()->json($data);
+    }
 }

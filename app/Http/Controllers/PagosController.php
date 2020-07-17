@@ -128,8 +128,6 @@ class PagosController extends Controller
                 $creditoLinea2->CLIENTE = $deudaChq->CLIENTE;
                 $creditoLinea2->TIPO = $deudaChq->TIPO;
                 $creditoLinea2->NUMERO = $deudaChq->NUMERO;
-                $creditoLinea2->TIPOCR = $deudaChq->TIPO;
-                $creditoLinea2->NUMCRE = $pago->numero;
                 $creditoLinea2->FECHA = $date->Format('Y-d-m');
                 $creditoLinea2->MONTO = $montoPagar;
                 $creditoLinea2->SALDO = $montoPagar;
