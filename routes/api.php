@@ -85,7 +85,7 @@ Route::post('/factxvendepos','VentasController@GetCabeceras');
 
 //Proformas Detalles
 Route::post('/detxproforma','ProformasController@GetDetalles');
-Route::post('/cabxproforma','ProformasController@GetCabeceras');
+Route::post('/cabxproforma','ProformasController@GetCabecera');
 
 //Pagos
 Route::post('/pago','PagosController@Pago');

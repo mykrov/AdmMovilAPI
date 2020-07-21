@@ -15,7 +15,8 @@ class RangoPrecio extends Controller
             $tienerango = 'no';
             $item  = [];
         }else{
-            $item  = \App\ADMRANGOPRECIO::where('codigoitem','=',"$it")->get();
+            $item  = \App\ADMRANGOPRECIO::where('codigoitem','=',"$it")
+            ->orderBy('minimorango', 'ASC')->get();
         }  
         return response()->json(['tieneRango'=>$tienerango,'data'=>$item]);
     }

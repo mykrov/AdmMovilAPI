@@ -32,8 +32,9 @@ class InfoPagoController extends Controller
 
         $detallesPago = DB::table('ADMDETPAGO')
         ->where('SECUENCIAL','=',$secuencial)
-        ->select('ADMDETPAGO.secuencial','ADMDETPAGO.cliente','ADMDETPAGO.tipo',
-        'ADMDETPAGO.numero','ADMDETPAGO.monto','ADMDETPAGO.observacion','ADMDETPAGO.hora')
+        ->select('ADMDETPAGO.secuencial','ADMDETPAGO.tipo',
+        'ADMDETPAGO.numero','ADMDETPAGO.monto','ADMDETPAGO.tipopag',
+        'ADMDETPAGO.banco','ADMDETPAGO.cuenta','ADMDETPAGO.numchq')
         ->get();
         return response()->json($detallesPago);
     }
