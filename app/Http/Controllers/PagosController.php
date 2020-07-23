@@ -224,12 +224,14 @@ class PagosController extends Controller
     
                 $factura = \App\ADMCABEGRESO::where('NUMERO','=',$numFac)
                 ->where('TIPO','=','FAC')
+                ->orWhere('TIPO','=','NVT')
                 ->first();
                 //return response()->json($factura);
     
                 if ($factura != null){
                     $deuda = \App\ADMDEUDA::where('SECINV','=',$factura->SECUENCIAL)
                     ->where('TIPO','=','FAC')
+                    ->orWhere('TIPO','=','NVT')
                     ->first();
     
                     //Reducción de Saldo.
@@ -243,6 +245,7 @@ class PagosController extends Controller
                     
                     $credito = \App\ADMCREDITO::where('SECINV','=',$factura->SECUENCIAL)
                     ->where('TIPO','=','FAC')
+                    ->orWhere('TIPO','=','NVT')
                     ->first();
                     
                     //Nueva Linea ADMCREDITO

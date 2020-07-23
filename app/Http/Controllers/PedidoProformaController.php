@@ -15,10 +15,10 @@ class PedidoProformaController extends Controller
         $cabecera = $r->cabecera[0];
         $detalles = $r->detalles;
 
-        $bodega = ADMBODEGA::where('CODIGO','=',$cabecera['bodega'])->first();
-        $parametrov = ADMPARAMETROV::first();
-        $cliente = Cliente::where('CODIGO','=',$cabecera['cliente'])->first();
-        $parametrobo = ADMPARAMETROBO::first();
+        $bodega = \App\ADMBODEGA::where('CODIGO','=',$cabecera['bodega'])->first();
+        $parametrov = \App\ADMPARAMETROV::first();
+        $cliente = \App\Cliente::where('CODIGO','=',$cabecera['cliente'])->first();
+        $parametrobo = \App\ADMPARAMETROBO::first();
         $date = Carbon::now();
 
         $grabaIva = "N";
@@ -26,7 +26,7 @@ class PedidoProformaController extends Controller
             $grabaIva = "S";
         }
 
-        DD::beginTransaction();
+        DB::beginTransaction();
         try {
 
             $cabe = new ADMCABPEDIDO();
@@ -59,7 +59,7 @@ class PedidoProformaController extends Controller
             $cabe->save();
 
             $parametrov->SECUENCIAL = $parametrov->SECUENCIAL + 1;
-            $parametrobo->save();
+            $parametrov->save();
 
             $bodega->NOPEDIDO = $bodega->NOPEDIDO +1;
             $bodega->save();
@@ -100,7 +100,7 @@ class PedidoProformaController extends Controller
                 $linea++;
             } 
             DB::commit();
-            return response()->json(["estado"=>"guardado", "Npedido"=>$cab->NUMERO, "secuencial"=>$cab->SECUENCIAL]);
+            return response()->json(["estado"=>"guardado", "Npedido"=>$cabe->NUMERO, "secuencial"=>$cabe->SECUENCIAL]);
 
         } catch (\Exception $e) {
             DB::rollback();
