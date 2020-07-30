@@ -81,7 +81,7 @@ class PedidoProformaController extends Controller
                 $d->SECUENCIAL = $cabe->SECUENCIAL ;
                 $d->ITEM = $det['item'];
                 $d->CANTIC = intval($det['total_unidades']  / $itemData->FACTOR);
-                $d->CANTIU = intval($det['total_unidades']) % $itemData->FACTOR;;
+                $d->CANTIU = intval($det['total_unidades']) % $itemData->FACTOR;
                 $d->CANTFUN = intval($det['total_unidades']);
                 $d->PRECIO = floatval($det['precio']);
                 $d->SUBTOTAL = round(floatval($det['subtotal']),2);

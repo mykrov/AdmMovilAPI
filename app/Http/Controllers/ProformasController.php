@@ -15,8 +15,10 @@ class ProformasController extends Controller
         $fecha1 = $f1->Format('Y-d-m');
         $fecha2 = $f2->Format('Y-d-m');
 
+        //return response()->json(['f1'=>$fecha1,'f2'=>$fecha2,'vende'=>$vendedor]);
+
         $cabeceras = DB::table('ADMCABPEDIDO')
-        ->where('ADMCABPEDIDO.TIPO','=','FAC')
+        ->where('ADMCABPEDIDO.TIPO','=','PED')
         ->whereBetween('ADMCABPEDIDO.FECHA',[$fecha1, $fecha2])
         ->where('ADMCABPEDIDO.VENDEDOR','=',$vendedor)
         ->join('ADMCLIENTE','ADMCABPEDIDO.CLIENTE','=','ADMCLIENTE.CODIGO' )

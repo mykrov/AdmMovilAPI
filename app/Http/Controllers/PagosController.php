@@ -12,7 +12,7 @@ class PagosController extends Controller
     public function Pago(Request $r)
     {
         $vendedor = $r->vendedor;
-        $facs = $r->facturas;
+        $deudas = $r->facturas;
         $tipoPago = $r->medioPago;
         $cliente = $r->cliente;
         $fechaChq = $r->fecha;
@@ -25,7 +25,7 @@ class PagosController extends Controller
         $observacionCre = "";
         $bodegaDeuda = 10;
 
-        DB::beginTransaction();
+            
         try {
              //ADMPAGO
             $cajaAbierta = DB::table('ADMCAJACOB')->where([['estadocaja','=','A'],['estado','=','A']])
@@ -218,22 +218,17 @@ class PagosController extends Controller
             $detCompro2->save();
 
             //Proceso de las Facturas a pagar
-            foreach ($facs as $pos => $val) {
-                $numFac = $val['numero'];
+            foreach ($deudas as $pos => $val) {
+                $numDeuda = $val['numero'];
                 $montoPagar = round($val['monto'],2);
-    
-                $factura = \App\ADMCABEGRESO::where('NUMERO','=',$numFac)
-                ->where('TIPO','=','FAC')
-                ->orWhere('TIPO','=','NVT')
+                
+                $deuda = \App\ADMDEUDA::where('SECUENCIAL','=',$numDeuda)
+                ->whereIn('TIPO',['NVT','FAC'])
                 ->first();
-                //return response()->json($factura);
-    
-                if ($factura != null){
-                    $deuda = \App\ADMDEUDA::where('SECINV','=',$factura->SECUENCIAL)
-                    ->where('TIPO','=','FAC')
-                    ->orWhere('TIPO','=','NVT')
-                    ->first();
-    
+                //return response()->json($deuda);
+                
+                if ($deuda != null){
+                        
                     //Reducción de Saldo.
                     $saldo = $deuda->SALDO;
                     $deuda->CREDITO = $deuda->CREDITO + $montoPagar;
@@ -243,9 +238,8 @@ class PagosController extends Controller
 
                     $deuda->save();
                     
-                    $credito = \App\ADMCREDITO::where('SECINV','=',$factura->SECUENCIAL)
-                    ->where('TIPO','=','FAC')
-                    ->orWhere('TIPO','=','NVT')
+                    $credito = \App\ADMCREDITO::where('SECUENCIAL','=',$numDeuda)
+                    ->whereIn('TIPO',['NVT','FAC'])
                     ->first();
                     
                     //Nueva Linea ADMCREDITO
@@ -280,7 +274,7 @@ class PagosController extends Controller
                     
                 }else{
                     DB::rollback();
-                    return response()->json(['error'=>'Factura no encontrada: Secuencial '.$numFac]);
+                    return response()->json(['error'=>'Deuda no encontrada: Secuencial '.$numDeuda]);
                 }  
             }
             
