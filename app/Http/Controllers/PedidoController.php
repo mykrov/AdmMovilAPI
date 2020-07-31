@@ -336,7 +336,7 @@ class PedidoController extends Controller
                         $mail->attachData($pdf->output(), 'Factura.pdf');
                     });
                 } catch (\Exception $e) {
-                    return response()->json(["error"=>["info"=>$e->getMessage()]]);;
+                    return response()->json(["error"=>["info Email ambos"=>$e->getMessage()]]);;
                 }
                 return response()->json(["estado"=>"guardado", "Nfactura"=>$cab->NUMERO, "secuencial"=>$cab->SECUENCIAL]);
                
@@ -350,7 +350,7 @@ class PedidoController extends Controller
                         $mail->attachData($pdf->output(), 'Factura.pdf');
                     });
                 } catch (\Exception $e) {
-                    return response()->json(["error"=>["info"=>$e->getMessage()]]);
+                    return response()->json(["error"=>["info Email solo Vendedor:"=>$e->getMessage()]]);
                 }
                 return response()->json(["estado"=>"guardado", "Nfactura"=>$cab->NUMERO, "secuencial"=>$cab->SECUENCIAL]);
                

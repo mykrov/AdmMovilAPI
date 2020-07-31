@@ -26,7 +26,8 @@ class ParametrosController extends Controller
                                     'FACLIN'=>$paramV->FACLIN,
                                     'pagina_web'=>$paramBO->pagina_web,
                                     'EPRECIO'=>$paramV->EPRECIO,
-                                    'ENOTAVENTA'=>$paramV->EPRECIO
+                                    'ENOTAVENTA'=>$paramV->EPRECIO,
+                                    'LISTADEPRECIO'=>$paramV->LISTADEPRECIO
                                 ]);
    }
 }
