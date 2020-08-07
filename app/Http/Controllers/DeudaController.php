@@ -22,7 +22,7 @@ class DeudaController extends Controller
     public function GetDeudaXCliente($codigo)
     {
         $deudas = DB::table('ADMDEUDA')
-                ->select(DB::raw("SECUENCIAL,TIPO, NUMERO, BODEGA, SERIE, FECHAEMI, FECHAVEN, CLIENTE, MONTO - IVA AS SUBTOTAL, '0' AS DESCTO, IVA, MONTO, CREDITO, SALDO"))
+                ->select(DB::raw("SECUENCIAL,TIPO, NUMERO, BODEGA, SERIE, FECHAEMI, FECHAVEN, CLIENTE, MONTO - IVA AS SUBTOTAL, '0' AS DESCTO, IVA, MONTO, CREDITO, SALDO,VENDEDOR"))
                 ->where('SALDO', '>', 0)
                 ->where('CLIENTE','=',$codigo)
                 ->whereIn('TIPO',array('FAC','NVT','NDB'))

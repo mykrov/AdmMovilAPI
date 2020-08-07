@@ -37,6 +37,9 @@ class VentaPos extends Controller
             ->where('CODIGOCAJA','=',$vendedor->caja)
             ->first();
 
+            if($aperturaCP == null){
+                return response()->json(['estado'=>'error','info'=>'NO HAY CAJA']);
+            }
             //return response()->json($cajaPos);
 
             $grabaIva = "N";

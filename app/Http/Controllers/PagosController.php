@@ -32,6 +32,10 @@ class PagosController extends Controller
             ->select('codigo')
             ->get();
 
+            if($cajaAbierta == null){
+                return response()->json(['estado'=>'error','info'=>'NO HAY CAJA']);
+            }
+
             $pago = new \App\ADMPAGO();
             $pago->secuencial = $parametrov->SECUENCIAL + 1;
             $pago->cliente = $cliente;

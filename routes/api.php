@@ -23,6 +23,7 @@ Route::get('/clientexv/{vendedor}','Cliente@ClienteXVendedor');
 Route::get('/cliente/{id?}','Cliente@byID');
 Route::post('/cliente','Cliente@CreateClient');
 Route::post('/clienteven','Cliente@CreateClientVen');
+Route::post('/clientebasico','Cliente@CreateClientBasic');
 Route::get('/clientelike/{nombre}','Cliente@BuscarNombre');
 
 //Items
@@ -90,6 +91,9 @@ Route::post('/cabxproforma','ProformasController@GetCabecera');
 //Pagos
 Route::post('/pago','PagosController@Pago');
 Route::get('/mediospago','MedioPagoController@GetMedioPago');
+
+//Credito
+Route::get('/credito/{num}','CreditoController@GetCredito');
 
 //Informe de Pagos
 Route::post('/detpagos','InfoPagoController@GetDetallesPagos');
