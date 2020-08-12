@@ -29,6 +29,16 @@ class Item extends Controller
         return response()->json($data);
     }
 
+    public function ItemTodosBodega($bodega)
+    {
+        $data = DB::select(DB::raw("exec SP_ITEMS_APPMOVIL :Param1"),[
+            ':Param1' => $bodega
+        ]);
+
+        return response()->json($data);
+    }
+
+
     public function ItemBodegaXCategoria($bodega,$categoria)
     {
         

@@ -25,9 +25,11 @@ Route::post('/cliente','Cliente@CreateClient');
 Route::post('/clienteven','Cliente@CreateClientVen');
 Route::post('/clientebasico','Cliente@CreateClientBasic');
 Route::get('/clientelike/{nombre}','Cliente@BuscarNombre');
+Route::get('/cli/{dia}','MapsController@GetClientsByDay');
 
 //Items
 Route::get('/items/{bod}','Item@ItemXBodega');
+Route::get('/itemstodos/{bod}','Item@ItemTodosBodega');
 Route::get('/items/{bod}/{categoria}','Item@ItemBodegaXCategoria');
 Route::get('/item/{codigo}','Item@ItemXCodigo');
 Route::get('/itemslike/{like}','Item@ItemsXNombre');
@@ -104,6 +106,12 @@ Route::post('/actubicacion','UbicacionController@UpdateCoordinates');
 
 //Test
 Route::get('/invertir/{cadena}','PedidoController@InvertirCadena');
+
+
+//Mapas
+Route::get('/vendemaps','MapsController@GetVendedores');
+
+Route::post('/pedmaps','MapsController@GetPedidos');
 
 Route::middleware('auth:api')->group(function () {
     Route::get('/vendedores','Vendedor@listado');

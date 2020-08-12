@@ -27,7 +27,8 @@ class ParametrosController extends Controller
                                     'pagina_web'=>$paramBO->pagina_web,
                                     'EPRECIO'=>$paramV->EPRECIO,
                                     'ENOTAVENTA'=>$paramV->EPRECIO,
-                                    'LISTADEPRECIO'=>$paramV->LISTADEPRECIO
+                                    'LISTADEPRECIO'=>$paramV->LISTADEPRECIO,
+                                    'LEYENDAPROFORMA'=>$paramV->LEYENDAPROFORMA
                                 ]);
    }
 }
