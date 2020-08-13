@@ -34,7 +34,8 @@ class InfoPagoController extends Controller
         ->where('SECUENCIAL','=',$secuencial)
         ->select('ADMDETPAGO.secuencial','ADMDETPAGO.tipo',
         'ADMDETPAGO.numero','ADMDETPAGO.monto','ADMDETPAGO.tipopag',
-        'ADMDETPAGO.banco','ADMDETPAGO.cuenta','ADMDETPAGO.numchq')
+        'ADMDETPAGO.banco','ADMDETPAGO.cuenta','ADMDETPAGO.numchq',
+        'ADMDETPAGO.fechaven')
         ->get();
         return response()->json($detallesPago);
     }

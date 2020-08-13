@@ -113,6 +113,9 @@ Route::get('/vendemaps','MapsController@GetVendedores');
 
 Route::post('/pedmaps','MapsController@GetPedidos');
 
+//Numeros a letras
+Route::post('/numeroletra','NumLetrasController@ConvertirNumeros');
+
 Route::middleware('auth:api')->group(function () {
     Route::get('/vendedores','Vendedor@listado');
     Route::get('/vendedorinfo',function (Request $request) {
