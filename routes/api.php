@@ -107,10 +107,8 @@ Route::post('/actubicacion','UbicacionController@UpdateCoordinates');
 //Test
 Route::get('/invertir/{cadena}','PedidoController@InvertirCadena');
 
-
 //Mapas
 Route::get('/vendemaps','MapsController@GetVendedores');
-
 Route::post('/pedmaps','MapsController@GetPedidos');
 
 //Numeros a letras

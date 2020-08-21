@@ -12,7 +12,7 @@ class DeudaPosController extends Controller
     {
         $deudas = DB::table('ADMDEUDAPOS')
                 ->select(DB::raw("TIPO, NUMERO, BODEGA, SERIE, FECHAEMI, FECHAVEN, CLIENTE, MONTO - IVA AS SUBTOTAL, '0' AS DESCTO, IVA, MONTO, CREDITO, SALDO"))
-                ->where('SALDO', '>', 0)
+                ->where('SALDO', '>', 0.01)
                 ->whereNull('ESTADO')
                 ->whereIn('TIPO',array('FAC','NVT','NDB'))
                 ->get();
@@ -23,7 +23,7 @@ class DeudaPosController extends Controller
     {
         $deudas = DB::table('ADMDEUDAPOS')
                 ->select(DB::raw("TIPO, NUMERO, BODEGA, SERIE, FECHAEMI, FECHAVEN, CLIENTE, MONTO - IVA AS SUBTOTAL, '0' AS DESCTO, IVA, MONTO, CREDITO, SALDO"))
-                ->where('SALDO', '>', 0)
+                ->where('SALDO', '>', 0.01)
                 ->where('CLIENTE','=',$codigo)
                 ->whereIn('TIPO',array('FAC','NVT','NDB'))
                 ->whereNull('ESTADO')

@@ -58,7 +58,7 @@ class NumLetrasController extends Controller
     {
         $numeros = $r['numero'];
 
-        $letras = $this->convertir($numeros,'DOLARES','CENTIMOS');
+        $letras = $this->convertir($numeros,'DOLARES','CENTAVOS');
 
         return response()->json(['letras'=>$letras]);
 
