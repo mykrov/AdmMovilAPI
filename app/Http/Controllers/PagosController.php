@@ -36,13 +36,20 @@ class PagosController extends Controller
                 return response()->json(['estado'=>'error','info'=>'NO HAY CAJA']);
             }
 
+            //Datos del Operador segun vendedor
+            $vendedorData = \App\ADMVENDEDOR::where('CODIGO','=',$vendedor)->first();
+            $operador1 = '';
+            if($vendedorData == null || $vendedorData->operadormovil == null){
+                $operador1 = 'ADM';
+            }
+
             $pago = new \App\ADMPAGO();
             $pago->secuencial = $parametrov->SECUENCIAL + 1;
             $pago->cliente = $cliente;
             $pago->tipo = 'PAG';
             $pago->numero = $NumCre->CONTADOR + 1;
             $pago->monto = $montoPagar;
-            $pago->operador = "ADM";
+            $pago->operador = $operador1;
             $pago->observacion = "Pago ".$tipoPago. " por ADMGO Nro:".$pago->numero;
             $pago->numpapel = "";
             $pago->fecha = $date->Format('d-m-Y');
@@ -110,7 +117,7 @@ class PagosController extends Controller
                 $deudaChq->CUENTA = trim($r->cuentaChq);
                 $deudaChq->NUMCHQ = trim($r->numCheque);
                 $deudaChq->ESTCHQ = "P";
-                $deudaChq->OPERADOR = "ADM";
+                $deudaChq->OPERADOR = $operador1;
                 $deudaChq->VENDEDOR = $vendedor;
                 $deudaChq->OBSERVACION = $observacionCre;
                 $deudaChq->NUMAUTO = "";
@@ -135,7 +142,7 @@ class PagosController extends Controller
                 $creditoLinea2->FECHA = $date->Format('Y-d-m');
                 $creditoLinea2->MONTO = $montoPagar;
                 $creditoLinea2->SALDO = $montoPagar;
-                $creditoLinea2->OPERADOR = 'ADM';
+                $creditoLinea2->OPERADOR = $operador1;
                 $creditoLinea2->OBSERVACION = $observacionCre;
                 $creditoLinea2->VENDEDOR = $vendedor;
                 $creditoLinea2->HORA = $date->Format('H:i:s');
@@ -175,7 +182,7 @@ class PagosController extends Controller
             $cabCompro->estado = "C";
             $cabCompro->fechao = $date->Format('Y-d-m');
             $cabCompro->retencion = "N";
-            $cabCompro->operador = "ADM";
+            $cabCompro->operador = $operador1;
             $cabCompro->modulo = "CXC";
             $cabCompro->nocuenta= "";
             $cabCompro->banco = "";
@@ -266,7 +273,7 @@ class PagosController extends Controller
                     if($creditoLinea->SALDO < 0){
                         $creditoLinea->SALDO = 0;
                     }
-                    $creditoLinea->OPERADOR = 'ADM';
+                    $creditoLinea->OPERADOR = $operador1;
                     $creditoLinea->OBSERVACION = $observacionCre;
                     $creditoLinea->VENDEDOR = $vendedor;
                     $creditoLinea->HORA = $date->Format('H:i:s');

@@ -24,6 +24,15 @@ class PedidoController extends Controller
     {
         $cabecera = $r->cabecera[0];
         $detalles = $r->detalles;
+
+        $operador1 = '';
+
+        //Datos del Operador segun vendedor
+        $vendedorData = \App\ADMVENDEDOR::where('CODIGO','=',$cabecera['usuario'])->first();
+        $operador1 = '';
+        if($vendedorData == null || $vendedorData->operadormovil == null){
+            $operador1 = 'ADM';
+        }
      
         DB::beginTransaction();
 
@@ -60,7 +69,7 @@ class PedidoController extends Controller
             $cab->FECHA = $date->Format('Y-d-m'); 
             $cab->FECHAVEN = $date->addDays(intval($cliente->DIASCREDIT))->format('Y-d-m'); 
             $cab->FECHADES = $cabecera['fecha_ingreso']; 
-            $cab->OPERADOR = "ADM"; 
+            $cab->OPERADOR = $operador1; 
             $cab->CLIENTE = $cabecera['cliente']; 
             $cab->VENDEDOR = $cabecera['usuario']; 
             $cab->PROVEEDOR = null; 
@@ -257,7 +266,7 @@ class PedidoController extends Controller
             $deuda->FECHAEMI = $cab->FECHA;
             $deuda->FECHAVEN = $cab->FECHAVEN;
             $deuda->FECHADES = $cab->FECHA;
-            $deuda->OPERADOR = "ADM";
+            $deuda->OPERADOR = $operador1;
             $deuda->VENDEDOR = $cab->VENDEDOR;
             $deuda->OBSERVACION = "Gracias por su Compra";
             $deuda->NUMAUTO = "";
@@ -297,7 +306,7 @@ class PedidoController extends Controller
             $credito->FECHA = $deuda->FECHA;
             $credito->MONTO = round($deuda->MONTO,2) ;
             $credito->SALDO = round($deuda->MONTO,2) ;
-            $credito->OPERADOR = "ADM";
+            $credito->OPERADOR = $operador1;
             $credito->OBSERVACION = "Gracias por su Compra";
             $credito->VENDEDOR = $deuda->VENDEDOR;
             $credito->estafirmado = "N";
