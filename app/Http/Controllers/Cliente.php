@@ -28,20 +28,26 @@ class Cliente extends Controller
 
     public function byID($id){
 
-        $cliente = \App\Cliente::where('codigo','like', '%' . $id . '%')->get();
+        $cliente = \App\Cliente::where('codigo','like', '%' . $id . '%')
+        ->where('ESTADO','=','A')
+        ->get();
         return response()->json($cliente);
 
     }
 
     public function BuscarNombre($like)
     {
-        $clientes = \App\Cliente::where('RAZONSOCIAL', 'like', '%' . $like . '%')->get();
+        $clientes = \App\Cliente::where('RAZONSOCIAL', 'like', '%' . $like . '%')
+        ->where('ESTADO','=','A')
+        ->get();
         return response()->json($clientes);
     }
 
     public function ClienteXVendedor($vendedor){
         
-        $clientes = \App\Cliente::where('VENDEDOR','=',$vendedor)->get();
+        $clientes = \App\Cliente::where('VENDEDOR','=',$vendedor)
+        ->where('ESTADO','=','A')
+        ->get();
         return response()->json($clientes);
     }
 
@@ -68,6 +74,11 @@ class Cliente extends Controller
                 $datos['GRUPO'] = '';
             }
 
+            if ($datos['NEGOCIO'] == null ) {
+                $datos['NEGOCIO'] = '';
+            }
+
+
             try {
 
                 $cliBase = \App\ADMPARAMETROC::first();
@@ -82,7 +93,7 @@ class Cliente extends Controller
                 $ClientNew  = new \App\Cliente;
                 $dt = Carbon::now();
                 $dt2 = $dt->format('Y-d-m');
-                //return response()->json($dt2);
+                //return response()->json($datos);
             
                 $ClientNew->CODIGO = $inicial.$codigo;
                 $ClientNew->RAZONSOCIAL = $datos['RAZONSOCIAL'];
@@ -126,7 +137,7 @@ class Cliente extends Controller
                 $ClientNew->TIPONEGO = $datos['TIPONEGO'];
                 $ClientNew->CODTMP = $standar->CODTMP;
                 $ClientNew->TIPODOC = $datos['TIPODOC'];
-                $ClientNew->tipocuenta = $standar->tipocuenta;
+                $ClientNew->TIPOCUENTA = $standar->TIPOCUENTA;
                 $ClientNew->CLIENTEWEB = $standar->CLIENTEWEB;
                 $ClientNew->CODCLIENTEDOMI = $standar->CODCLIENTEDOMI;
                 $ClientNew->CLIENTEDOMI = $standar->CLIENTEDOMI;
@@ -292,15 +303,15 @@ class Cliente extends Controller
                 $ClientNew->RETENPED = $standar->RETENPED;
                 $ClientNew->CONFINAL = $standar->CONFINAL;
                 $ClientNew->CLASE = $standar->CLASE;
-                $ClientNew->OBSERVACION = '';
+                $ClientNew->OBSERVACION = $datos['OBSERVACION'];
                 $ClientNew->TIPONEGO = $standar->TIPONEGO;
                 $ClientNew->CODTMP = $standar->CODTMP;
                 $ClientNew->TIPODOC = $datos['TIPODOC'];
-                $ClientNew->tipocuenta = $standar->TIPOCUENTA;
+                $ClientNew->TIPOCUENTA = $standar->TIPOCUENTA;
                 $ClientNew->CLIENTEWEB = $standar->CLIENTEWEB;
                 $ClientNew->CODCLIENTEDOMI = $standar->CODCLIENTEDOMI;
                 $ClientNew->CLIENTEDOMI = $standar->CLIENTEDOMI;
-                $ClientNew->REFERENCIA = "VentasAPP";
+                $ClientNew->REFERENCIA = $datos['REFERENCIA'];
                 $ClientNew->TIPOCONTRIBUYENTE = $standar->TIPOCONTRIBUYENTE;
                 $ClientNew->RETIENEFUENTE = $standar->RETIENEFUENTE;
                 $ClientNew->RETIENEIVA = $standar->RETIENEIVA;
@@ -466,7 +477,7 @@ class Cliente extends Controller
                 $ClientNew->TIPONEGO = $datos['TIPONEGO'];
                 $ClientNew->CODTMP = $standar->CODTMP;
                 $ClientNew->TIPODOC = $datos['TIPODOC'];
-                $ClientNew->tipocuenta = $standar->TIPOCUENTA;
+                $ClientNew->TIPOCUENTA = $standar->TIPOCUENTA;
                 $ClientNew->CLIENTEWEB = $standar->CLIENTEWEB;
                 $ClientNew->CODCLIENTEDOMI = $standar->CODCLIENTEDOMI;
                 $ClientNew->CLIENTEDOMI = $standar->CLIENTEDOMI;

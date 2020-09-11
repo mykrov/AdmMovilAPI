@@ -56,6 +56,9 @@ Route::get('/tiponego','TipoNegocioController@GetTipoNegocios');
 Route::get('/itemtop','ItemTopController@GetItemTop');
 Route::get('/itemxcliente','ItemXClienteController@GetItemXCliente');
 Route::get('/bancos','Banco@GetBancos');
+Route::get('/bacoscia','BancoCiaController@GetBancoCia');
+
+
 
 Route::get('/diascredito','DiasCreditoController@GetDiasCredito');
 Route::get('/formapago','FormaPagoController@GetFormaPago');
@@ -120,4 +123,3 @@ Route::middleware('auth:api')->group(function () {
         return $request->user();
     });
 });
-

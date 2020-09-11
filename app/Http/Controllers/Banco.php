@@ -13,4 +13,8 @@ class Banco extends Controller
       return response()->json($bancos);
 
    }
+
+   public function GetBancosCia(){
+      
+   }
 }

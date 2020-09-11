@@ -25,7 +25,15 @@ class PagosController extends Controller
         $observacionCre = "";
         $bodegaDeuda = 10;
 
-            
+        $secDelPago = 0;
+
+
+        //para actualizar al final el seccon
+        $numComproContable = 0;
+        $numeroPago = 0;
+        $numeroMoviBancoCIa = 0;
+
+        DB::beginTransaction();  
         try {
              //ADMPAGO
             $cajaAbierta = DB::table('ADMCAJACOB')->where([['estadocaja','=','A'],['estado','=','A']])
@@ -39,15 +47,23 @@ class PagosController extends Controller
             //Datos del Operador segun vendedor
             $vendedorData = \App\ADMVENDEDOR::where('CODIGO','=',$vendedor)->first();
             $operador1 = '';
-            if($vendedorData == null || $vendedorData->operadormovil == null){
+            if($vendedorData == null || $vendedorData->operadormovil == null || trim($vendedorData->operadormovil) == ''){
                 $operador1 = 'ADM';
+            }else{
+                $operador1 = trim($vendedorData->operadormovil);
             }
 
             $pago = new \App\ADMPAGO();
             $pago->secuencial = $parametrov->SECUENCIAL + 1;
+
+            $secDelPago = $pago->secuencial;
+
             $pago->cliente = $cliente;
             $pago->tipo = 'PAG';
             $pago->numero = $NumCre->CONTADOR + 1;
+
+            $numeroPago = $pago->numero;
+
             $pago->monto = $montoPagar;
             $pago->operador = $operador1;
             $pago->observacion = "Pago ".$tipoPago. " por ADMGO Nro:".$pago->numero;
@@ -79,13 +95,22 @@ class PagosController extends Controller
             $detPago->estchq = "";
             
             //Pago con Cheque
-            if ($tipoPago == "CHQ") {
+            if ($tipoPago != "EFE") {
                 $detPago->banco = $r->banco;
                 $detPago->cuenta = $r->cuentaChq;
                 $detPago->numchq = $r->numCheque;
                 $detPago->estchq = "P";
                 $detPago->fechaven = $fcChq;
-                $observacionCre = "Cheque ".$r->banco." - Cuenta No ".$r->cuentaChq."- No Chq ".$r->numCheque;
+
+                $tipoOperacionN = "Cheque";
+
+                if ($tipoPago == 'TRA'){
+                    $tipoOperacionN = 'Transferencia';
+                }elseif ($tipoPago == 'DEP'){
+                    $tipoOperacionN = 'Deposito';
+                }
+
+                $observacionCre = $tipoOperacionN." ".$r->banco." - Cuenta No ".$r->cuentaChq."- No ".$tipoPago." ".$r->numCheque;
             }
             $detPago->vendedor = $vendedor;
             $detPago->intregrado = "N";
@@ -164,6 +189,50 @@ class PagosController extends Controller
 
             }
 
+            
+
+            //Si el Pago es por Transferecia o Deposito
+            if ($r->medioPago == 'DEP' || $r->medioPago == 'TRA') {
+                $tipoDocccb = \App\ADMTIPODOCPROV::where('TIPO','=','CCB')->first(); 
+                $paramC = \App\ADMPARAMETROC::first();
+                
+                
+                $numeroCCB = $tipoDocccb->NUMERO + 1;
+                $beneficiario =  $paramC->BENEDEFAULT;
+                
+                $numeroMoviBancoCIa = $numeroCCB;
+
+                
+                $movibanco = new \App\ADMMOVIBANCOCIA();                
+                $movibanco->secuencial =  $secDelPago;
+                $movibanco->tipomovimiento = "CRE";
+                $movibanco->numeromovimiento = $numeroCCB;
+                $movibanco->tipodocumento = $r->medioPago;
+                $movibanco->motivo = $r->medioPago."CLI";
+                $movibanco->numdocumento = $r->numCheque;
+                $movibanco->banco = $r->banco;
+                $movibanco->cuenta = $r->cuentaChq;
+                $movibanco->fecha = $date->Format('d-m-Y');
+                
+                $movibanco->fechavence = $fcChq;
+                $movibanco->monto = $montoPagar;
+                $movibanco->beneficiario = $beneficiario;
+                $movibanco->numpapel = "";
+                $movibanco->origen = "CXC";
+                $movibanco->observacion = $observacionCre;
+                $movibanco->hora = $date->Format('H:i:s');
+                $movibanco->operador = $operador1;
+                $movibanco->nombrepc = "Servidor Laravel";
+                $movibanco->cajac = $cajaAbierta[0]->codigo;
+                $movibanco->conciliado = "N";
+                $movibanco->save();
+
+                $tipoDocccb->NUMERO = $numeroCCB;
+                $tipoDocccb->save();
+
+            }
+
+
             $parametrov->SECUENCIAL = $parametrov->SECUENCIAL + 1;
             $parametrov->save();
 
@@ -172,6 +241,8 @@ class PagosController extends Controller
             $parametroBO = \App\ADMPARAMETROBO::first();
 
             $cabCompro->secuencial = $parametroBO->secuencial + 1;
+
+            $numComproContable = $cabCompro->secuencial;
             $cabCompro->fecha = $date->Format('Y-d-m');
             $cabCompro->tipoComprobante = 18;
             $cabCompro->numero = -1;
@@ -203,13 +274,17 @@ class PagosController extends Controller
             $cuentaChq1 = DB::table('ADMASIENTOS')
             ->where([['ASIENTO','=','PAG'],['ANIO','=',$anioActual],['TIPO','=','CHQ']])
             ->first();
+             
+            $cuentaDEP = DB::table('ADMBANCOCIA')
+            ->where('CODIGO','=',trim($r->banco))
+            ->first();
             
             $detCompro = new \App\ADMDETCOMPROBANTE();
             $detCompro->SECUENCIAL = $cabCompro->secuencial;
             $detCompro->LINEA = 1;
             $detCompro->CUENTA = trim($cuentaCli1->CUENTA);
             $detCompro->DETALLE = $observacionCre;
-            $detCompro->DBCR = "DB";
+            $detCompro->DBCR = "CR";
             $detCompro->MONTO = $montoPagar;
             $detCompro->ESTADO = "C";
             $detCompro->save();
@@ -217,16 +292,36 @@ class PagosController extends Controller
             $detCompro2 = new \App\ADMDETCOMPROBANTE();
             $detCompro2->SECUENCIAL = $cabCompro->secuencial;
             $detCompro2->LINEA = 2;
+
             if (trim($r->medioPago) == 'CHQ') {
                 $detCompro2->CUENTA = trim($cuentaChq1->CUENTA);
-            } else {
+            }elseif (trim($r->medioPago) == 'EFE') {
                 $detCompro2->CUENTA = trim($cuentaEfe1->CUENTA);
+            }elseif(trim($r->medioPago) == 'DEP' || trim($r->medioPago) == 'TRA'){ 
+                $detCompro2->CUENTA = trim($cuentaDEP->cuentachq);
             }
+
+
             $detCompro2->DETALLE = $observacionCre;
-            $detCompro2->DBCR = "CR";
+            $detCompro2->DBCR = "DB";
             $detCompro2->MONTO = $montoPagar;
             $detCompro2->ESTADO = "C";
             $detCompro2->save();
+
+
+            //actualizar SECCON en el ADMPAGO y ADMMoviBancoCia
+            $pagoActualizar = \App\ADMPAGO::where('NUMERO','=', $numeroPago)->first();
+            $pagoActualizar->seccon = $numComproContable;
+            $pagoActualizar->save();
+            
+            if ($r->medioPago == 'DEP' || $r->medioPago == 'TRA'){
+
+                $result = DB::table('ADMMOVIBANCOCIA')
+                            ->where('secuencial',$secDelPago)
+                            ->update([
+                                'seccon' =>$numComproContable,
+                            ]);
+            }
 
             //Proceso de las Facturas a pagar
             foreach ($deudas as $pos => $val) {

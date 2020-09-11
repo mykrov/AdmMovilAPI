@@ -26,9 +26,10 @@ class Vendedor extends Controller
         $vendedor = \App\ADMVENDEDOR::where('CODIGO',request('codigo'))
         ->where('ESTADO','A')
         ->first();
-
+        
         //return response()->json($vendedorData);
-        if ($vendedor &&  \Hash::check(request('password'), trim($vendedor->HASH))){
+        //if ($vendedor &&  \Hash::check(request('password'), trim($vendedor->HASH))){
+        if ($vendedor &&  trim($request['password']) == trim($vendedor->CLAVEWEB)){
             try {
                 Auth::loginUsingId($vendedor->CODIGO, TRUE);
                 $user = Auth::user();
