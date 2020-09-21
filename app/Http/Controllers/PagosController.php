@@ -329,7 +329,7 @@ class PagosController extends Controller
                 $montoPagar = round($val['monto'],2);
                 
                 $deuda = \App\ADMDEUDA::where('SECUENCIAL','=',$numDeuda)
-                ->whereIn('TIPO',['NVT','FAC'])
+                ->whereIn('TIPO',['NVT','FAC','NDB'])
                 ->first();
                 //return response()->json($deuda);
                 
@@ -345,7 +345,7 @@ class PagosController extends Controller
                     $deuda->save();
                     
                     $credito = \App\ADMCREDITO::where('SECUENCIAL','=',$numDeuda)
-                    ->whereIn('TIPO',['NVT','FAC'])
+                    ->whereIn('TIPO',['NVT','FAC','NDB'])
                     ->first();
                     
                     //Nueva Linea ADMCREDITO

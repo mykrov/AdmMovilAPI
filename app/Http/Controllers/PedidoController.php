@@ -56,7 +56,13 @@ class PedidoController extends Controller
             
             $cab->TIPO = $cabecera['tipo']; 
             $cab->BODEGA = intval($cabecera['bodega']); 
-            $cab->NUMERO = $bodega->NOFACTURA + 1; 
+             
+            if($cabecera['tipo'] == 'NVT'){
+                $cab->NUMERO = $bodega->NONOTA + 1;
+            }else{
+                $cab->NUMERO = $bodega->NOFACTURA + 1;
+            }
+
             $cab->SERIE = trim($bodega->SERIE); 
             $cab->SECUENCIAL = $parametrov->SECUENCIAL + 1; 
             $cab->NUMPROCESO = null; 
@@ -165,8 +171,13 @@ class PedidoController extends Controller
             $cabEgr->ESTADO = "P";
 
             $cabEgr->save();
-
-            $bodega->NOFACTURA = $cab->NUMERO;
+            
+            if($cabecera['tipo'] == 'NVT'){
+                $bodega->NONOTA = $bodega->NONOTA + 1;
+            }else{
+                $bodega->NOFACTURA = $bodega->NOFACTURA + 1;
+            }
+            
             $bodega->NUMGUIAREMISION = $cab->NUMGUIAREMISION;
             $bodega->NOEGR = $bodega->NOEGR + 1;
             $parametrov->SECUENCIAL = $parametrov->SECUENCIAL + 1;
@@ -459,18 +470,3 @@ class PedidoController extends Controller
     }
 
 }
-
-// ADMCABEGRESO
-// ADMDETEGRESO
-
-// ADMCABEGRBOD
-// ADMDETEGRBOD
-
-// ADMDEUDA
-// ADMCREDITO
-
-// ADMCABCOMPROBANTE
-// ADMDETCOMPROBANTE
-
-// ADMITEM
-// ADMITEMBO
