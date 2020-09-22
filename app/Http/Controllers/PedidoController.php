@@ -164,7 +164,7 @@ class PedidoController extends Controller
 
             $cabEgr->SECUENCIAL = $cab->SECUENCIAL;
             $cabEgr->BODEGA = $cab->BODEGA;
-            $cabEgr->TIPO = "FAC";
+            $cabEgr->TIPO = $cab->TIPO;
             $cabEgr->NUMERO = $cab->NUMERO;
             $cabEgr->NUMEGRESO = $bodega->NOEGR + 1;
             $cabEgr->FECHA = $cabecera['fecha_ingreso'];
@@ -344,16 +344,22 @@ class PedidoController extends Controller
 
             //Validacion de Email del Cliente.
             $clienteEmail = trim($cliente->EMAIL);
+
+            //Tipo Doc para Email
+            $tipoDocumento = "Factura";
+            if($cabecera['tipo'] == 'NVT'){
+                $tipoDocumento = "NotaPedido";
+            }
                      
             if (filter_var($clienteEmail, FILTER_VALIDATE_EMAIL)) {
                 //Email Valido
                 try {
                     Mail::send('emails.FacPDF', ['pdf'=>$pdf,'cliente'=>trim($cliente)], function ($mail) use ($pdf,$clienteEmail,$vendEmail) {
-                        $mail->from('mrangel@birobid.com', 'Factura Electronica');
+                        $mail->from(env("MAIL_USERNAME"),  $tipoDocumento.' Electronica');
                         $mail->to($clienteEmail);
                         $mail->cc($vendEmail);
-                        $mail->subject('Factura PDF');
-                        $mail->attachData($pdf->output(), 'Factura.pdf');
+                        $mail->subject($tipoDocumento.' PDF');
+                        $mail->attachData($pdf->output(), $tipoDocumento.'.pdf');
                     });
                 } catch (\Exception $e) {
                     return response()->json(["error"=>["info Email ambos"=>$e->getMessage()]]);;
@@ -364,10 +370,10 @@ class PedidoController extends Controller
                 //Email No valido
                 try {
                     Mail::send('emails.FacPDF', ['pdf'=>$pdf,'cliente'=>trim($cliente)], function ($mail) use ($pdf,$vendEmail) {
-                        $mail->from('mrangel@birobid.com', 'Factura Electronica');
+                        $mail->from(env("MAIL_USERNAME"), $tipoDocumento.' Electronica');
                         $mail->to($vendEmail);
-                        $mail->subject('Factura PDF');
-                        $mail->attachData($pdf->output(), 'Factura.pdf');
+                        $mail->subject($tipoDocumento.' PDF');
+                        $mail->attachData($pdf->output(), $tipoDocumento.'.pdf');
                     });
                 } catch (\Exception $e) {
                     return response()->json(["error"=>["info Email solo Vendedor:"=>$e->getMessage()]]);
@@ -400,7 +406,7 @@ class PedidoController extends Controller
 
     public function TestEmail(){
          Mail::send('emails.TestEmailServer',[], function ($mail) {
-            $mail->from('mrangel@birobid.com', 'Test de Email');
+            $mail->from(env("MAIL_USERNAME"), 'Test de Email');
             $mail->to('salvatorex89@gmail.com');
             $mail->subject('Test envio email');
         });
