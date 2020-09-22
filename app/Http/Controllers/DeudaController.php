@@ -19,6 +19,19 @@ class DeudaController extends Controller
         return response()->json($deudas);
     }
 
+    public function GetDeudasXVendedor($vendedor)
+    {
+        $deudas = DB::table('ADMDEUDA')
+                ->select(DB::raw("SECUENCIAL,TIPO, NUMERO, BODEGA, SERIE, FECHAEMI, FECHAVEN, CLIENTE, MONTO - IVA AS SUBTOTAL, '0' AS DESCTO, IVA, MONTO, CREDITO, SALDO"))
+                ->where('SALDO', '>', 0.01)
+                ->whereNull('ESTADO')
+                ->where('VENDEDOR','=',$vendedor)
+                ->whereIn('TIPO',array('FAC','NVT','NDB'))
+                ->get();
+        return response()->json($deudas);
+    }
+
+
     public function GetDeudaXCliente($codigo)
     {
         $deudas = DB::table('ADMDEUDA')

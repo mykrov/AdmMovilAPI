@@ -43,10 +43,90 @@ class Cliente extends Controller
         return response()->json($clientes);
     }
 
+    public function BuscarNombreXVendedor($like,$vendedor)
+    {
+        $clientes = \App\Cliente::where('RAZONSOCIAL', 'like', '%' . $like . '%')
+        ->where('ESTADO','=','A')
+        ->where('VENDEDOR','=',$vendedor)
+        ->get();
+        return response()->json($clientes);
+    }
+
+    public function BuscarNombreXDia($like)
+    {
+        $fecha_actual = Carbon::now();
+        $diaSemana = $fecha_actual->dayOfWeek;  
+        $clientes = \App\Cliente::where('RAZONSOCIAL', 'like', '%' . $like . '%')
+        ->where('ESTADO','=','A')
+        ->where('DIA','=',$diaSemana)
+        ->get();
+        return response()->json($clientes);
+    }
+
+    public function BuscarIdXVendedor($id,$vendedor){
+        $clientes = \App\Cliente::where('CODIGO','=',$id)
+        ->where('ESTADO','=','A')
+        ->where('VENDEDOR','=',$vendedor)
+        ->get();
+        return response()->json($clientes);
+    }
+
     public function ClienteXVendedor($vendedor){
         
         $clientes = \App\Cliente::where('VENDEDOR','=',$vendedor)
         ->where('ESTADO','=','A')
+        ->get();
+        return response()->json($clientes);
+    }
+
+
+    public function ClienteLikeDiaVende($nombre,$vendedor){
+        $fecha_actual = Carbon::now();
+        $diaSemana = $fecha_actual->dayOfWeek;  
+        $clientes = \App\Cliente::where('RAZONSOCIAL', 'like', '%' . $nombre . '%')
+        ->where('VENDEDOR','=',$vendedor)
+        ->where('DIA','=',$diaSemana)
+        ->where('ESTADO','=','A')
+        ->get();
+        return response()->json($clientes);
+    }
+    
+    public function ClienteLikeCodVende($codigo,$vendedor){
+        $fecha_actual = Carbon::now();
+        $diaSemana = $fecha_actual->dayOfWeek;  
+        $clientes = \App\Cliente::where('CODIGO','=',$codigo)
+        ->where('VENDEDOR','=',$vendedor)
+        ->where('DIA','=',$diaSemana)
+        ->where('ESTADO','=','A')
+        ->get();
+        return response()->json($clientes);
+    }
+
+    public function ClienteCodDia($codigo){
+        $fecha_actual = Carbon::now();
+        $diaSemana = $fecha_actual->dayOfWeek;  
+        $clientes = \App\Cliente::where('CODIGO','=',$codigo)
+        ->where('DIA','=',$diaSemana)
+        ->where('ESTADO','=','A')
+        ->get();
+        return response()->json($clientes);
+    }
+    
+    public function ClienteXVendedorDia($vendedor){
+        $fecha_actual = Carbon::now();
+        $diaSemana = $fecha_actual->dayOfWeek;  
+        $clientes = \App\Cliente::where('VENDEDOR','=',$vendedor)
+        ->where('ESTADO','=','A')
+        ->where('DIA','=',$diaSemana)
+        ->get();
+        return response()->json($clientes);
+    }
+    
+
+    public function ClienteXDia(){
+        $fecha_actual = Carbon::now();
+        $diaSemana = $fecha_actual->dayOfWeek;  
+        $clientes = \App\Cliente::where('DIA','=',$diaSemana)
         ->get();
         return response()->json($clientes);
     }
@@ -56,7 +136,6 @@ class Cliente extends Controller
         $datos = $request;
         
         $check = \App\Cliente::where('RUC','=',$datos['RUC'])->count();
-
         //return response()->json($datos);
         
         DB::beginTransaction();
@@ -93,7 +172,7 @@ class Cliente extends Controller
                 $ClientNew  = new \App\Cliente;
                 $dt = Carbon::now();
                 $dt2 = $dt->format('Y-d-m');
-                //return response()->json($datos);
+                //return response()->json($datos['RAZONSOCIAL']);
             
                 $ClientNew->CODIGO = $inicial.$codigo;
                 $ClientNew->RAZONSOCIAL = $datos['RAZONSOCIAL'];
@@ -207,9 +286,9 @@ class Cliente extends Controller
                 $ClientNew->numero = $standar->numero;
                 $ClientNew->CORREOCARRO = $standar->CORREOCARRO;
                 $ClientNew->CLAVECARRO = $standar->CLAVECARRO;
-
+                //return response()->json($ClientNew);
                 $ClientNew->save();
-
+                
                 $cliBase->NUMCLIENTE = $cliBase->NUMCLIENTE +1;
                 $cliBase->save();
                 DB::commit();

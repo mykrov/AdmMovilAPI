@@ -20,11 +20,20 @@ Route::get('/setpassword','Vendedor@SetearPasswordHash');
 Route::get('/cliente','Cliente@listado');
 Route::get('/clientetodos','Cliente@listado2');
 Route::get('/clientexv/{vendedor}','Cliente@ClienteXVendedor');
+Route::get('/clientexvdia/{vendedor}','Cliente@ClienteXVendedorDia');
 Route::get('/cliente/{id?}','Cliente@byID');
 Route::post('/cliente','Cliente@CreateClient');
+Route::get('/clientedia','Cliente@ClienteXDia'); //Cliente por del dia actual del server
 Route::post('/clienteven','Cliente@CreateClientVen');
 Route::post('/clientebasico','Cliente@CreateClientBasic');
 Route::get('/clientelike/{nombre}','Cliente@BuscarNombre');
+Route::get('/clientelikexv/{nombre}/{vendedor}','Cliente@BuscarNombreXVendedor');
+Route::get('/clientelikexdia/{nombre}','Cliente@BuscarNombreXDia');
+Route::get('/clientexcd/{codigo}','Cliente@ClienteCodDia');
+Route::get('/clientexvcod/{id}/{vendedor}','Cliente@BuscarIdXVendedor');
+Route::get('/clientelikexvd/{nombre}/{vendedor}','Cliente@ClienteLikeDiaVende');
+Route::get('/clientelikexvc/{codigo}/{vendedor}','Cliente@ClienteLikeCodVende');
+
 Route::get('/cli/{dia}','MapsController@GetClientsByDay');
 
 //Items
@@ -58,14 +67,13 @@ Route::get('/itemxcliente','ItemXClienteController@GetItemXCliente');
 Route::get('/bancos','Banco@GetBancos');
 Route::get('/bacoscia','BancoCiaController@GetBancoCia');
 
-
-
 Route::get('/diascredito','DiasCreditoController@GetDiasCredito');
 Route::get('/formapago','FormaPagoController@GetFormaPago');
 Route::get('/cliprecio','CliPrecioController@GetCliPrecio');
 
 //Deudas
 Route::get('/deuda','DeudaController@GetDeudas');
+Route::get('/deudaxv/{vendedor}','DeudaController@GetDeudasXVendedor');
 Route::get('/deuda/{codigo}','DeudaController@GetDeudaXCliente');
 
 //Deudas POS
@@ -96,6 +104,7 @@ Route::post('/cabxproforma','ProformasController@GetCabecera');
 //Pagos
 Route::post('/pago','PagosController@Pago');
 Route::get('/mediospago','MedioPagoController@GetMedioPago');
+Route::post('/pagosposa','Cliente@listado');
 
 //Credito
 Route::get('/credito/{num}','CreditoController@GetCredito');

@@ -35,7 +35,14 @@
                     <table border="0" cellpadding="0" cellspacing="0" width="100%">
                         <tr >
                             <td width="50%" height ="120px" align="center" >
-                                <img src="img/descarga.jpg." alt="" style="max-height: 120px;">
+                                @php
+                                    if( $cabecera->TIPO == 'FAC'){
+                                        echo('<img src="img/logo.jpg." alt="" style="max-height: 120px;">');
+                                    }else{
+                                        echo('<h1>NOTA DE PEDIDO</h1>');
+                                    }
+                                @endphp
+                                
                             </td>
                             <td width="50%">
                                 <table cellpadding="0" cellspacing="0" width="100%" style="border-radius:6px;border-collapse:separate;border:solid black 1px">
@@ -44,7 +51,16 @@
                                             @php
                                                 $newstr = substr_replace($cabecera->SERIE,'-', 3, 0);
                                             @endphp
-                                            <h5>FACTURA NÚMERO: {{ $newstr.'-'.substr("000000000{$cabecera->NUMERO}",-9)}}</h5>
+                                            <h5>
+                                                @php
+                                                    if( $cabecera->TIPO == 'FAC'){
+                                                        echo('FACTURA NÚMERO:');
+                                                    }else{
+                                                        echo('PEDIDO NÚMERO:');
+                                                    }
+                                                @endphp
+                                                 
+                                                {{ $newstr.'-'.substr("000000000{$cabecera->NUMERO}",-9)}}</h5>
                                         </td>
                                     </tr>
                                     <tr>
@@ -74,30 +90,40 @@
                             </td>
                             <td width="50%">
                                 <table style="font-size:12px;"  width ="50%">
-                                    <tr>
-                                        <td><strong>Número de Autorización:</strong>
-                                            {{ $cabecera->NUMAUTO }}
-                                        </td>
-                                    </tr>
-                                    <tr >
-                                        <td><strong>Ambiente: </strong>Producción</td>
-                                    </tr>
-                                    <tr >
-                                        <td><strong>Tipo de Emisión: </strong>Normal</td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <strong>Clave de Acceso: </strong>
-                                            <p style="font-size: 9; margin-top:0px;">{{ $cabecera->NUMAUTO }}</p>
-                                            <span style="padding-top:0px;margin-top:0px">
-                                                @php
-                                                $generator = new Picqer\Barcode\BarcodeGeneratorSVG();
-                                                $redColor = [255, 0, 0];
-                                                echo '<img style="max-width: 32rem;min-height: 3rem;" src="data:image/png;base64,' . base64_encode($generator->getBarcode($cabecera->NUMAUTO, $generator::TYPE_CODE_128,1,80,'black')) . '"">';
-                                                @endphp
-                                            </span>
-                                        </td>
-                                    </tr>
+
+                                    @php
+                                     if($cabecera->TIPO == 'FAC'){
+                                    @endphp
+                                        <tr>
+                                            <td><strong>Número de Autorización:</strong>
+                                                {{ $cabecera->NUMAUTO }}
+                                            </td>
+                                        </tr>
+                                        <tr >
+                                            <td><strong>Ambiente: </strong>Producción</td>
+                                        </tr>
+                                        <tr >
+                                            <td><strong>Tipo de Emisión: </strong>Normal</td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <strong>Clave de Acceso: </strong>
+                                                <p style="font-size: 9; margin-top:0px;">{{ $cabecera->NUMAUTO }}</p>
+                                                <span style="padding-top:0px;margin-top:0px">
+                                                    @php
+                                                    $generator = new Picqer\Barcode\BarcodeGeneratorSVG();
+                                                    $redColor = [255, 0, 0];
+                                                    echo '<img style="max-width: 32rem;min-height: 3rem;" src="data:image/png;base64,' . base64_encode($generator->getBarcode($cabecera->NUMAUTO, $generator::TYPE_CODE_128,1,80,'black')) . '"">';
+                                                    @endphp
+                                                </span>
+                                            </td>
+                                        </tr>'
+                                    @php
+                                    }else{
+                                        echo('<tr><td style="padding-bottom: 120px"></td></tr>');
+                                    }
+                                    @endphp
+
                                 </table>
                             </td>
                         </tr>

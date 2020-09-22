@@ -20,7 +20,7 @@ class FacturasController extends Controller
         $fecha2 = $f2->Format('Y-d-m');
 
         $cabeceras = DB::table('ADMCABEGRESO')
-        ->where('ADMCABEGRESO.TIPO','=','FAC')
+        ->whereIn('ADMCABEGRESO.TIPO',['FAC','NVT'])
         ->whereBetween('ADMCABEGRESO.FECHA',[$fecha1, $fecha2])
         ->where('ADMCABEGRESO.VENDEDOR','=',$vendedor)
         ->join('ADMCLIENTE','ADMCABEGRESO.CLIENTE','=','ADMCLIENTE.CODIGO' )
