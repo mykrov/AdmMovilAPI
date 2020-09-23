@@ -350,12 +350,14 @@ class PedidoController extends Controller
             if($cabecera['tipo'] == 'NVT'){
                 $tipoDocumento = "NotaPedido";
             }
-                     
+            
+            $nombreMail = env("MAIL_USERNAME","facturas@sistemas.com");
+
             if (filter_var($clienteEmail, FILTER_VALIDATE_EMAIL)) {
                 //Email Valido
                 try {
-                    Mail::send('emails.FacPDF', ['pdf'=>$pdf,'cliente'=>trim($cliente)], function ($mail) use ($pdf,$clienteEmail,$vendEmail) {
-                        $mail->from(env("MAIL_USERNAME"),  $tipoDocumento.' Electronica');
+                    Mail::send('emails.FacPDF', ['pdf'=>$pdf,'cliente'=>trim($cliente)], function ($mail) use ($pdf,$clienteEmail,$vendEmail,$tipoDocumento,$nombreMail) {
+                        $mail->from($nombreMail,$tipoDocumento.' Electronica');
                         $mail->to($clienteEmail);
                         $mail->cc($vendEmail);
                         $mail->subject($tipoDocumento.' PDF');
@@ -369,8 +371,8 @@ class PedidoController extends Controller
             } else {
                 //Email No valido
                 try {
-                    Mail::send('emails.FacPDF', ['pdf'=>$pdf,'cliente'=>trim($cliente)], function ($mail) use ($pdf,$vendEmail) {
-                        $mail->from(env("MAIL_USERNAME"), $tipoDocumento.' Electronica');
+                    Mail::send('emails.FacPDF', ['pdf'=>$pdf,'cliente'=>trim($cliente)], function ($mail) use ($pdf,$vendEmail,$tipoDocumento,$nombreMail) {
+                        $mail->from($nombreMail, $tipoDocumento.' Electronica');
                         $mail->to($vendEmail);
                         $mail->subject($tipoDocumento.' PDF');
                         $mail->attachData($pdf->output(), $tipoDocumento.'.pdf');
