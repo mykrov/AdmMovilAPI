@@ -84,7 +84,14 @@
                                         <td><strong>Sucursal: </strong></td>
                                     </tr>
                                     <tr>
-                                        <td><strong>Obligado a llevar contabilidad: </strong>Si</td>
+                                        <td>
+                                            @php
+                                            if( $cabecera->TIPO == 'FAC'){
+                                                echo('<strong>Obligado a llevar contabilidad: </strong>Si');
+                                            }
+                                            @endphp
+                                            
+                                        </td>
                                     </tr>
                                 </table>
                             </td>
@@ -117,7 +124,7 @@
                                                     @endphp
                                                 </span>
                                             </td>
-                                        </tr>'
+                                        </tr>
                                     @php
                                     }else{
                                         echo('<tr><td style="padding-bottom: 120px"></td></tr>');
@@ -206,7 +213,15 @@
                             <td>{{$item->ITEM}}</td>
                             <td>{{\App\ADMITEM::where(['ITEM' => $item->ITEM])->pluck('NOMBRE')->first()}}</td>
                             <td>{{intval($item->CANTFUN)}}</td>
-                            <td>{{number_format($item->PRECIO,2,'.',',')}}</td>
+                            <td>
+                            @php 
+                                if ($cabecera->TIPO == 'FAC') {
+                                    echo(number_format($item->PRECIO,2,'.',','));
+                                }else{
+                                   
+                                }
+                            @endphp
+                           </td>
                             <td>{{number_format($item->DESCUENTO,2,'.',',')}}</td>
                             <td>{{number_format($item->SUBTOTAL,2,'.',',')}}</td>
                         </tr>   
@@ -304,6 +319,11 @@
                 </table>
             </tr>
         </table>
+
+        @php
+        if ($cabecera->TIPO == 'FAC') {
+        @endphp
+        
         <table border-top="1" class="table-forma" style="padding-top: 20px;font-size:12px;border-bottom:1pxx solid;">
             <tr style="border: 1px solid; background-color:gray;">
                 <td>Forma de Pago</td>
@@ -319,6 +339,9 @@
                 <td>Dias</td>
             </tr>
         </table>
+        @php
+        }
+        @endphp
         <div style="max-width: 32rem;min-height: 5rem;">
            
         </div>

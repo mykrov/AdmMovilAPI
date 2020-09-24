@@ -12,8 +12,14 @@ class MapsController extends Controller
 {
     public function GetClientsByDay($dia){
         
-        
-        $clients = \App\Cliente::where('DIA','=',$dia)
+        //Correnccion del dia con respecto al ADM
+        $diaMasConsul = $dia;
+        if($dia == 7){
+            $diaMasConsul = 0;
+        }
+        $diaMasConsul = $dia + 1;
+
+        $clients = \App\Cliente::where('DIA','=',$diaMasConsul)
         ->where('latitud','<>','null')
         ->select('RUC as Ruc','VENDEDOR as Vendedor','CODIGO as Codigo','RAZONSOCIAL as Nombre',
         'latitud as Latitud','longuitud as Longitud','DIRECCION as Direccion',

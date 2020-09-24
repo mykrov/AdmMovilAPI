@@ -34,8 +34,6 @@ Route::get('/clientexvcod/{id}/{vendedor}','Cliente@BuscarIdXVendedor');
 Route::get('/clientelikexvd/{nombre}/{vendedor}','Cliente@ClienteLikeDiaVende');
 Route::get('/clientelikexvc/{codigo}/{vendedor}','Cliente@ClienteLikeCodVende');
 
-Route::get('/cli/{dia}','MapsController@GetClientsByDay');
-
 //Items
 Route::get('/items/{bod}','Item@ItemXBodega');
 Route::get('/itemstodos/{bod}','Item@ItemTodosBodega');
@@ -60,6 +58,7 @@ Route::get('/grupocli','GrupoCliController@GetGrupoCli');
 Route::get('/tiposcli','TipoClienteController@GetTipoClientes');
 Route::get('/grupospro','GrupoProductoController@GetGrupoProductos');
 Route::get('/condicomer','CondiComercialesController@GetCondiComer');
+Route::get('/condicomerxi/{item}','CondiComercialesController@GetCondiComerPorProducto');
 Route::get('/frecuencia','FrecuenciaController@GetFrecuencias');
 Route::get('/tiponego','TipoNegocioController@GetTipoNegocios');
 Route::get('/itemtop','ItemTopController@GetItemTop');
@@ -122,6 +121,7 @@ Route::get('/invertir/{cadena}','PedidoController@InvertirCadena');
 //Mapas
 Route::get('/vendemaps','MapsController@GetVendedores');
 Route::post('/pedmaps','MapsController@GetPedidos');
+Route::get('/cli/{dia}','MapsController@GetClientsByDay');
 
 //Numeros a letras
 Route::post('/numeroletra','NumLetrasController@ConvertirNumeros');

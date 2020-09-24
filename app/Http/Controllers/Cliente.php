@@ -55,10 +55,15 @@ class Cliente extends Controller
     public function BuscarNombreXDia($like)
     {
         $fecha_actual = Carbon::now();
-        $diaSemana = $fecha_actual->dayOfWeek;  
+        $diaSemana = $fecha_actual->dayOfWeek; 
+
+        if($diaSemana == 7){
+            $diaSemana = 0;
+        }
+
         $clientes = \App\Cliente::where('RAZONSOCIAL', 'like', '%' . $like . '%')
         ->where('ESTADO','=','A')
-        ->where('DIA','=',$diaSemana)
+        ->where('DIA','=',$diaSemana + 1)
         ->get();
         return response()->json($clientes);
     }
@@ -83,9 +88,14 @@ class Cliente extends Controller
     public function ClienteLikeDiaVende($nombre,$vendedor){
         $fecha_actual = Carbon::now();
         $diaSemana = $fecha_actual->dayOfWeek;  
+
+        if($diaSemana == 7){
+            $diaSemana = 0;
+        }
+
         $clientes = \App\Cliente::where('RAZONSOCIAL', 'like', '%' . $nombre . '%')
         ->where('VENDEDOR','=',$vendedor)
-        ->where('DIA','=',$diaSemana)
+        ->where('DIA','=',$diaSemana + 1)
         ->where('ESTADO','=','A')
         ->get();
         return response()->json($clientes);
@@ -94,9 +104,13 @@ class Cliente extends Controller
     public function ClienteLikeCodVende($codigo,$vendedor){
         $fecha_actual = Carbon::now();
         $diaSemana = $fecha_actual->dayOfWeek;  
+        if($diaSemana == 7){
+            $diaSemana = 0;
+        }
+
         $clientes = \App\Cliente::where('CODIGO','=',$codigo)
         ->where('VENDEDOR','=',$vendedor)
-        ->where('DIA','=',$diaSemana)
+        ->where('DIA','=',$diaSemana + 1)
         ->where('ESTADO','=','A')
         ->get();
         return response()->json($clientes);
@@ -105,8 +119,12 @@ class Cliente extends Controller
     public function ClienteCodDia($codigo){
         $fecha_actual = Carbon::now();
         $diaSemana = $fecha_actual->dayOfWeek;  
+        if($diaSemana == 7){
+            $diaSemana = 0;
+        }
+
         $clientes = \App\Cliente::where('CODIGO','=',$codigo)
-        ->where('DIA','=',$diaSemana)
+        ->where('DIA','=',$diaSemana + 1)
         ->where('ESTADO','=','A')
         ->get();
         return response()->json($clientes);
@@ -115,9 +133,13 @@ class Cliente extends Controller
     public function ClienteXVendedorDia($vendedor){
         $fecha_actual = Carbon::now();
         $diaSemana = $fecha_actual->dayOfWeek;  
+        if($diaSemana == 7){
+            $diaSemana = 0;
+        }
+
         $clientes = \App\Cliente::where('VENDEDOR','=',$vendedor)
         ->where('ESTADO','=','A')
-        ->where('DIA','=',$diaSemana)
+        ->where('DIA','=',$diaSemana + 1)
         ->get();
         return response()->json($clientes);
     }
@@ -126,7 +148,11 @@ class Cliente extends Controller
     public function ClienteXDia(){
         $fecha_actual = Carbon::now();
         $diaSemana = $fecha_actual->dayOfWeek;  
-        $clientes = \App\Cliente::where('DIA','=',$diaSemana)
+        if($diaSemana == 7){
+            $diaSemana = 0;
+        }
+
+        $clientes = \App\Cliente::where('DIA','=',$diaSemana + 1)
         ->get();
         return response()->json($clientes);
     }
