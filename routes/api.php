@@ -103,7 +103,7 @@ Route::post('/cabxproforma','ProformasController@GetCabecera');
 //Pagos
 Route::post('/pago','PagosController@Pago');
 Route::get('/mediospago','MedioPagoController@GetMedioPago');
-Route::post('/pagosposa','Cliente@listado');
+Route::post('/pagosposa','PagosPosController@Pagopos');
 
 //Credito
 Route::get('/credito/{num}','CreditoController@GetCredito');

@@ -40,6 +40,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ADMDEUDAPOS extends Model
 {
+    public $timestamps = false;
     /**
      * The table associated with the model.
      * 
@@ -47,6 +48,7 @@ class ADMDEUDAPOS extends Model
      */
     protected $table = 'ADMDEUDAPOS';
 
+    protected $primaryKey = 'SECUENCIAL';
     /**
      * @var array
      */
