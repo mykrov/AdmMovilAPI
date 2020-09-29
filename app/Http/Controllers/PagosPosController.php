@@ -40,8 +40,13 @@ class PagosPosController extends Controller
             //ADMPAGOPOS
             $vendedorData = \App\ADMVENDEDOR::where('CODIGO','=',$vendedor)->first();
             $operador1 = '';
-            $cajaAbiertaPOS = DB::table('ADMAPERTURACAJAPOS')->where([['CODIGOCAJA','=',$vendedorData->caja],['ESTADO','=','A']])
+            $cajaAbiertaPOS = DB::table('ADMAPERTURACAJAPOS')
+            ->where([['CODIGOCAJA','=',$vendedorData->caja],['ESTADO','=','A']])
+            ->where($date->format('d-m-Y'),'>=','FECHADESDE')
+            ->where($date->format('d-m-Y'),'<=','FECHAHASTA')
             ->get();
+
+            return response()->json($cajaAbiertaPOS);
 
             if($cajaAbiertaPOS == null){
                 return response()->json(['estado'=>'error','info'=>'NO HAY CAJA']);

@@ -218,12 +218,29 @@
                                 if ($cabecera->TIPO == 'FAC') {
                                     echo(number_format($item->PRECIO,2,'.',','));
                                 }else{
-                                   
+                                    if ($item->GRAVAIVA == 'S') {
+                                        echo(number_format(($item->SUBTOTAL / intval($item->CANTFUN) * 1.12),2,'.',','));
+                                    } else {
+                                        echo(number_format($item->SUBTOTAL / intval($item->CANTFUN),2,'.',','));
+                                    }
                                 }
                             @endphp
                            </td>
                             <td>{{number_format($item->DESCUENTO,2,'.',',')}}</td>
-                            <td>{{number_format($item->SUBTOTAL,2,'.',',')}}</td>
+                            <td>
+                            @php
+                                if ($cabecera->TIPO == 'FAC') {
+                                    number_format($item->SUBTOTAL,2,'.',',');
+                                }else{
+                                    if ($item->GRAVAIVA == 'S') {
+                                       echo(number_format($item->SUBTOTAL * (1.12),2,'.',','));
+                                    } else {
+                                        echo(number_format($item->SUBTOTAL,2,'.',','));
+                                    }
+                                }
+                                @endphp
+                            
+                            </td>
                         </tr>   
                         @endforeach
                     </table>
@@ -273,6 +290,8 @@
                         
                         <td width="35%">
                             <table style="border-radius:6px;border-collapse:separate;border:solid black 2px; font-size:11px;padding:10px 10px 10px 10px;">
+                                @php
+                                if ($cabecera->TIPO == 'FAC') { @endphp
                                 <tr>
                                     <td>SubTotal 12%</td>
                                     <td>{{ number_format($cabecera->SUBTOTAL - $cabecera->SUBTOTAL0,2,'.',',') }}</td>
@@ -309,6 +328,11 @@
                                     <td>IVA 12%</td>
                                     <td>{{ number_format($cabecera->IVA,2,'.',',') }}</td>
                                 </tr>
+                                
+                                @php
+                                }  
+                                @endphp  
+                                
                                 <tr>
                                     <td><strong>VALOR TOTAL</strong></td>
                                     <td><strong>{{ number_format($cabecera->NETO,2,'.',',') }}</strong></td>
