@@ -105,8 +105,12 @@ Route::post('/pago','PagosController@Pago');
 Route::get('/mediospago','MedioPagoController@GetMedioPago');
 Route::post('/pagosposa','PagosPosController@Pagopos');
 
+Route::post('/pagopostcab','PagPosConsultaController@GetCabeceras');
+Route::post('/pagopostdet','PagPosConsultaController@GetDetalles');
+
 //Credito
 Route::get('/credito/{num}','CreditoController@GetCredito');
+Route::get('/creditopos/{num}','CreditoController@GetCreditoPos');
 
 //Informe de Pagos
 Route::post('/detpagos','InfoPagoController@GetDetallesPagos');

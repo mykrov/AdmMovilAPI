@@ -12,7 +12,7 @@ class PagosPosController extends Controller
 {
     public function Pagopos(Request $r)
     {
-        //return response()->json("si llega");
+       
         $vendedor = $r->vendedor;
         $deudas = $r->facturas;
         $tipoPago = $r->medioPago;
@@ -42,11 +42,11 @@ class PagosPosController extends Controller
             $operador1 = '';
             $cajaAbiertaPOS = DB::table('ADMAPERTURACAJAPOS')
             ->where([['CODIGOCAJA','=',$vendedorData->caja],['ESTADO','=','A']])
-            ->where($date->format('d-m-Y'),'>=','FECHADESDE')
-            ->where($date->format('d-m-Y'),'<=','FECHAHASTA')
+            ->where('FECHADESDE','<=',$date->format('d-m-Y'))
+            ->where('FECHAHASTA','>=',$date->format('d-m-Y'))
             ->get();
 
-            return response()->json($cajaAbiertaPOS);
+            //return response()->json($cajaAbiertaPOS);
 
             if($cajaAbiertaPOS == null){
                 return response()->json(['estado'=>'error','info'=>'NO HAY CAJA']);
@@ -119,11 +119,12 @@ class PagosPosController extends Controller
                 }elseif ($tipoPago == 'DEP'){
                     $tipoOperacionN = 'Deposito';
                 }
-
+                
                 $observacionCre = $tipoOperacionN." ".$r->banco." - Cuenta No ".$r->cuentaChq."- No ".$tipoPago." ".$r->numCheque;
             }
             //$detPago->vendedor = $vendedor;
             //$detPago->intregrado = "N";
+
             $detPago->save();
 
             $parametrov->SECUENCIAL = $parametrov->SECUENCIAL + 1;
@@ -168,6 +169,8 @@ class PagosPosController extends Controller
                 $deudaChq->EWEB = "N";
                 $deudaChq->save();
 
+                
+
                 $creditoLinea2 = new \App\ADMCREDITO();
                 $creditoLinea2->SECUENCIAL = $deudaChq->SECUENCIAL;
                 $creditoLinea2->BODEGA = $deudaChq->BODEGA;
@@ -186,16 +189,25 @@ class PagosPosController extends Controller
                 $creditoLinea2->ACT_SCT = 'N';
                 $creditoLinea2->seccreditogen = 0;
                 $creditoLinea2->save();
-
                 $numeroCHP->CONTADOR = $numeroCHP->CONTADOR + 1;
                 $numeroCHP->save();
 
-                $detPago = \App\ADMDETPAGO::where('secuencial','=',$detPago->secuencial)
-                ->where('numero','=',$detPago->numero)->first();
+                //$detPago = \App\ADMDETPAGOPOS::where('secuencial','=',$detPago->secuencial)
+                //->where('numero','=',$detPago->numero)->first();
 
-                $detPago->docrel = 'CHP';
-                $detPago->numerorel = $deudaChq->NUMERO;
-                $detPago->save();
+
+                $result = DB::table('ADMDETPAGOPOS')
+                ->where('secuencial',$detPago->secuencial)
+                ->where('numero','=',$detPago->numero)
+                ->update([
+                    'docrel' =>'CHP',
+                    'numerorel' => $deudaChq->NUMERO
+                ]);
+
+                //return response()->json($detPago);
+                //$detPago->docrel = 'CHP';
+                //$detPago->numerorel = $deudaChq->NUMERO;
+                //$detPago->save();
 
             }
 
@@ -247,7 +259,7 @@ class PagosPosController extends Controller
                 $numDeuda = $val['numero'];
                 $montoPagar = round($val['monto'],2);
                 
-                $deuda = \App\ADMDEUDAPOS::where('SECUENCIAL','=',$numDeuda)
+                $deuda = \App\ADMDEUDAPOS::where('SECINV','=',$numDeuda)
                 ->whereIn('TIPO',['NVT','FAC','NDB'])
                 ->first();
                 //return response()->json($deuda);
@@ -263,7 +275,7 @@ class PagosPosController extends Controller
 
                     $deuda->save();
                     
-                    $credito = \App\ADMCREDITOPOS::where('SECUENCIAL','=',$numDeuda)
+                    $credito = \App\ADMCREDITOPOS::where('SECINV','=',$numDeuda)
                     ->whereIn('TIPO',['NVT','FAC','NDB'])
                     ->first();
                     
