@@ -8,10 +8,10 @@ class ParametrosController extends Controller
 {
    public function GetParametros(){
        $paramBO = \App\ADMPARAMETROBO::get();
-       $paramV = \App\ADMPARAMETROV::get();
-       $paramC = \App\ADMPARAMETROC::get();
+       //$paramV = \App\ADMPARAMETROV::get();
+       //$paramC = \App\ADMPARAMETROC::get();
 
-       return response()->json(['parametroBO'=>$paramBO,'parametroV'=>$paramV,'parametroC'=>$paramC]);
+       return response()->json(['parametroBO'=>$paramBO]);
    }
 
    public function GetParametrosLite()

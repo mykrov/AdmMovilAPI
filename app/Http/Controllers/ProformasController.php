@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\DB;
 class ProformasController extends Controller
 {
     public function GetCabecera(Request $r){
+       
+        //return response()->json(Carbon::now()->subHours(5));
         $vendedor = $r['VENDEDOR'];
         $f1 = Carbon::createFromFormat('d-m-Y',$r['FECHAINI']);
         $f2 = Carbon::createFromFormat('d-m-Y',$r["FECHAFIN"]);
@@ -21,6 +23,7 @@ class ProformasController extends Controller
         ->where('ADMCABPEDIDO.TIPO','=','PED')
         ->whereBetween('ADMCABPEDIDO.FECHA',[$fecha1, $fecha2])
         ->where('ADMCABPEDIDO.VENDEDOR','=',$vendedor)
+        ->where('ADMCABPEDIDO.ESTADO','<>','XXX')
         ->join('ADMCLIENTE','ADMCABPEDIDO.CLIENTE','=','ADMCLIENTE.CODIGO' )
         ->select('ADMCLIENTE.RAZONSOCIAL','ADMCABPEDIDO.TIPO','ADMCABPEDIDO.SECAUTO',
         'ADMCABPEDIDO.NUMERO','ADMCABPEDIDO.FECHA','ADMCABPEDIDO.CLIENTE','ADMCABPEDIDO.SECUENCIAL',

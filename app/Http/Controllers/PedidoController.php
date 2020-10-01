@@ -36,6 +36,17 @@ class PedidoController extends Controller
      
         DB::beginTransaction();
 
+        //En caso de Observacion.
+        $observacion = "Gracias por su Compra.";
+        if(trim($cabecera['observacion']) != ""){
+            $observacion = $cabecera['observacion'];
+        }
+
+        $campo_adi = "Gracias por su Compra.";
+        if(trim($cabecera['observacion']) != ""){
+            $campo_adi = $cabecera['campo_adi'];
+        }
+
         try {
         
             $bodega = ADMBODEGA::where('CODIGO','=',$cabecera['bodega'])->first();
@@ -50,7 +61,7 @@ class PedidoController extends Controller
                 $grabaIva = "S";
             }
             
-            $date = Carbon::now();
+            $date = Carbon::now()->subHours(5);
             
             $cab = new \App\ADMCABEGRESO();
             
@@ -93,8 +104,8 @@ class PedidoController extends Controller
             $cab->ESTADODOC = null; 
             $cab->TIPOVTA = "BIE"; 
             $cab->INTECXC = null; 
-            $cab->OBSERVA = "Gracias por su Compra"; 
-            $cab->COMENTA = ""; 
+            $cab->OBSERVA =  $observacion; 
+            $cab->COMENTA = $campo_adi; 
             $cab->INTEGRADO = null; 
             $cab->SECCON = 0; //Pendiente, se Actualiza al guardar todo.
             $cab->NUMSERIE = null; 
@@ -217,7 +228,7 @@ class PedidoController extends Controller
                 $d->PORDES2 = 0;
                 $d->CANTENTREGADA = 0;
                 $d->CANTPORENTREGAR = null;
-                $d->DETALLE = "";
+                $d->DETALLE = $campo_adi;
                 $d->FECHAELA = null;
                 $d->FECHAVEN = null;
                 $d->LOTE = null;
@@ -241,7 +252,7 @@ class PedidoController extends Controller
                             ->where('BODEGA',$cab->BODEGA)
                             ->update([
                                 'STOCK' =>$stockBod,
-                                'ULTFECEGR' => Carbon::now()->Format('Y-d-m')
+                                'ULTFECEGR' => Carbon::now()->subHours(5)->Format('Y-d-m')
                             ]);
                 
                 //Generar el Detalle de Egreso.
@@ -279,7 +290,7 @@ class PedidoController extends Controller
             $deuda->FECHADES = $cab->FECHA;
             $deuda->OPERADOR = $operador1;
             $deuda->VENDEDOR = $cab->VENDEDOR;
-            $deuda->OBSERVACION = "Gracias por su Compra";
+            $deuda->OBSERVACION =  $observacion;
             $deuda->NUMAUTO = "";
             $deuda->BODEGAFAC = 0;
             $deuda->SERIEFAC = "";
@@ -318,7 +329,7 @@ class PedidoController extends Controller
             $credito->MONTO = round($deuda->MONTO,2) ;
             $credito->SALDO = round($deuda->MONTO,2) ;
             $credito->OPERADOR = $operador1;
-            $credito->OBSERVACION = "Gracias por su Compra";
+            $credito->OBSERVACION =  $observacion;
             $credito->VENDEDOR = $deuda->VENDEDOR;
             $credito->estafirmado = "N";
             $credito->ACT_SCT = "N";
@@ -342,9 +353,15 @@ class PedidoController extends Controller
             $vendedor = \App\ADMVENDEDOR::where('CODIGO','=',$cabecera['usuario'])->first();
             $vendEmail = $vendedor->email;
 
+            
             //Validacion de Email del Cliente.
             $clienteEmail = trim($cliente->EMAIL);
-
+            if(trim($cabecera['email'] != "")){
+                if(filter_var(trim($cabecera['email'], FILTER_VALIDATE_EMAIL))){
+                    $clienteEmail = $cabecera['email'];
+                }
+            }
+          
             //Tipo Doc para Email
             $tipoDocumento = "Factura";
             if($cabecera['tipo'] == 'NVT'){
@@ -364,9 +381,11 @@ class PedidoController extends Controller
                         $mail->attachData($pdf->output(), $tipoDocumento.'.pdf');
                     });
                 } catch (\Exception $e) {
-                    return response()->json(["error"=>["info Email ambos"=>$e->getMessage()]]);;
+                    return response()->json(["estado"=>"guardado", "Nfactura"=>$cab->NUMERO, "secuencial"=>$cab->SECUENCIAL,"email"=>"error_enviando"]);
+                    //return response()->json(["error"=>["info Email ambos"=>$e->getMessage()]]);;
                 }
-                return response()->json(["estado"=>"guardado", "Nfactura"=>$cab->NUMERO, "secuencial"=>$cab->SECUENCIAL]);
+                return response()->json(["estado"=>"guardado", "Nfactura"=>$cab->NUMERO, "secuencial"=>$cab->SECUENCIAL,"email"=>"enviado"]);
+                //return response()->json(["estado"=>"guardado", "Nfactura"=>$cab->NUMERO, "secuencial"=>$cab->SECUENCIAL]);
                
             } else {
                 //Email No valido
@@ -378,9 +397,10 @@ class PedidoController extends Controller
                         $mail->attachData($pdf->output(), $tipoDocumento.'.pdf');
                     });
                 } catch (\Exception $e) {
-                    return response()->json(["error"=>["info Email solo Vendedor:"=>$e->getMessage()]]);
+                    return response()->json(["estado"=>"guardado", "Nfactura"=>$cab->NUMERO, "secuencial"=>$cab->SECUENCIAL,"email"=>"error_enviando"]);
+                    //return response()->json(["error"=>["info Email solo Vendedor:"=>$e->getMessage()]]);
                 }
-                return response()->json(["estado"=>"guardado", "Nfactura"=>$cab->NUMERO, "secuencial"=>$cab->SECUENCIAL]);
+                return response()->json(["estado"=>"guardado", "Nfactura"=>$cab->NUMERO, "secuencial"=>$cab->SECUENCIAL,"email"=>"enviado"]);
                
             }
 
@@ -452,7 +472,7 @@ class PedidoController extends Controller
     //Funcion Principal Clave de Acceso.
     public function GenerarClave($secuencial6,$Serie6,$ruc,$codDoc,$tipoemision,$ambiente,$fecha_fac){
         try {
-            $dat = Carbon::now();
+            $dat = Carbon::now()->subHours(5);
             $dateDMY = $dat->Format('d-m-Y');
             $obtender_fecha = str_replace('-','',$dateDMY);
             $codigo_Numerico = '12345678';

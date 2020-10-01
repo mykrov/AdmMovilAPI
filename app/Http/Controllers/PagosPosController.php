@@ -21,7 +21,7 @@ class PagosPosController extends Controller
         $montoPagar = $r->total;
         $parametrov = ADMPARAMETROV::first();
         $NumCre = \App\ADMTIPODOC::where('TIPO','=','PAG')->first();
-        $date = Carbon::now('-5');
+        $date = Carbon::now()->subHours(5);
         
         $fcChq = Carbon::createFromFormat('Y-m-d',$fechaChq)->Format('d-m-Y');
         $observacionCre = "";

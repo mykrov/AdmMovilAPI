@@ -19,7 +19,7 @@ class PedidoProformaController extends Controller
         $parametrov = \App\ADMPARAMETROV::first();
         $cliente = \App\Cliente::where('CODIGO','=',$cabecera['cliente'])->first();
         $parametrobo = \App\ADMPARAMETROBO::first();
-        $date = Carbon::now();
+        $date = Carbon::now()->subHours(5);
 
         $grabaIva = "N";
         if(floatval($cabecera['iva']) > 0){

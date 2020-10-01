@@ -47,7 +47,7 @@ class VentaPos extends Controller
                 $grabaIva = "S";
             }
             
-            $date = Carbon::now();
+            $date = Carbon::now()->subHours(5);
             
             $cab = new \App\ADMCABEGRESOPOS();
 
