@@ -26,6 +26,17 @@ class PedidoProformaController extends Controller
             $grabaIva = "S";
         }
 
+         //En caso de Observacion.
+        $observacion = "Gracias por su Compra.";
+        if(trim($cabecera['observacion']) != ""){
+            $observacion = $cabecera['observacion'];
+        }
+
+        $campo_adi = "Gracias por su Compra.";
+        if(trim($cabecera['observacion']) != ""){
+            $campo_adi = $cabecera['datos_adi'];
+        }
+
         DB::beginTransaction();
         try {
 
@@ -46,8 +57,8 @@ class PedidoProformaController extends Controller
             $cabe->PESO = 0;
             $cabe->VOLUMEN = 0;
             $cabe->OPERADOR = "ADM";
-            $cabe->COMENTARIO = "Gracias por su Compra";
-            $cabe->OBSERVACION = "Gracias por su Compra";
+            $cabe->COMENTARIO = $campo_adi;
+            $cabe->OBSERVACION = $observacion;
             $cabe->DOCFAC = trim($cabecera['tipo']);
             $cabe->DIASCRED = $cliente->TDCREDITO ;
             $cabe->GRAVAIVA = $grabaIva;

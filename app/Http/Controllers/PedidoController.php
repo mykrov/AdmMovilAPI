@@ -27,6 +27,8 @@ class PedidoController extends Controller
 
         $operador1 = '';
 
+        //return response()->json($r);
+
         //Datos del Operador segun vendedor
         $vendedorData = \App\ADMVENDEDOR::where('CODIGO','=',$cabecera['usuario'])->first();
         $operador1 = '';
@@ -38,13 +40,13 @@ class PedidoController extends Controller
 
         //En caso de Observacion.
         $observacion = "Gracias por su Compra.";
-        if(trim($cabecera['observacion']) != ""){
+        if(trim($cabecera['observacion']) != null){
             $observacion = $cabecera['observacion'];
         }
 
         $campo_adi = "Gracias por su Compra.";
-        if(trim($cabecera['observacion']) != ""){
-            $campo_adi = $cabecera['campo_adi'];
+        if(trim($cabecera['observacion']) != null){
+            $campo_adi = $cabecera['datos_adi'];
         }
 
         try {
@@ -356,7 +358,7 @@ class PedidoController extends Controller
             
             //Validacion de Email del Cliente.
             $clienteEmail = trim($cliente->EMAIL);
-            if(trim($cabecera['email'] != "")){
+            if(trim($cabecera['email'] != null)){
                 if(filter_var(trim($cabecera['email'], FILTER_VALIDATE_EMAIL))){
                     $clienteEmail = $cabecera['email'];
                 }
