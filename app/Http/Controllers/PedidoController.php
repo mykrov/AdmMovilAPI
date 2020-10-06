@@ -180,7 +180,7 @@ class PedidoController extends Controller
             $cabEgr->TIPO = $cab->TIPO;
             $cabEgr->NUMERO = $cab->NUMERO;
             $cabEgr->NUMEGRESO = $bodega->NOEGR + 1;
-            $cabEgr->FECHA = $cabecera['fecha_ingreso'];
+            $cabEgr->FECHA = $date->Format('Y-d-m');
             $cabEgr->ESTADO = "P";
 
             $cabEgr->save();

@@ -259,7 +259,7 @@ class PagosPosController extends Controller
                 $numDeuda = $val['numero'];
                 $montoPagar = round($val['monto'],2);
                 
-                $deuda = \App\ADMDEUDAPOS::where('SECINV','=',$numDeuda)
+                $deuda = \App\ADMDEUDAPOS::where('SECUENCIAL','=',$numDeuda)
                 ->whereIn('TIPO',['NVT','FAC','NDB'])
                 ->first();
                 //return response()->json($deuda);
@@ -274,8 +274,8 @@ class PagosPosController extends Controller
                     $bodegaDeuda = $deuda->BODEGA;
 
                     $deuda->save();
-                    
-                    $credito = \App\ADMCREDITOPOS::where('SECINV','=',$numDeuda)
+                    //return response()->json($deuda->SECINV);
+                    $credito = \App\ADMCREDITOPOS::where('SECINV','=',$deuda->SECINV)
                     ->whereIn('TIPO',['NVT','FAC','NDB'])
                     ->first();
                     

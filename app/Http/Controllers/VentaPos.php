@@ -24,6 +24,17 @@ class VentaPos extends Controller
 
         try {
 
+              //En caso de Observacion.
+            $observacion = "Gracias por su Compra.";
+            if(trim($cabecera['observacion']) != ""){
+                $observacion = $cabecera['observacion'];
+            }
+
+            $campo_adi = "Gracias por su Compra.";
+            if(trim($cabecera['observacion']) != ""){
+                $campo_adi = $cabecera['datos_adi'];
+            }
+
             //$bodega = ADMBODEGA::where('CODIGO','=',$cabecera['bodega'])->first();
             $parametrov = ADMPARAMETROV::first();
             $cliente = Cliente::where('CODIGO','=',$cabecera['cliente'])->first();
@@ -86,8 +97,8 @@ class VentaPos extends Controller
             $cab->ESTADODOC = null; 
             $cab->TIPOVTA = "BIE"; 
             $cab->INTECXC = null; 
-            $cab->OBSERVA = "Gracias por su Compra.";
-            $cab->COMENTA = "Fac POS-APP";
+            $cab->OBSERVA = $observacion;
+            $cab->COMENTA = $campo_adi;
             $cab->INTEGRADO = null;
             $cab->SECCON = 0; 
             $cab->NUMSERIE = null; 
