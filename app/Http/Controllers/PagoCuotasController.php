@@ -33,7 +33,7 @@ class PagoCuotasController extends Controller
         $vendedor = DB::table('ADMDEUDA')->where('SECUENCIAL',$secDeuda)
         ->select('VENDEDOR')->first();
 
-        $clienteData = \App\ADMCLIENTE::where('CODIGO',$cliente)->first();
+        $clienteData = \App\Cliente::where('CODIGO',$cliente)->first();
 
         //para actualizar al final el seccon
         $numComproContable = 0;

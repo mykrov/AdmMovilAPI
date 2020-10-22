@@ -27,7 +27,7 @@ class PagosController extends Controller
 
         $secDelPago = 0;
 
-        $clienteData = \App\ADMCLIENTE::where('CODIGO',$cliente)->first();
+        $clienteData = \App\Cliente::where('CODIGO',$cliente)->first();
 
         //para actualizar al final el seccon
         $numComproContable = 0;
