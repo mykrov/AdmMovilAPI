@@ -28,7 +28,11 @@ class ParametrosController extends Controller
                                     'EPRECIO'=>$paramV->EPRECIO,
                                     'ENOTAVENTA'=>$paramV->EPRECIO,
                                     'LISTADEPRECIO'=>$paramV->LISTADEPRECIO,
-                                    'LEYENDAPROFORMA'=>$paramV->LEYENDAPROFORMA
+                                    'LEYENDAPROFORMA'=>$paramV->LEYENDAPROFORMA,
+                                    'usardecimales'=>$paramV->usardecimales,
+                                    'ESQUEMAELE'=>$paramV->ESQUEMAELE,
+                                    'FACLIN'=>$paramV->FACLIN,
+                                    'NVTLIN'=>$paramV->NVTLIN
                                 ]);
    }
 }

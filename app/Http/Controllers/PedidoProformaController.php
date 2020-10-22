@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use \App\ADMCABPEDIDO;
 use \App\ADMDETPEDIDO;
+use Illuminate\Support\Facades\Log;
 
 class PedidoProformaController extends Controller
 {
@@ -48,9 +49,9 @@ class PedidoProformaController extends Controller
             $cabe->SECUENCIAL = $parametrov->SECUENCIAL + 1; //actualizar
             $cabe->CLIENTE = $cabecera['cliente'];
             $cabe->VENDEDOR = $cabecera['usuario'];
-            $cabe->FECHA = $date->Format('Y-d-m');;
+            $cabe->FECHA = $date->Format('Y-d-m');
             $cabe->ESTADO = "WEB";
-            $cabe->SUBTOTAL = round($cabecera['subtotal'],2);;
+            $cabe->SUBTOTAL = round($cabecera['subtotal'],2);
             $cabe->DESCUENTO = round($cabecera['descuento'],2);
             $cabe->IVA = round($cabecera['iva'],2);
             $cabe->NETO = round($cabecera['neto'],2);
@@ -111,10 +112,12 @@ class PedidoProformaController extends Controller
                 $linea++;
             } 
             DB::commit();
+            Log::info("Registro de PedidoProformaController ", ["cabecera" => $cabe,"TiempoPreciso"=>Carbon::now()->subHours(5)->format('H:m:s.u')]);
             return response()->json(["estado"=>"guardado", "Npedido"=>$cabe->NUMERO, "secuencial"=>$cabe->SECUENCIAL]);
 
         } catch (\Exception $e) {
             DB::rollback();
+            Log::error("Error PedidoProformaController ", ["cabecera" => $cabe,"TiempoPreciso"=>Carbon::now()->subHours(5)->format('H:m:s.u'),"Datos"=>$e->getMessage()]);
             return response()->json(["error"=>["info"=>$e->getMessage()]]);
         }
     }    

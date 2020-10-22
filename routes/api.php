@@ -130,6 +130,15 @@ Route::get('/cli/{dia}','MapsController@GetClientsByDay');
 //Numeros a letras
 Route::post('/numeroletra','NumLetrasController@ConvertirNumeros');
 
+//NotoficacionPush
+Route::get('/notipush/{item}','PushNotificacionController@NewItem');
+Route::get('/notipushtest','PushNotificacionController@NewItem2');
+
+//Guias de Cobro
+Route::get('/guiacobro/{numero}','GuiaCobroController@GetGuiaCobro');
+Route::get('/deudacuotas/{sec}','DeudaCuotasController@GetDeudaCuotas');
+Route::post('/pagocuota','PagoCuotasController@PagoCuota');
+
 Route::middleware('auth:api')->group(function () {
     Route::get('/vendedores','Vendedor@listado');
     Route::get('/vendedorinfo',function (Request $request) {

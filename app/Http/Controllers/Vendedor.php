@@ -22,26 +22,51 @@ class Vendedor extends Controller
             'codigo' => 'required|string',
             'password' => 'required|string'
         ]);
-        
-        $vendedor = \App\ADMVENDEDOR::where('CODIGO',request('codigo'))
-        ->where('ESTADO','A')
-        ->first();
-        
-        //return response()->json($vendedorData);
-        //if ($vendedor &&  \Hash::check(request('password'), trim($vendedor->HASH))){
-        if ($vendedor &&  trim($request['password']) == trim($vendedor->CLAVEWEB)){
-            try {
-                Auth::loginUsingId($vendedor->CODIGO, TRUE);
-                $user = Auth::user();
-                $token = $vendedor->createToken('authToken')->accessToken;
-                return response()->json(['vendedor'=>$vendedor,'token'=>$token,'ID'=>$user]);
-            } catch (\Throwable $th) {
-                return response()->json(['message'=>$th->getMessage()]);
+
+        //Logueo para Operadores
+        if(strlen(request('codigo')) == 3 ){
+            
+            $operador = \App\ADMOPERADOR::where('codigo',request('codigo'))
+            ->where('estado','A')
+            ->first();
+            
+            if ($operador && trim($request['password']) == trim($operador->clave)){
+                try {
+                    Auth::loginUsingId($operador->codigo, TRUE);
+                    $user = Auth::user();
+                    $token = $operador->createToken('authToken')->accessToken;
+                    return response()->json(['operador'=>$operador,'token'=>$token,'ID'=>$user]);
+                } catch (\Throwable $th) {
+                    return response()->json(['message'=>$th->getMessage()]);
+                }
+            }
+            else{
+                return response()->json(['message'=>'ErrorLogin']);
+            }    
+
+        }else{
+                 
+            $vendedor = \App\ADMVENDEDOR::where('CODIGO',request('codigo'))
+            ->where('ESTADO','A')
+            ->first();
+            
+            //return response()->json($vendedorData);
+            //if ($vendedor &&  \Hash::check(request('password'), trim($vendedor->HASH))){
+            if ($vendedor && trim($request['password']) == trim($vendedor->CLAVEWEB)){
+                try {
+                    Auth::loginUsingId($vendedor->CODIGO, TRUE);
+                    $user = Auth::user();
+                    $token = $vendedor->createToken('authToken')->accessToken;
+                    return response()->json(['vendedor'=>$vendedor,'token'=>$token,'ID'=>$user]);
+                } catch (\Throwable $th) {
+                    return response()->json(['message'=>$th->getMessage()]);
+                }
+            }
+            else{
+                return response()->json(['message'=>'ErrorLogin']);
             }
         }
-        else{
-            return response()->json(['message'=>'ErrorLogin']);
-        }
+
     }
 
     public function listado(){

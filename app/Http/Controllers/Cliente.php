@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 class Cliente extends Controller
 {
     public function listado(){
-
+        
         $clientes = \App\Cliente::where('ESTADO','=','A')
         ->select(['CODIGO','RAZONSOCIAL','NEGOCIO','DIRECCION','TELEFONOS','FAX','EMAIL','RUC','GRUPO','TIPONEGO','TIPO'])
         ->simplePaginate(100);
@@ -19,7 +19,7 @@ class Cliente extends Controller
     }
 
     public function listado2(){
-
+        
         $clientes2 = \App\Cliente::where('ESTADO','=','A')
         ->select(['CODIGO','RAZONSOCIAL','NEGOCIO','DIRECCION','TELEFONOS','FAX','EMAIL','RUC','GRUPO','TIPONEGO','TIPO'])
         ->get();
