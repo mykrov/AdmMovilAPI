@@ -115,6 +115,8 @@ Route::get('/creditopos/{num}','CreditoController@GetCreditoPos');
 //Informe de Pagos
 Route::post('/detpagos','InfoPagoController@GetDetallesPagos');
 Route::post('/cabpagos','InfoPagoController@GetPagoCab');
+//InformePago por operador
+Route::post('/opecabpagos','InfoPagoOperadorController@GetPagoOperadorCab');
 
 //Actualizar Ubicacion del Cliente
 Route::post('/actubicacion','UbicacionController@UpdateCoordinates');
