@@ -21,6 +21,7 @@ class PagoCuotasController extends Controller
         $parametrov = ADMPARAMETROV::first();
         $NumCre = \App\ADMTIPODOC::where('TIPO','=','PAG')->first();
         $date = Carbon::now()->subHours(5);
+        $numeroGuia = $r->numguia;
         
         $fcChq = Carbon::createFromFormat('Y-m-d',$fechaChq)->Format('d-m-Y');
         $observacionCre = "";
@@ -385,7 +386,7 @@ class PagoCuotasController extends Controller
                     $creditoLinea->seccreditogen = 0;
                     $creditoLinea->save();
 
-                    if($this->pagarCuotas($numDeuda,$montoPagar,$pago->numero,$operador1,$observacionCre)){
+                    if($this->pagarCuotas($numDeuda,$montoPagar,$pago->numero,$operador1,$observacionCre && $this->CambioEstado($numeroGuia,$numDeuda,$montoPagar,$tipoPago))){
                         
                     }else{
                         DB::rollback();
@@ -510,5 +511,70 @@ class PagoCuotasController extends Controller
             Log::error("Error pagoCuota:",['Mensaje'=> $e->getMessage()]);
             return false;
         }
+    }
+
+    public function CambioEstado(int $Numguia,int $secuencial,float $monto,string $tipopago){
+        DB::beginTransaction();
+        try{
+            $DetGuiaCobro = DB::table('ADMDETGUIACOB')
+            ->where('SECUENCIAL',$secuencial)
+            ->where('NUMGUIA',$Numguia)
+            ->first();
+
+            if($DetGuiaCobro != NULL){
+                //Log::info("entra en el DETGUIACOB valido");
+                $chq = 0;
+                $efect = 0;
+                $otro = 0;
+
+                if ($tipopago == 'EFE') {
+                    $efect = $monto;
+                }elseif($tipopago == 'CHQ') {
+                    $chq = $monto;
+                }else{
+                    $otro = $monto;
+                }
+
+                if (round($DetGuiaCobro->SALDO - $monto,2) <= 0) {
+                    $result = DB::table('ADMDETGUIACOB')
+                    ->where('SECUENCIAL',$secuencial)
+                    ->where ('NUMGUIA',$Numguia)
+                    ->update([
+                        'ESTADO' => 'L',
+                        'SALDO' => 0,
+                        'VALORULTPAG' => $monto,
+                        'EFECTIVO' => round($DetGuiaCobro->EFECTIVO + $efect,2),
+                        'CHEQUE' => round($DetGuiaCobro->CHEQUE + $chq,2),
+                        'OTRO' => round($DetGuiaCobro->OTRO + $otro,2),
+                        'FECULTPAG'=> Carbon::now()->format('Y-d-m')
+                    ]);
+                    DB::commit();
+                    return true;
+                } else {
+                    $result = DB::table('ADMDETGUIACOB')
+                    ->where('SECUENCIAL',$secuencial)
+                    ->where ('NUMGUIA',$Numguia)
+                    ->update([
+                        'SALDO' => round($DetGuiaCobro->SALDO - $monto,2),
+                        'VALORULTPAG' => $monto,
+                        'EFECTIVO' => round($DetGuiaCobro->EFECTIVO + $efect,2),
+                        'CHEQUE' => round($DetGuiaCobro->CHEQUE + $chq,2),
+                        'OTRO' => round($DetGuiaCobro->OTRO + $otro,2),
+                        'FECULTPAG'=> Carbon::now()->format('Y-d-m')
+                    ]);
+                    DB::commit();
+                    return true;
+                }
+
+            }else{
+                DB::rollback();
+                Log::error("Error DETGUIACOB no encontrada");
+                return false;
+            }
+        } catch (\Exception $e) {
+            DB::rollback();
+            Log::error("Error Cambio de Estado DETGUIACOB:",['Mensaje'=> $e->getMessage()]);
+            return false;
+        }          
     }
 }

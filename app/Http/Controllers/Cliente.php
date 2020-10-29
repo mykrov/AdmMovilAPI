@@ -523,6 +523,9 @@ class Cliente extends Controller
         DB::beginTransaction();
         if ($check < 1) {
 
+            $cliBase = \App\ADMPARAMETROC::first();
+            $standar = \App\Cliente::where('CODIGO','=',$cliBase->CLIENTEMODELOCARRO)->first();
+
             if ($datos['REFERENCIA'] == null ) {
                 $datos['REFERENCIA'] = '';
             }
@@ -532,12 +535,41 @@ class Cliente extends Controller
             }
 
             if ($datos['GRUPO'] == null ) {
-                $datos['GRUPO'] = '';
+                $datos['GRUPO'] = trim($standar->GRUPO);
             }
 
-            try {
+            if ($datos['CANTON'] == null ) {
+                $datos['CANTON'] = trim($standar->CANTON);
+            }
 
-                $cliBase = \App\ADMPARAMETROC::first();
+            if ($datos['GRUPO'] == null ) {
+                $datos['GRUPO'] = trim($standar->GRUPO);
+            }
+
+            if ($datos['PARROQUIA'] == null ) {
+                $datos['PARROQUIA'] = trim($standar->PARROQUIA);
+            }
+
+            if ($datos['PROVINCIA'] == null ) {
+                $datos['PROVINCIA'] = trim($standar->PROVINCIA);
+            }
+
+            if ($datos['ZONA'] == null ) {
+                $datos['ZONA'] = trim($standar->ZONA);
+            }
+
+            if ($datos['SECTOR'] == null ) {
+                $datos['SECTOR'] = trim($standar->SECTOR);
+            }
+
+            
+            if ($datos['RUTA'] == null ) {
+                $datos['RUTA'] = trim($standar->RUTA);
+            }
+
+
+            try {
+               
                 $inicial = $cliBase->LETRAINI;
                 $numeroCli = $cliBase->NUMCLIENTE + 1;
 
@@ -562,11 +594,11 @@ class Cliente extends Controller
                 $ClientNew->EMAIL = $datos['EMAIL'];
                 $ClientNew->TIPO = $datos['TIPO'];
                 $ClientNew->CATEGORIA = trim($standar->CATEGORIA);
-                $ClientNew->PROVINCIA = trim($standar->PROVINCIA);
-                $ClientNew->CANTON = trim($standar->CANTON);
-                $ClientNew->PARROQUIA = trim($standar->PARROQUIA);
-                $ClientNew->SECTOR = trim($standar->SECTOR);
-                $ClientNew->RUTA = trim($standar->RUTA);
+                $ClientNew->PROVINCIA = $datos['PROVINCIA'];
+                $ClientNew->CANTON = $datos['CANTON'];
+                $ClientNew->PARROQUIA = $datos['PARROQUIA'];
+                $ClientNew->SECTOR = $datos['SECTOR'];
+                $ClientNew->RUTA = $datos['RUTA'];
                 $ClientNew->CTACLIENTE = "";
                 $ClientNew->CUPO = 0;
                 $ClientNew->GRUPO = '';
@@ -597,11 +629,11 @@ class Cliente extends Controller
                 $ClientNew->CLIENTEWEB = $standar->CLIENTEWEB;
                 $ClientNew->CODCLIENTEDOMI = $standar->CODCLIENTEDOMI;
                 $ClientNew->CLIENTEDOMI = $standar->CLIENTEDOMI;
-                $ClientNew->REFERENCIA = "VentasAPP";
+                $ClientNew->REFERENCIA = $datos['REFERENCIA'];
                 $ClientNew->TIPOCONTRIBUYENTE = $standar->TIPOCONTRIBUYENTE;
                 $ClientNew->RETIENEFUENTE = $standar->RETIENEFUENTE;
                 $ClientNew->RETIENEIVA = $standar->RETIENEIVA;
-                $ClientNew->ZONA = trim($standar->ZONA);
+                $ClientNew->ZONA = $datos['ZONA'];
                 $ClientNew->FECNAC = $dt2;
                 $ClientNew->FECMOD = $dt2;
                 $ClientNew->OPEMOD = $standar->OPEMOD;
