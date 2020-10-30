@@ -32,7 +32,8 @@ class ParametrosController extends Controller
                                     'usardecimales'=>$paramV->usardecimales,
                                     'ESQUEMAELE'=>$paramV->ESQUEMAELE,
                                     'FACLIN'=>$paramV->FACLIN,
-                                    'NVTLIN'=>$paramV->NVTLIN
+                                    'NVTLIN'=>$paramV->NVTLIN,
+                                    'POSFACLIN' => $paramV->POSFACLIN
                                 ]);
    }
 }
