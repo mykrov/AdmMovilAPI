@@ -24,8 +24,8 @@ class PushNotificacionController extends Controller
         $item = "Iphone 12";
         $servek = "AAAA5ytqw8A:APA91bHrZeoeaAUZ342am5YwqEBz5SfWkW5Cvl6tMMPxu1KTgt85Et1ICPyI4G6f1IkMFqo6vu7Mss7d0h0djZ3-7FDMQ3OWflhkw3vavSgAF5aT-mJKyh-Bq8bLbRAdz5Uh9Po2fYK7";
         $topic = $parametros->ruc;
-        $menss =  "Se Agregó: ".$item." al Inventario.";
-        $this->sendNotification("ADMGO - Nuevo Producto", $menss , ["NombreITEM" => "Item CAfe"], trim($topic), $servek);
+        $menss =  "Esta es una Notificación de prueba.";
+        $this->sendNotification("ADMGO - Notificacin Test", $menss , ["NombreITEM" => "Item CAfe"], trim($topic), $servek);
         Log::info("Notificacion Push: ",['ITEM'=>$item]);
         return response()->json('Se agrego ' .$item);
     }
