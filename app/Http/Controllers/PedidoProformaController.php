@@ -34,7 +34,7 @@ class PedidoProformaController extends Controller
         }
 
         $campo_adi = "Gracias por su Compra.";
-        if(trim($cabecera['observacion']) != ""){
+        if(trim($cabecera['datos_adi']) != ""){
             $campo_adi = $cabecera['datos_adi'];
         }
 
@@ -112,12 +112,12 @@ class PedidoProformaController extends Controller
                 $linea++;
             } 
             DB::commit();
-            Log::info("Registro de PedidoProformaController ", ["cabecera" => $cabe,"TiempoPreciso"=>Carbon::now()->subHours(5)->format('H:m:s.u')]);
+            Log::info("Registro de PedidoProformaController ", ["cabecera" => $cabe,"detalles"=> $d,"TiempoPreciso"=>Carbon::now()->subHours(5)->format('H:m:s.u')]);
             return response()->json(["estado"=>"guardado", "Npedido"=>$cabe->NUMERO, "secuencial"=>$cabe->SECUENCIAL]);
 
         } catch (\Exception $e) {
             DB::rollback();
-            Log::error("Error PedidoProformaController ", ["cabecera" => $cabe,"TiempoPreciso"=>Carbon::now()->subHours(5)->format('H:m:s.u'),"Datos"=>$e->getMessage()]);
+            Log::error("Error PedidoProformaController ", ["cabecera" => $cabe,"detalles" => $d,"TiempoPreciso"=>Carbon::now()->subHours(5)->format('H:m:s.u'),"Datos"=>$e->getMessage()]);
             return response()->json(["error"=>["info"=>$e->getMessage()]]);
         }
     }    

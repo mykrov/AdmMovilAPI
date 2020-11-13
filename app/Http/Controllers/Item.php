@@ -70,7 +70,7 @@ class Item extends Controller
         return response()->json($items4);
     }
 
-    public function ItemsSinStock()
+    public function ItemsSinStock($bodega)
     {       
         $page = \Request::input('page', 1);  
         $paginate = 200;  

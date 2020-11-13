@@ -84,6 +84,7 @@ class Cliente extends Controller
     public function ClienteXVendedor($vendedor){
         
         $clientes = \App\Cliente::where('VENDEDOR','=',$vendedor)
+        ->orWhere('VENDEDORAUX','=', $vendedor)
         ->where('ESTADO','=','A')
         ->select(['CODIGO','RAZONSOCIAL','NEGOCIO','DIRECCION','TELEFONOS','FAX','EMAIL','RUC','GRUPO','TIPONEGO','TIPO'])
         ->get();
@@ -170,6 +171,13 @@ class Cliente extends Controller
 
     public function CreateClient(Request $request){
 
+        $fecha_actual = Carbon::now();
+        $diaSemana = $fecha_actual->dayOfWeek; 
+
+        if($diaSemana == 7){
+            $diaSemana = 0;
+        }
+
         $datos = $request;
         
         $check = \App\Cliente::where('RUC','=',$datos['RUC'])->count();
@@ -233,7 +241,7 @@ class Cliente extends Controller
                 $ClientNew->ORDEN = $standar->ORDEN;
                 $ClientNew->CODFRE = $datos['CODFRE'];
                 $ClientNew->CREDITO = $standar->CREDITO;
-                $ClientNew->DIA = $standar->DIA;
+                $ClientNew->DIA = $diaSemana + 1;
                 $ClientNew->FECDESDE = $dt2;
                 $ClientNew->FECHAING = $dt2;
                 $ClientNew->FECULTCOM = $dt2;
@@ -344,6 +352,13 @@ class Cliente extends Controller
 
     public function CreateClientVen(Request $request){
 
+        $fecha_actual = Carbon::now();
+        $diaSemana = $fecha_actual->dayOfWeek; 
+
+        if($diaSemana == 7){
+            $diaSemana = 0;
+        }
+
         $datos = $request;
 
         $check = \App\Cliente::where('RUC','=',$datos['RUC'])->count();
@@ -403,7 +418,7 @@ class Cliente extends Controller
                 $ClientNew->ORDEN = $standar->ORDEN;
                 $ClientNew->CODFRE = $standar->CODFRE;
                 $ClientNew->CREDITO = $standar->CREDITO;
-                $ClientNew->DIA = $standar->DIA;
+                $ClientNew->DIA = $diaSemana + 1;
                 $ClientNew->FECDESDE = $dt2;
                 $ClientNew->FECHAING = $dt2;
                 $ClientNew->FECULTCOM = $dt2;
@@ -513,6 +528,13 @@ class Cliente extends Controller
 
 
     public function CreateClientBasic(Request $request){
+        
+        $fecha_actual = Carbon::now();
+        $diaSemana = $fecha_actual->dayOfWeek; 
+
+        if($diaSemana == 7){
+            $diaSemana = 0;
+        }
 
         $datos = $request;
 
@@ -605,7 +627,7 @@ class Cliente extends Controller
                 $ClientNew->ORDEN = $standar->ORDEN;
                 $ClientNew->CODFRE = $standar->CODFRE;
                 $ClientNew->CREDITO = $standar->CREDITO;
-                $ClientNew->DIA = $standar->DIA;
+                $ClientNew->DIA = $diaSemana + 1;
                 $ClientNew->FECDESDE = $dt2;
                 $ClientNew->FECHAING = $dt2;
                 $ClientNew->FECULTCOM = $dt2;
