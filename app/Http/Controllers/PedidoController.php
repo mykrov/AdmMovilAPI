@@ -25,6 +25,10 @@ class PedidoController extends Controller
         $cabecera = $r->cabecera[0];
         $detalles = $r->detalles;
 
+        if(count($detalles == 0)){
+            return response()->json(['error'=>'Cabecera Sin Detalles']);
+        }
+
         $operador1 = '';
 
         //return response()->json($r);

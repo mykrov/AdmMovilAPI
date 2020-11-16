@@ -13,6 +13,8 @@ class PedidoProformaController extends Controller
 {
     public function PostPedidoProforma(Request $r)
     {
+
+        ///return $r;
         $cabecera = $r->cabecera[0];
         $detalles = $r->detalles;
 
@@ -78,46 +80,54 @@ class PedidoProformaController extends Controller
 
             $linea = 1;
 
-            foreach ($detalles as $det){
-
-                $d = new \App\ADMDETPEDIDO;
+            if (count($detalles) > 0) { //Cuando no trae detalles la cabecera.
                 
-                $grabaIvadet = "N";
-                if(floatval($det['iva']) > 0){
-                    $grabaIvadet = "S";
-                }
+                foreach ($detalles as $det){
 
-                $itemData = \App\ADMITEM::where('ITEM','=',trim($det['item']))->first();
-                
-                $d->LINEA = $linea;
-                $d->SECUENCIAL = $cabe->SECUENCIAL ;
-                $d->ITEM = $det['item'];
-                $d->CANTIC = intval($det['total_unidades']  / $itemData->FACTOR);
-                $d->CANTIU = intval($det['total_unidades']) % $itemData->FACTOR;
-                $d->CANTFUN = intval($det['total_unidades']);
-                $d->PRECIO = floatval($det['precio']);
-                $d->SUBTOTAL = round(floatval($det['subtotal']),2);
-                $d->PORDES = floatval($det['pordes']);
-                $d->DESCUENTO = floatval($det['descuento']);
-                $d->IVA = round(floatval($det['iva']),2);
-                $d->NETO = round(floatval($det['neto']),2);
-                $d->COSTOP = $itemData->COSTOP;
-                $d->COSTOU = $itemData->COSTOU;
-                $d->TIPOITEM = $det['tipo_item'];
-                $d->FORMAVTA = $det['forma_venta'];
-                $d->GRAVAIVA = $grabaIvadet;
-                $d->LINGENCONDICION = 0;
-                $d->PORDES2 = 0;
-                $d->save();
-                $linea++;
-            } 
-            DB::commit();
-            Log::info("Registro de PedidoProformaController ", ["cabecera" => $cabe,"detalles"=> $d,"TiempoPreciso"=>Carbon::now()->subHours(5)->format('H:m:s.u')]);
-            return response()->json(["estado"=>"guardado", "Npedido"=>$cabe->NUMERO, "secuencial"=>$cabe->SECUENCIAL]);
-
+                    $d = new \App\ADMDETPEDIDO;
+                    
+                    $grabaIvadet = "N";
+                    if(floatval($det['iva']) > 0){
+                        $grabaIvadet = "S";
+                    }
+    
+                    $itemData = \App\ADMITEM::where('ITEM','=',trim($det['item']))->first();
+                    
+                    $d->LINEA = $linea;
+                    $d->SECUENCIAL = $cabe->SECUENCIAL ;
+                    $d->ITEM = $det['item'];
+                    $d->CANTIC = intval($det['total_unidades']  / $itemData->FACTOR);
+                    $d->CANTIU = intval($det['total_unidades']) % $itemData->FACTOR;
+                    $d->CANTFUN = intval($det['total_unidades']);
+                    $d->PRECIO = floatval($det['precio']);
+                    $d->SUBTOTAL = round(floatval($det['subtotal']),2);
+                    $d->PORDES = floatval($det['pordes']);
+                    $d->DESCUENTO = floatval($det['descuento']);
+                    $d->IVA = round(floatval($det['iva']),2);
+                    $d->NETO = round(floatval($det['neto']),2);
+                    $d->COSTOP = $itemData->COSTOP;
+                    $d->COSTOU = $itemData->COSTOU;
+                    $d->TIPOITEM = $det['tipo_item'];
+                    $d->FORMAVTA = $det['forma_venta'];
+                    $d->GRAVAIVA = $grabaIvadet;
+                    $d->LINGENCONDICION = 0;
+                    $d->PORDES2 = 0;
+                    $d->save();
+                    $linea++;
+                } 
+                DB::commit();
+                Log::info("Registro de PedidoProformaController ", ["cabecera" => $cabe,"detalles"=> $d,"TiempoPreciso"=>Carbon::now()->subHours(5)->format('H:m:s.u')]);
+                return response()->json(["estado"=>"guardado", "Npedido"=>$cabe->NUMERO, "secuencial"=>$cabe->SECUENCIAL]);
+    
+            } else {
+                DB::rollback();
+                Log::error("Cabecera Sin Detalles",['cabecera'=>$cabe]);
+                return response()->json(['error'=>'Cabecera Sin Detalles']);
+            }
+            
         } catch (\Exception $e) {
             DB::rollback();
-            Log::error("Error PedidoProformaController ", ["cabecera" => $cabe,"detalles" => $d,"TiempoPreciso"=>Carbon::now()->subHours(5)->format('H:m:s.u'),"Datos"=>$e->getMessage()]);
+            Log::error("Error PedidoProformaController ", ["cabecera" => $cabe,"TiempoPreciso"=>Carbon::now()->subHours(5)->format('H:m:s.u'),"Datos"=>$e->getMessage()]);
             return response()->json(["error"=>["info"=>$e->getMessage()]]);
         }
     }    
