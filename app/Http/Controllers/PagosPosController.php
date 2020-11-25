@@ -12,7 +12,7 @@ class PagosPosController extends Controller
 {
     public function Pagopos(Request $r)
     {
-       
+        //return response()->json($r);
         $vendedor = $r->vendedor;
         $deudas = $r->facturas;
         $tipoPago = $r->medioPago;

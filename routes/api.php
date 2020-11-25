@@ -82,6 +82,7 @@ Route::get('/deudapos/{codigo}','DeudaPosController@GetDeudaXCliente');
 
 //Rutas Pedidos
 Route::post('/pedido','PedidoController@PostPedido');
+Route::post('/proformaoff','PedidoXController@PostPedidoProformaOff');
 Route::post('/proforma','PedidoProformaController@PostPedidoProforma');
 
 //Ruta Ventas POS
