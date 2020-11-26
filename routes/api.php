@@ -74,6 +74,7 @@ Route::get('/cliprecio','CliPrecioController@GetCliPrecio');
 Route::get('/deuda','DeudaController@GetDeudas');
 Route::get('/deudaxv/{vendedor}','DeudaController@GetDeudasXVendedor');
 Route::get('/deuda/{codigo}','DeudaController@GetDeudaXCliente');
+Route::get('deudatotal/{vendedor}','DeudaTotalXVendedor@DeudaTotal');
 
 //Deudas POS
 Route::get('/deudapos','DeudaPosController@GetDeudas');

@@ -9,9 +9,9 @@ class ParametrosController extends Controller
    public function GetParametros(){
        $paramBO = \App\ADMPARAMETROBO::get();
        //$paramV = \App\ADMPARAMETROV::get();
-       //$paramC = \App\ADMPARAMETROC::get();
+       $paramC = \App\ADMPARAMETROC::get();
 
-       return response()->json(['parametroBO'=>$paramBO]);
+       return response()->json(['parametroBO'=>$paramBO,'parametroC'=>$paramC]);
    }
 
    public function GetParametrosLite()
