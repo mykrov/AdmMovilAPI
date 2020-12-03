@@ -14,7 +14,7 @@ class DeudaPosController extends Controller
                 ->select(DB::raw("TIPO, NUMERO, BODEGA, SERIE, FECHAEMI, FECHAVEN, CLIENTE, MONTO - IVA AS SUBTOTAL, '0' AS DESCTO, IVA, MONTO, CREDITO, SALDO"))
                 ->where('SALDO', '>', 0.01)
                 ->whereNull('ESTADO')
-                ->whereIn('TIPO',array('FAC','NVT','NDB'))
+                ->whereIn('TIPO',array('FAC','NVT','NDB','CHP'))
                 ->get();
         return response()->json($deudas);
     }
@@ -28,6 +28,14 @@ class DeudaPosController extends Controller
                 ->whereIn('TIPO',array('FAC','NVT','NDB'))
                 ->whereNull('ESTADO')
                 ->get();
+
+        $deudasCHP = DB::table('ADMDEUDA')
+                    ->select(DB::raw("TIPO, NUMERO, SECUENCIAL, BODEGA, SERIE, FECHAEMI, FECHAVEN, CLIENTE, MONTO - IVA AS SUBTOTAL, '0' AS DESCTO, IVA, MONTO, CREDITO, SALDO"))
+                    ->where('SALDO', '>', 0.01)
+                    ->where('CLIENTE','=',$codigo)
+                    ->whereIn('TIPO',array('CHP'))
+                    ->whereNull('ESTADO')
+                    ->get();
         return response()->json($deudas);
     }
 }
