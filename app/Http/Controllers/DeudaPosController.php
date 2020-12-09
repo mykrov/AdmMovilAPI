@@ -36,6 +36,8 @@ class DeudaPosController extends Controller
                     ->whereIn('TIPO',array('CHP'))
                     ->whereNull('ESTADO')
                     ->get();
-        return response()->json($deudas);
+        
+        //return response()->json($deudas);
+        return response()->json($deudas->merge($deudasCHP));
     }
 }

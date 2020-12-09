@@ -14,7 +14,8 @@ class PagosPosController extends Controller
     {
         //return response()->json($r);
         $vendedor = $r->vendedor;
-        $deudas = $r->facturas;
+        $deudas = $r["facturas"];
+        //return response()->json($deudas);
         $tipoPago = $r->medioPago;
         $cliente = $r->cliente;
         $fechaChq = $r->fecha;
@@ -47,8 +48,7 @@ class PagosPosController extends Controller
             ->get();
 
             //return response()->json($cajaAbiertaPOS);
-
-            if($cajaAbiertaPOS == null){
+            if($cajaAbiertaPOS == null or COUNT($cajaAbiertaPOS) == 0){
                 return response()->json(['estado'=>'error','info'=>'NO HAY CAJA']);
             }
 

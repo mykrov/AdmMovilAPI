@@ -29,7 +29,7 @@ class Vendedor extends Controller
             $operador = \App\ADMOPERADOR::where('codigo',request('codigo'))
             ->where('estado','A')
             ->first();
-
+            
             $userInput = str_split($request['password']);
             $UpDown = []; 
             $sig = 1;
@@ -43,8 +43,10 @@ class Vendedor extends Controller
                 }
             }
             //return(implode($UpDown));
+          
             
             if ($operador && implode($UpDown) == trim($operador->clave)){
+                //return($operador);
                 try {
                     Auth::loginUsingId($operador->codigo, TRUE);
                     $user = Auth::user();

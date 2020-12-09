@@ -37,7 +37,8 @@ class PagosController extends Controller
         DB::beginTransaction();  
         try {
              //ADMPAGO
-            $cajaAbierta = DB::table('ADMCAJACOB')->where([['estadocaja','=','A'],['estado','=','A']])
+            $cajaAbierta = DB::table('ADMCAJACOB')
+            ->where([['estadocaja','=','A'],['estado','=','A'],['fechaini','=',$date->format('d-m-Y')],['fechafin','=',$date->format('d-m-Y')]])
             ->select('codigo')
             ->get();
 
