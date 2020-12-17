@@ -43,6 +43,14 @@ class PedidoController extends Controller
             $operador1 = 'ADM';
         }
      
+
+       
+        $parametrov = ADMPARAMETROV::first();
+        $secuencialNew = $parametrov->SECUENCIAL;
+        $parametrov->SECUENCIAL = $parametrov->SECUENCIAL + 1;
+        $parametrov->save();
+
+
         DB::beginTransaction();
 
         //En caso de Observacion.
@@ -59,7 +67,6 @@ class PedidoController extends Controller
         try {
         
             $bodega = ADMBODEGA::where('CODIGO','=',$cabecera['bodega'])->first();
-            $parametrov = ADMPARAMETROV::first();
             $cliente = Cliente::where('CODIGO','=',$cabecera['cliente'])->first();
             $parametrobo = ADMPARAMETROBO::first();
 
@@ -84,7 +91,7 @@ class PedidoController extends Controller
             }
 
             $cab->SERIE = trim($bodega->SERIE); 
-            $cab->SECUENCIAL = $parametrov->SECUENCIAL + 1; 
+            $cab->SECUENCIAL = $secuencialNew + 1; 
             $cab->NUMPROCESO = null; 
             $cab->NUMPEDIDO = 0; 
             $cab->NUMGUIA = null; 
@@ -200,7 +207,7 @@ class PedidoController extends Controller
             
             $bodega->NUMGUIAREMISION = $cab->NUMGUIAREMISION;
             $bodega->NOEGR = $bodega->NOEGR + 1;
-            $parametrov->SECUENCIAL = $parametrov->SECUENCIAL + 1;
+            
 
             //Procesado de los Detalles.
             foreach ($detalles as $det) {
@@ -279,7 +286,6 @@ class PedidoController extends Controller
             }
 
             $bodega->save();
-            $parametrov->save();
             
             //Generar la Deuda.
             $deuda = new ADMDEUDA();

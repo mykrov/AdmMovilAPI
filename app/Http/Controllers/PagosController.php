@@ -38,11 +38,11 @@ class PagosController extends Controller
         try {
              //ADMPAGO
             $cajaAbierta = DB::table('ADMCAJACOB')
-            ->where([['estadocaja','=','A'],['estado','=','A'],['fechaini','=',$date->format('d-m-Y')],['fechafin','=',$date->format('d-m-Y')]])
+            ->where([['estadocaja','=','A'],['estado','=','A'],['fechaini','<=',$date->format('d-m-Y')],['fechafin','>=',$date->format('d-m-Y')]])
             ->select('codigo')
             ->get();
 
-            if($cajaAbierta == null){
+            if($cajaAbierta == null or COUNT($cajaAbierta) == 0){
                 return response()->json(['estado'=>'error','info'=>'NO HAY CAJA']);
             }
 

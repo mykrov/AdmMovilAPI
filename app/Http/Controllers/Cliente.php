@@ -110,6 +110,7 @@ class Cliente extends Controller
     }
     
     public function ClienteLikeCodVende($codigo,$vendedor){
+       
         $fecha_actual = Carbon::now();
         $diaSemana = $fecha_actual->dayOfWeek;  
         if($diaSemana == 7){
