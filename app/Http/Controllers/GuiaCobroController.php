@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class GuiaCobroController extends Controller
 {
@@ -11,11 +12,13 @@ class GuiaCobroController extends Controller
         $cabecera = \App\ADMCABGUIACOB::where('NUMGUIA','=',$numero)
         ->where('ESTADO','=','P')
         ->get();
-        
-        $detalles = \App\ADMDETGUIACOB::where('NUMGUIA','=',$numero)
+
+        $detalles2 = DB::table("ADMDETGUIACOB")
         ->where('ESTADO','=','P')
+        ->where('NUMGUIA','=',$numero)
+        ->select('NUMGUIA','SECUENCIAL',DB::raw('RTRIM(CLIENTE) as CLIENTE'),'TIPO','NUMERO','SERIE','FECHAEMI','FECHAVEN','MONTO','SALDO','EFECTIVO','CHEQUE','FUENTE','IVA','DESCUENTO','OTRO','NOCOBRO','ESTADO','NRECIBO','DEPOSITO','ARTICULO','VALORCUOTA','FECULTPAG','VALORULTPAG')
         ->get();
         
-        return response()->json(['cabecera'=>$cabecera,'detalles'=>$detalles]);
+        return response()->json(['cabecera'=>$cabecera,'detalles'=>$detalles2]);
     }
 }
