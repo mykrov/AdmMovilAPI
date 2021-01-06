@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use \App\ADMPARAMETROV;
+use \App\ADMPUNTOASIENTOS;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -22,7 +23,6 @@ class PagoCuotasController extends Controller
         $NumCre = \App\ADMTIPODOC::where('TIPO','=','PAG')->first();
         $date = Carbon::now()->subHours(5);
         $numeroGuia = $r->numguia;
-        
         $fcChq = Carbon::createFromFormat('Y-m-d',$fechaChq)->Format('d-m-Y');
         $observacionCre = "";
         $bodegaDeuda = 10;
@@ -31,8 +31,19 @@ class PagoCuotasController extends Controller
 
         //Vendedor de la deuda a pagar
         $secDeuda = $deudas[0]['numero'];
+
+        $serieDeuda = DB::table('ADMDEUDA')->where('SECUENCIAL',$secDeuda)
+        ->first();
+
+        $codigoPunto = substr($serieDeuda->SERIE, 0, 3);
+
+        $cajaDeuda = $serieDeuda->CAJAC;
+
         $vendedor = DB::table('ADMDEUDA')->where('SECUENCIAL',$secDeuda)
         ->select('VENDEDOR')->first();
+        
+        //Log::info("Deuda a Procesar:",['deudas'=>$deudas]);
+        //Log::info("Vendedor de la deuda:",['vendedor'=>$vendedor]);
 
         $clienteData = \App\Cliente::where('CODIGO',$cliente)->first();
 
@@ -44,9 +55,11 @@ class PagoCuotasController extends Controller
         DB::beginTransaction();  
         try {
              //ADMPAGO
-            $cajaAbierta = DB::table('ADMCAJACOB')->where([['estadocaja','=','A'],['estado','=','A']])
+            $cajaAbierta = DB::table('ADMCAJACOB')->where([['estadocaja','=','A'],['estado','=','A'],['codigo','=',$cajaDeuda]])
             ->select('codigo')
             ->get();
+
+            Log::info("Cajas Abiertas Informacion:",['data'=>$cajaAbierta]);
 
             if($cajaAbierta == null){
                 return response()->json(['estado'=>'error','info'=>'NO HAY CAJA']);
@@ -273,14 +286,14 @@ class PagoCuotasController extends Controller
 
             //Detalles comprobante contable
             $anioActual  = intval($date->Format('Y'));
-            $cuentaCli1 = DB::table('ADMASIENTOS')
-            ->where([['ASIENTO','=','PAG'],['ANIO','=',$anioActual],['TIPO','=','CLI']])
+            $cuentaCli1 = DB::table('ADMPUNTOASIENTOS')
+            ->where([['ASIENTO','=','PAG'],['ANIO','=',$anioActual],['TIPO','=','CLI'],['PUNTO','=',$codigoPunto]])
             ->first();
-            $cuentaEfe1 = DB::table('ADMASIENTOS')
-            ->where([['ASIENTO','=','PAG'],['ANIO','=',$anioActual],['TIPO','=','EFE']])
+            $cuentaEfe1 = DB::table('ADMPUNTOASIENTOS')
+            ->where([['ASIENTO','=','PAG'],['ANIO','=',$anioActual],['TIPO','=','EFE'],['PUNTO','=',$codigoPunto]])
             ->first();
-            $cuentaChq1 = DB::table('ADMASIENTOS')
-            ->where([['ASIENTO','=','PAG'],['ANIO','=',$anioActual],['TIPO','=','CHQ']])
+            $cuentaChq1 = DB::table('ADMPUNTOASIENTOS')
+            ->where([['ASIENTO','=','PAG'],['ANIO','=',$anioActual],['TIPO','=','CHQ'],['PUNTO','=',$codigoPunto]])
             ->first();
              
             $cuentaDEP = DB::table('ADMBANCOCIA')
@@ -514,6 +527,7 @@ class PagoCuotasController extends Controller
     }
 
     public function CambioEstado(int $Numguia,int $secuencial,float $monto,string $tipopago){
+        Log::info("CambioEstado",["Guia"=>$Numguia,"sec"=>$secuencial]);
         DB::beginTransaction();
         try{
             $DetGuiaCobro = DB::table('ADMDETGUIACOB')
@@ -522,7 +536,7 @@ class PagoCuotasController extends Controller
             ->first();
 
             if($DetGuiaCobro != NULL){
-                //Log::info("entra en el DETGUIACOB valido");
+                Log::info("entra en el DETGUIACOB valido");
                 $chq = 0;
                 $efect = 0;
                 $otro = 0;

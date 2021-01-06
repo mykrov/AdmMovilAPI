@@ -112,17 +112,18 @@
                                         <tr >
                                             <td><strong>Tipo de Emisión: </strong>Normal</td>
                                         </tr>
-                                        <tr>
+                                        <tr style="border:solid;">
                                             <td>
-                                                <strong>Clave de Acceso: </strong>
-                                                <p style="font-size: 9; margin-top:0px;">{{ $cabecera->NUMAUTO }}</p>
-                                                <span style="padding-top:0px;margin-top:0px">
+                                                <strong style="margin-bottom:3px;">Clave de Acceso: </strong> 
+                                                <br>                       
+                                                <span style="padding-top:4px;margin-top:4px;">
                                                     @php
                                                     $generator = new Picqer\Barcode\BarcodeGeneratorSVG();
                                                     $redColor = [255, 0, 0];
-                                                    echo '<img style="max-width: 32rem;min-height: 3rem;" src="data:image/png;base64,' . base64_encode($generator->getBarcode($cabecera->NUMAUTO, $generator::TYPE_CODE_128,1,80,'black')) . '"">';
+                                                    echo '<img style="max-width: 38rem;width:22rem; height:3rem;" src="data:image/png;base64,' . base64_encode($generator->getBarcode($cabecera->NUMAUTO, $generator::TYPE_CODE_128,1,80,'black')) . '"">';
                                                     @endphp
                                                 </span>
+                                                <p style="font-size: 9; margin-top:4px;">{{ $cabecera->NUMAUTO }}</p>
                                             </td>
                                         </tr>
                                     @php
