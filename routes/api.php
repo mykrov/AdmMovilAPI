@@ -147,6 +147,7 @@ Route::post('/pagocuota','PagoCuotasController@PagoCuota');
 
 //DeudasCuotasDet
 Route::get('/deudacuotasdet/{pago}','DeudasCoutasDetController@CuotasAfectadas');
+Route::get('/detguiacob/{guia}/{secuencial}','DeudasCoutasDetController@ItemDetGuia');
 
 Route::middleware('auth:api')->group(function () {
     Route::get('/vendedores','Vendedor@listado');

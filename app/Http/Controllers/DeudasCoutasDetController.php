@@ -14,4 +14,11 @@ class DeudasCoutasDetController extends Controller
 
         return response()->json($cuotas);
     }
+
+
+    public function ItemDetGuia($guia,$secuencial)
+    {
+        $detalle = \App\ADMDETGUIACOB::where([['NUMGUIA','=',$guia],['SECUENCIAL','=',$secuencial]])->get();
+        return response()->json($detalle);
+    }
 }

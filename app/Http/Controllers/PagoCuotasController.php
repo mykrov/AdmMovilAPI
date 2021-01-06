@@ -56,10 +56,10 @@ class PagoCuotasController extends Controller
         try {
              //ADMPAGO
             $cajaAbierta = DB::table('ADMCAJACOB')->where([['estadocaja','=','A'],['estado','=','A'],['codigo','=',$cajaDeuda]])
-            ->select('codigo')
+            ->select('codigo','DIRECCION')
             ->get();
-
-            Log::info("Cajas Abiertas Informacion:",['data'=>$cajaAbierta]);
+            //return response()->json($cajaAbierta[0]->DIRECCION);
+            //Log::info("Cajas Abiertas Informacion:",['data'=>$cajaAbierta]);
 
             if($cajaAbierta == null){
                 return response()->json(['estado'=>'error','info'=>'NO HAY CAJA']);
@@ -413,7 +413,7 @@ class PagoCuotasController extends Controller
             }
             
             DB::commit();
-            return response()->json(['estado'=>'ok','numPago'=> $pago->numero]);
+            return response()->json(['estado'=>'ok','numPago'=> $pago->numero,'dirCaja'=>$cajaAbierta[0]->DIRECCION]);
 
         } catch (\Exception $e) {
             DB::rollback();
