@@ -25,11 +25,13 @@ class ProformaEdicionController extends Controller
         if(floatval($cabecera['iva']) > 0){
             $grabaIva = "S";
         }
-    
+        
+        $observacion = "Gracias por su Compra.";
         if(trim($cabecera['observacion']) != "Gracias por su Compra."){
             $observacion = $cabecera['observacion'];
         }
 
+        $campo_adi = "Gracias por su Compra.";
         if(trim($cabecera['datos_adi']) != "Gracias por su Compra."){
             $campo_adi = $cabecera['datos_adi'];
         }
