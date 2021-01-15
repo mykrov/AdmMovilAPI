@@ -10,11 +10,10 @@ class GuiaCobroController extends Controller
     public function GetGuiaCobro(int $numero)
     {
         $cabecera = \App\ADMCABGUIACOB::where('NUMGUIA','=',$numero)
-        ->where('ESTADO','=','P')
         ->get();
 
         $detalles2 = DB::table("ADMDETGUIACOB")
-        ->where('ESTADO','=','P')
+        ->where('SALDO','>',0)
         ->where('NUMGUIA','=',$numero)
         ->select('NUMGUIA','SECUENCIAL',DB::raw('RTRIM(CLIENTE) as CLIENTE'),'TIPO','NUMERO','SERIE','FECHAEMI','FECHAVEN','MONTO','SALDO','EFECTIVO','CHEQUE','FUENTE','IVA','DESCUENTO','OTRO','NOCOBRO','ESTADO','NRECIBO','DEPOSITO','ARTICULO','VALORCUOTA','FECULTPAG','VALORULTPAG')
         ->get();

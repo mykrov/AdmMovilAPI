@@ -27,12 +27,12 @@ class ProformaEdicionController extends Controller
         }
         
         $observacion = "Gracias por su Compra.";
-        if(trim($cabecera['observacion']) != "Gracias por su Compra."){
+        if(trim($cabecera['observacion']) != ""){
             $observacion = $cabecera['observacion'];
         }
 
         $campo_adi = "Gracias por su Compra.";
-        if(trim($cabecera['datos_adi']) != "Gracias por su Compra."){
+        if(trim($cabecera['datos_adi']) != ""){
             $campo_adi = $cabecera['datos_adi'];
         }
 
