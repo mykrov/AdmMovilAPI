@@ -54,24 +54,26 @@ class PagoCuotasController extends Controller
 
         DB::beginTransaction();  
         try {
-             //ADMPAGO
-            $cajaAbierta = DB::table('ADMCAJACOB')->where([['estadocaja','=','A'],['estado','=','A'],['codigo','=',$cajaDeuda]])
-            ->select('codigo','DIRECCION')
-            ->get();
-            //return response()->json($cajaAbierta[0]->DIRECCION);
-            //Log::info("Cajas Abiertas Informacion:",['data'=>$cajaAbierta]);
 
-            if($cajaAbierta == null){
-                return response()->json(['estado'=>'error','info'=>'NO HAY CAJA']);
-            }
+            //ADMPAGO
+            $cajaAbierta = array(['codigo'=>10,'DIRECCION'=>'MatrizDefault']);
 
             //Datos del Cobrador segun operador
             $operadorData = \App\ADMOPERADOR::where('CODIGO','=',$operador1)->first();
             $cobrador = '';
+
             if($operadorData == null || $operadorData->COBRADOR == null || trim($operadorData->COBRADOR) == ''){
                 $cobrador = 'ADM';
             }else{
                 $cobrador = trim($operadorData->COBRADOR);
+
+                $cajaAbierta = DB::table('ADMCAJACOB')->where([['estadocaja','=','A'],['estado','=','A'],['codigo','=',$operadorData->caja]])
+                ->select('codigo','DIRECCION')
+                ->get();
+                    
+                if($cajaAbierta == null){
+                    return response()->json(['estado'=>'error','info'=>'NO HAY CAJA']);
+                }
             }
 
             $pago = new \App\ADMPAGO();

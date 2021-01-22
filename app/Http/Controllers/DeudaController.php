@@ -8,6 +8,22 @@ use Illuminate\Support\Facades\DB;
 
 class DeudaController extends Controller
 {
+    /**
+    * @OA\Get(
+    *     path="/api/deuda",
+    *     tags={"Deudas"},
+    *     summary="Retorna registros de ADMDEUDA donde el saldo > 0, el ESTADO != null, y el TIPO in ('FAC','NVT','NDB')",
+   
+    *     @OA\Response(
+    *         response=200,
+    *         description="Retorna los registros de ADMDEUDA"
+    *     ),
+    *     @OA\Response(
+    *         response="default",
+    *         description="Ha ocurrido un error."
+    *     )
+    * )
+    */
     public function GetDeudas()
     {
         $deudas = DB::table('ADMDEUDA')
@@ -18,6 +34,28 @@ class DeudaController extends Controller
                 ->get();
         return response()->json($deudas);
     }
+
+    /**
+    * @OA\Get(
+    *     path="/api/deudaxv/{vendedor}",
+    *     tags={"Deudas"},
+    *     summary="Retorna registros de ADMDEUDA por vendedor, donde el saldo > 0, el ESTADO != null, y el TIPO in ('FAC','NVT','NDB')",
+    * @OA\Parameter(
+    *          name="vendedor",
+    *          description="vendedor",
+    *          required=true,
+    *          in="path",
+    *          @OA\Schema(type="string")),
+    *     @OA\Response(
+    *         response=200,
+    *         description="Retorna los registros de ADMDEUDA por vendedor."
+    *     ),
+    *     @OA\Response(
+    *         response="default",
+    *         description="Ha ocurrido un error."
+    *     )
+    * )
+    */
 
     public function GetDeudasXVendedor($vendedor)
     {
@@ -31,7 +69,27 @@ class DeudaController extends Controller
         return response()->json($deudas);
     }
 
-
+    /**
+    * @OA\Get(
+    *     path="/api/deuda/{cliente}",
+    *     tags={"Deudas"},
+    *     summary="Retorna registros de ADMDEUDA por cliente, donde el saldo > 0, el ESTADO != null, y el TIPO in ('FAC','NVT','NDB')",
+    * @OA\Parameter(
+    *          name="cliente",
+    *          description="cliente",
+    *          required=true,
+    *          in="path",
+    *          @OA\Schema(type="string")),
+    *     @OA\Response(
+    *         response=200,
+    *         description="Retorna los registros de ADMDEUDA por cliente."
+    *     ),
+    *     @OA\Response(
+    *         response="default",
+    *         description="Ha ocurrido un error."
+    *     )
+    * )
+    */
     public function GetDeudaXCliente($codigo)
     {
         $deudas = DB::table('ADMDEUDA')

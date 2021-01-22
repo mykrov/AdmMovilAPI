@@ -8,6 +8,21 @@ use Illuminate\Support\Facades\DB;
 
 class DeudaPosController extends Controller
 {
+    /**
+    * @OA\Get(
+    *     path="/api/deudapos",
+    *     tags={"Deudas"},
+    *     summary="Retorna registros de ADMDEUDAPOS, donde el saldo > 0, el ESTADO != null, y el TIPO in ('FAC','NVT','NDB','CHP')",
+    *     @OA\Response(
+    *         response=200,
+    *         description="Retorna los registros de ADMDEUDA."
+    *     ),
+    *     @OA\Response(
+    *         response="default",
+    *         description="Ha ocurrido un error."
+    *     )
+    * )
+    */
     public function GetDeudas()
     {
         $deudas = DB::table('ADMDEUDAPOS')
@@ -19,6 +34,28 @@ class DeudaPosController extends Controller
         return response()->json($deudas);
     }
 
+
+    /**
+    * @OA\Get(
+    *     path="/api/deudapos/{cliente}",
+    *     tags={"Deudas"},
+    *     summary="Retorna registros de ADMDEUDAPOS por Cliente, donde el saldo > 0, el ESTADO != null, y el TIPO in ('FAC','NVT','NDB','CHP')",
+    * @OA\Parameter(
+    *          name="cliente",
+    *          description="cliente",
+    *          required=true,
+    *          in="path",
+    *          @OA\Schema(type="string")),
+    *     @OA\Response(
+    *         response=200,
+    *         description="Retorna los registros de ADMDEUDAPOS y los Cheques de ADMDEUDA por cliente."
+    *     ),
+    *     @OA\Response(
+    *         response="default",
+    *         description="Ha ocurrido un error."
+    *     )
+    * )
+    */
     public function GetDeudaXCliente($codigo)
     {
         $deudas = DB::table('ADMDEUDAPOS')

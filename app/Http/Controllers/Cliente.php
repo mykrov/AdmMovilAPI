@@ -8,6 +8,21 @@ use Illuminate\Support\Facades\DB;
 
 class Cliente extends Controller
 {
+    /**
+    * @OA\Get(
+    *     path="/api/cliente",
+    *     tags={"Cliente"},
+    *     summary="Listado de Clientes  - Paginado 100.",
+    *     @OA\Response(
+    *         response=200,
+    *         description="Retorna todos los registros de la tabla ADMCLIENTE con ESTADO = 'A'."
+    *     ),
+    *     @OA\Response(
+    *         response="default",
+    *         description="Ha ocurrido un error."
+    *     )
+    * )
+    */
     public function listado(){
         
         $clientes = \App\Cliente::where('ESTADO','=','A')
@@ -18,6 +33,21 @@ class Cliente extends Controller
 
     }
 
+    /**
+    * @OA\Get(
+    *     path="/api/clientetodos",
+    *     tags={"Cliente"},
+    *     summary="Listado de todos los Clientes  - Sin Paginado.",
+    *     @OA\Response(
+    *         response=200,
+    *         description="Retorna todos los registros de la tabla ADMCLIENTE con ESTADO = 'A'."
+    *     ),
+    *     @OA\Response(
+    *         response="default",
+    *         description="Ha ocurrido un error."
+    *     )
+    * )
+    */
     public function listado2(){
         
         $clientes2 = \App\Cliente::where('ESTADO','=','A')
@@ -27,6 +57,30 @@ class Cliente extends Controller
 
     }
 
+    /**
+    * @OA\Get(
+    *     path="/api/cliente/{codigo}",
+    *     tags={"Cliente"},
+    *     operationId="buscarCliente",
+    *     summary="Busqueda de Cliente por Codigo.",
+    *     description = "Bucar Cliente por el codigo dado basado en un like '%codigo%' de SQL.",
+    * @OA\Parameter(
+    *          name="codigo",
+    *          description="Codigo Cliente",
+    *          required=true,
+    *          in="path",
+    *          @OA\Schema(type="string")),
+    *    
+    *     @OA\Response(
+    *         response=200,
+    *         description="Retorna todos los registros de la tabla ADMCLIENTE con CODIGO 'Igual o similar' al suministrado y estado activo."
+    *     ),
+    *     @OA\Response(
+    *         response="default",
+    *         description="Ha ocurrido un error."
+    *     )
+    * )
+    */
     public function byID($id){
 
         $cliente = \App\Cliente::where('codigo','like', '%' . $id . '%')
@@ -36,6 +90,30 @@ class Cliente extends Controller
 
     }
 
+     /**
+    * @OA\Get(
+    *     path="/api/clientelike/{nombre}",
+    *     tags={"Cliente"},
+    *     operationId="buscarCliente like",
+    *     summary="Busqueda de Cliente por Nombre.",
+    *     description = "Bucar Cliente por el nombre dado basado en un like '%nombre%' de SQL.",
+    * @OA\Parameter(
+    *          name="nombre",
+    *          description="Razon Social del Cliente",
+    *          required=true,
+    *          in="path",
+    *          @OA\Schema(type="string")),
+    *    
+    *     @OA\Response(
+    *         response=200,
+    *         description="Retorna todos los registros de la tabla ADMCLIENTE con RAZONSOCIAL 'Igual o similar' al suministrado y estado activo."
+    *     ),
+    *     @OA\Response(
+    *         response="default",
+    *         description="Ha ocurrido un error."
+    *     )
+    * )
+    */
     public function BuscarNombre($like)
     {
         $clientes = \App\Cliente::where('RAZONSOCIAL', 'like', '%' . $like . '%')
@@ -45,6 +123,36 @@ class Cliente extends Controller
         return response()->json($clientes);
     }
 
+    /**
+    * @OA\Get(
+    *     path="/api/clientelike/{nombre}/{vendedor}",
+    *     tags={"Cliente"},
+    *     operationId="buscarCliente like vendedor",
+    *     summary="Busqueda de Cliente por Nombre y Vendedor.",
+    *     description = "Bucar Cliente por el nombre dado basado en un like '%nombre%' de SQL y pertenezca al codigo del vendedor dado.",
+    * @OA\Parameter(
+    *          name="nombre",
+    *          description="Razon Social del Cliente",
+    *          required=true,
+    *          in="path",
+    *          @OA\Schema(type="string")),
+    * @OA\Parameter(
+    *          name="vendedor",
+    *          description="Codigo vendedor",
+    *          required=true,
+    *          in="path",
+    *          @OA\Schema(type="string")),
+    *    
+    *     @OA\Response(
+    *         response=200,
+    *         description="Retorna todos los registros de la tabla ADMCLIENTE con RAZONSOCIAL 'Igual o similar' al suministrado y estado activo."
+    *     ),
+    *     @OA\Response(
+    *         response="default",
+    *         description="Ha ocurrido un error."
+    *     )
+    * )
+    */
     public function BuscarNombreXVendedor($like,$vendedor)
     {
         $clientes = \App\Cliente::where('RAZONSOCIAL', 'like', '%' . $like . '%')
@@ -54,6 +162,31 @@ class Cliente extends Controller
         ->get();
         return response()->json($clientes);
     }
+
+    /**
+    * @OA\Get(
+    *     path="/api/clientelikexdia/{nombre}",
+    *     tags={"Cliente"},
+    *     operationId="buscarCliente like - dia",
+    *     summary="Busqueda de Cliente por Nombre del dia actual.",
+    *     description = "Bucar Cliente por el nombre dado basado en un like '%nombre%' de SQL y que el dia de visita sea el actual.",
+    * @OA\Parameter(
+    *          name="nombre",
+    *          description="Razon Social del Cliente",
+    *          required=true,
+    *          in="path",
+    *          @OA\Schema(type="string")),
+    *    
+    *     @OA\Response(
+    *         response=200,
+    *         description="Retorna todos los registros de la tabla ADMCLIENTE con RAZONSOCIAL 'Igual o similar' al suministrado y estado activo."
+    *     ),
+    *     @OA\Response(
+    *         response="default",
+    *         description="Ha ocurrido un error."
+    *     )
+    * )
+    */
 
     public function BuscarNombreXDia($like)
     {
@@ -72,6 +205,36 @@ class Cliente extends Controller
         return response()->json($clientes);
     }
 
+    /**
+    * @OA\Get(
+    *     path="/api/clientexvcod/{codigo}/{vendedor}",
+    *     tags={"Cliente"},
+    *     operationId="buscarCliente like Codigo - dia",
+    *     summary="Busqueda de Cliente por codigo que pertenezcan al vendedor indicado.",
+    *     description = "Bucar Cliente por el nombre dado basado en un like '%codigo%' de SQL y el vendedor sea el dado.",
+    * @OA\Parameter(
+    *          name="codigo",
+    *          description="Codigo del Cliente",
+    *          required=true,
+    *          in="path",
+    *          @OA\Schema(type="string")),
+    * @OA\Parameter(
+    *          name="vendedor",
+    *          description="Codigo del vendedor",
+    *          required=true,
+    *          in="path",
+    *          @OA\Schema(type="string")),
+    *    
+    *     @OA\Response(
+    *         response=200,
+    *         description="Retorna todos los registros de la tabla ADMCLIENTE con RAZONSOCIAL 'Igual o similar' al suministrado y estado activo."
+    *     ),
+    *     @OA\Response(
+    *         response="default",
+    *         description="Ha ocurrido un error."
+    *     )
+    * )
+    */
     public function BuscarIdXVendedor($id,$vendedor){
         $clientes = \App\Cliente::where('CODIGO','=',$id)
         ->where('ESTADO','=','A')
@@ -80,6 +243,31 @@ class Cliente extends Controller
         ->get();
         return response()->json($clientes);
     }
+
+    /**
+    * @OA\Get(
+    *     path="/api/clientexv/{vendedor}",
+    *     tags={"Cliente"},
+    *     operationId="buscarCliente por vendedor",
+    *     summary="Busqueda de Clientes en donde en VENDEDOR ó VENDEDORAUX es el indicado.",
+    *     description = "Retorna los Clientes en los que el vendedor o vendedor auxiliar es el indicado.",
+    * @OA\Parameter(
+    *          name="vendedor",
+    *          description="Codigo del vendedor",
+    *          required=true,
+    *          in="path",
+    *          @OA\Schema(type="string")),
+    *    
+    *     @OA\Response(
+    *         response=200,
+    *         description="Retorna todos los registros de la tabla ADMCLIENTE con estado activo."
+    *     ),
+    *     @OA\Response(
+    *         response="default",
+    *         description="Ha ocurrido un error."
+    *     )
+    * )
+    */
 
     public function ClienteXVendedor($vendedor){
         
@@ -92,6 +280,36 @@ class Cliente extends Controller
     }
 
 
+    /**
+    * @OA\Get(
+    *     path="/api/clientelikexvd/{nombre}/{vendedor}",
+    *     tags={"Cliente"},
+    *     operationId="buscarCliente like nombre - dia - vende",
+    *     summary="Busqueda de Cliente por nombre que pertenezcan al vendedor indicado y del dia actual.",
+    *     description = "Bucar Cliente por el nombre dado basado en un like '%nombre%' de SQL con vendedor y dia actual.",
+    * @OA\Parameter(
+    *          name="nombre",
+    *          description="Nombre del Cliente",
+    *          required=true,
+    *          in="path",
+    *          @OA\Schema(type="string")),
+    * @OA\Parameter(
+    *          name="vendedor",
+    *          description="Codigo del vendedor",
+    *          required=true,
+    *          in="path",
+    *          @OA\Schema(type="string")),
+    *    
+    *     @OA\Response(
+    *         response=200,
+    *         description="Retorna todos los registros de la tabla ADMCLIENTE con RAZONSOCIAL 'Igual o similar' al suministrado y estado activo."
+    *     ),
+    *     @OA\Response(
+    *         response="default",
+    *         description="Ha ocurrido un error."
+    *     )
+    * )
+    */
     public function ClienteLikeDiaVende($nombre,$vendedor){
         $fecha_actual = Carbon::now();
         $diaSemana = $fecha_actual->dayOfWeek;  
@@ -108,6 +326,37 @@ class Cliente extends Controller
         ->get();
         return response()->json($clientes);
     }
+
+    /**
+    * @OA\Get(
+    *     path="/api/clientelikexvc/{codigo}/{vendedor}",
+    *     tags={"Cliente"},
+    *     operationId="buscarCliente like codigo - dia - vende",
+    *     summary="Busqueda de Cliente por codigo que pertenezcan al vendedor indicado y del dia actual.",
+    *     description = "Bucar Cliente por el nombre dado basado en un like '%codigo%' de SQL con vendedor y dia actual.",
+    * @OA\Parameter(
+    *          name="codigo",
+    *          description="codigo del Cliente",
+    *          required=true,
+    *          in="path",
+    *          @OA\Schema(type="string")),
+    * @OA\Parameter(
+    *          name="vendedor",
+    *          description="Codigo del vendedor",
+    *          required=true,
+    *          in="path",
+    *          @OA\Schema(type="string")),
+    *    
+    *     @OA\Response(
+    *         response=200,
+    *         description="Retorna todos los registros de la tabla ADMCLIENTE con RAZONSOCIAL 'Igual o similar' al suministrado y estado activo."
+    *     ),
+    *     @OA\Response(
+    *         response="default",
+    *         description="Ha ocurrido un error."
+    *     )
+    * )
+    */
     
     public function ClienteLikeCodVende($codigo,$vendedor){
        
@@ -126,6 +375,31 @@ class Cliente extends Controller
         return response()->json($clientes);
     }
 
+    /**
+    * @OA\Get(
+    *     path="/api/clientexcd/{codigo}",
+    *     tags={"Cliente"},
+    *     operationId="buscarCliente like codigo - dia",
+    *     summary="Busqueda de Cliente por codigo que y del dia actual.",
+    *     description = "Bucar Cliente por el nombre dado basado en un like '%codigo%' y dia actual.",
+    * @OA\Parameter(
+    *          name="codigo",
+    *          description="codigo del Cliente",
+    *          required=true,
+    *          in="path",
+    *          @OA\Schema(type="string")),
+    *    
+    *     @OA\Response(
+    *         response=200,
+    *         description="Retorna todos los registros de la tabla ADMCLIENTE con RAZONSOCIAL 'Igual o similar' al suministrado y estado activo."
+    *     ),
+    *     @OA\Response(
+    *         response="default",
+    *         description="Ha ocurrido un error."
+    *     )
+    * )
+    */
+    
     public function ClienteCodDia($codigo){
         $fecha_actual = Carbon::now();
         $diaSemana = $fecha_actual->dayOfWeek;  
@@ -140,6 +414,31 @@ class Cliente extends Controller
         ->get();
         return response()->json($clientes);
     }
+
+    /**
+    * @OA\Get(
+    *     path="/api/clientexvdia/{vendedor}",
+    *     tags={"Cliente"},
+    *     operationId="buscarCliente like vendedor - dia",
+    *     summary="Busqueda de Cliente por vendedor que y del dia actual.",
+    *     description = "Bucar Clientes por el vendedor y dia actual.",
+    * @OA\Parameter(
+    *          name="vendedor",
+    *          description="Codigo del Vendedor",
+    *          required=true,
+    *          in="path",
+    *          @OA\Schema(type="string")),
+    *    
+    *     @OA\Response(
+    *         response=200,
+    *         description="Retorna todos los registros de la tabla ADMCLIENTE con Vendedor 'Igual o similar' al suministrado y estado activo."
+    *     ),
+    *     @OA\Response(
+    *         response="default",
+    *         description="Ha ocurrido un error."
+    *     )
+    * )
+    */
     
     public function ClienteXVendedorDia($vendedor){
         $fecha_actual = Carbon::now();
@@ -157,6 +456,24 @@ class Cliente extends Controller
     }
     
 
+    /**
+    * @OA\Get(
+    *     path="/api/clientedia",
+    *     tags={"Cliente"},
+    *     operationId="buscarCliente por dia",
+    *     summary="Busqueda de Cliente por dia actual.",
+    *     description = "Bucar Clientes por el dia actual.",
+    *    
+    *     @OA\Response(
+    *         response=200,
+    *         description="Retorna todos los registros de la tabla ADMCLIENTE del dia actual y estado activo."
+    *     ),
+    *     @OA\Response(
+    *         response="default",
+    *         description="Ha ocurrido un error."
+    *     )
+    * )
+    */
     public function ClienteXDia(){
         $fecha_actual = Carbon::now();
         $diaSemana = $fecha_actual->dayOfWeek;  
@@ -169,6 +486,63 @@ class Cliente extends Controller
         ->get();
         return response()->json($clientes);
     }
+
+
+    /**
+     * @OA\Post(
+     *      path="/cliente",
+     *      operationId="GuardaCliente",
+     *      tags={"Cliente"},
+     *      summary="Guarda un nuevo Cliente",
+     *      description="Nuevo Registro en ADMCLIENTE",
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(
+     *              required={"RAZONSOCIAL","NEGOCIO","DIRECCION","TELEFONOS","FAX","TIPODOC","RUC","EMAIL","REFERENCIA","OBSERVACION","TIPONEGO","TIPO","grupocliente","PROVINCIA","CANTON","PARROQUIA","SECTOR","RUTA","CODFRE","FECHAING","DIASCREDIT","TDCREDITO","VENDEDOR","ZONA"},
+     *              @OA\Property(property="RAZONSOCIAL", type="string", format="string", example="Manuel Rangel"),
+    *               @OA\Property(property="NEGOCIO", type="string", format="string", example="BAZAR"),
+    *               @OA\Property(property="DIRECCION", type="string", format="string", example="AV Lara"),
+    *               @OA\Property(property="TELEFONOS", type="string", format="string", example="1547896"),
+    *               @OA\Property(property="FAX", type="string", format="string", example="1547896"),
+    *               @OA\Property(property="TIPODOC", type="string", format="string", example="C"),
+    *               @OA\Property(property="RUC", type="string", format="string", example="123456789"),
+    *               @OA\Property(property="EMAIL", type="string", format="string", example="abcd@abc.com"),
+    *               @OA\Property(property="REFERENCIA", type="string", format="string", example="Casa azul"),
+    *               @OA\Property(property="OBSERVACION", type="string", format="string", example="abcd"),
+    *               @OA\Property(property="TIPONEGO", type="string", format="string", example="FAR"),
+    *               @OA\Property(property="TIPO", type="string", format="string", example="DET"),
+    *               @OA\Property(property="grupocliente", type="string", format="string", example="G01"),
+    *               @OA\Property(property="PROVINCIA", type="string", format="string", example="P0001"),
+    *               @OA\Property(property="CANTON", type="string", format="string", example="C0018"),
+    *               @OA\Property(property="PARROQUIA", type="string", format="string", example="P0017"),
+    *               @OA\Property(property="SECTOR", type="string", format="string", example="CEN"),
+    *               @OA\Property(property="RUTA", type="string", format="string", example="abcd"),
+    *               @OA\Property(property="CODFRE", type="int", format="number", example=12),
+    *               @OA\Property(property="FECHAING", type="string", format="string", example="2020-05-26 09:14:00"),
+    *               @OA\Property(property="DIASCREDIT", type="int", format="number", example=7),
+    *               @OA\Property(property="TDCREDITO", type="string", format="string", example="15"),
+    *               @OA\Property(property="VENDEDOR", type="string", format="string", example="VEN001"),
+    *               @OA\Property(property="ZONA", type="string", format="string", example="CEN")
+     *         )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Cliente Creado",
+     *         @OA\JsonContent(
+     *              @OA\Property(property="status", type="string", example="ok"),
+     *              @OA\Property(property="codCliente", type="string", example="C0002")
+     *          )
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Número de identificación ya registrado.",
+     *         @OA\JsonContent(
+     *              @OA\Property(property="result", type="string", example="Identificacionexistente")
+     *          )
+     *       ),
+     * )
+     */
+
 
     public function CreateClient(Request $request){
 
@@ -339,17 +713,59 @@ class Cliente extends Controller
                 $cliBase->save();
                 DB::commit();
 
-                return response()->json(['status'=>'ok','codCliente'=>$inicial.$codigo]);
+                return response()->json(['status'=>'ok','codCliente'=>$inicial.$codigo],200);
             } catch (\Exception $e) {
                 
                 DB::rollback();
-                return response()->json(["error"=>["info"=>$e->getMessage()]]);
+                return response()->json(["error"=>["info"=>$e->getMessage()]],503);
             }
         } else {
-            return response()->json(['result'=>'IdentificacionExistente']);
+            return response()->json(['result'=>'IdentificacionExistente'],200);
         }
         
     }
+
+
+        /**
+     * @OA\Post(
+     *      path="/clienteven",
+     *      operationId="GuardaCliente Basico para Ventas",
+     *      tags={"Cliente"},
+     *      summary="Guarda un nuevo Cliente con datos basicos para ventas.",
+     *      description="Nuevo Registro en ADMCLIENTE con datos basicos para ventas.",
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(
+     *              required={"RAZONSOCIAL","RUC","DIRECCION","TELEFONOS","FAX","EMAIL","VENDEDOR","OBSERVACION","TIPODOC","REFERENCIA"},
+     *              @OA\Property(property="RAZONSOCIAL", type="string", format="string", example="Manuel Rangel"),
+     *              @OA\Property(property="RUC", type="string", format="string", example="123456789"),
+    *               @OA\Property(property="DIRECCION", type="string", format="string", example="AV Lara"),
+    *               @OA\Property(property="TELEFONOS", type="string", format="string", example="1547896"),
+    *               @OA\Property(property="FAX", type="string", format="string", example="1547896"),
+    *               @OA\Property(property="EMAIL", type="string", format="string", example="abcd@abc.com"),
+    *               @OA\Property(property="VENDEDOR", type="string", format="string", example="VEN001"),
+    *               @OA\Property(property="OBSERVACION", type="string", format="string", example="abcd"),
+    *               @OA\Property(property="TIPODOC", type="string", format="string", example="C"),
+    *               @OA\Property(property="REFERENCIA", type="string", format="string", example="Casa azul")
+     *         )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Cliente Creado",
+     *         @OA\JsonContent(
+     *              @OA\Property(property="status", type="string", example="ok"),
+     *              @OA\Property(property="codCliente", type="string", example="C0002")
+     *          )
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Número de identificación ya registrado.",
+     *         @OA\JsonContent(
+     *              @OA\Property(property="result", type="string", example="Identificacionexistente")
+     *          )
+     *       ),
+     * )
+     */
 
     public function CreateClientVen(Request $request){
 
@@ -526,6 +942,56 @@ class Cliente extends Controller
             return response()->json(['result'=>'IdentificacionExistente']);
         }
     }
+
+    /**
+     * @OA\Post(
+     *      path="/clientebasico",
+     *      operationId="GuardaCliente Basico",
+     *      tags={"Cliente"},
+     *      summary="Guarda un nuevo Cliente con datos basicos.",
+     *      description="Nuevo Registro en ADMCLIENTE con datos basicos.",
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(
+     *              required={"RAZONSOCIAL","NEGOCIO","DIRECCION","TELEFONOS","FAX","TIPODOC","RUC","EMAIL","REFERENCIA","OBSERVACION","TIPONEGO","TIPO","PROVINCIA","CANTON","PARROQUIA","SECTOR","RUTA","VENDEDOR","ZONA"},
+     *              @OA\Property(property="RAZONSOCIAL", type="string", format="string", example="Manuel Rangel"),
+    *               @OA\Property(property="NEGOCIO", type="string", format="string", example="BAZAR"),
+    *               @OA\Property(property="DIRECCION", type="string", format="string", example="AV Lara"),
+    *               @OA\Property(property="TELEFONOS", type="string", format="string", example="1547896"),
+    *               @OA\Property(property="FAX", type="string", format="string", example="1547896"),
+    *               @OA\Property(property="TIPODOC", type="string", format="string", example="C"),
+    *               @OA\Property(property="RUC", type="string", format="string", example="123456789"),
+    *               @OA\Property(property="EMAIL", type="string", format="string", example="abcd@abc.com"),
+    *               @OA\Property(property="REFERENCIA", type="string", format="string", example="Casa azul"),
+    *               @OA\Property(property="OBSERVACION", type="string", format="string", example="abcd"),
+    *               @OA\Property(property="TIPONEGO", type="string", format="string", example="FAR"),
+    *               @OA\Property(property="TIPO", type="string", format="string", example="DET"),
+    *               @OA\Property(property="PROVINCIA", type="string", format="string", example="P0001"),
+    *               @OA\Property(property="CANTON", type="string", format="string", example="C0018"),
+    *               @OA\Property(property="PARROQUIA", type="string", format="string", example="P0017"),
+    *               @OA\Property(property="SECTOR", type="string", format="string", example="CEN"),
+    *               @OA\Property(property="RUTA", type="string", format="string", example="abcd"),
+    *               @OA\Property(property="VENDEDOR", type="string", format="string", example="VEN001"),
+    *               @OA\Property(property="ZONA", type="string", format="string", example="CEN")
+     *         )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Cliente Creado",
+     *         @OA\JsonContent(
+     *              @OA\Property(property="status", type="string", example="ok"),
+     *              @OA\Property(property="codCliente", type="string", example="C0002")
+     *          )
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Número de identificación ya registrado.",
+     *         @OA\JsonContent(
+     *              @OA\Property(property="result", type="string", example="Identificacionexistente")
+     *          )
+     *       ),
+     * )
+     */
 
 
     public function CreateClientBasic(Request $request){
@@ -725,14 +1191,14 @@ class Cliente extends Controller
                 $cliBase->save();
                 DB::commit();
 
-                return response()->json(['status'=>'ok','codCliente'=>$inicial.$codigo]);
+                return response()->json(['status'=>'ok','codCliente'=>$inicial.$codigo],200);
             } catch (\Exception $e) {
                 
                 DB::rollback();
-                return response()->json(["error"=>["info"=>$e->getMessage()]]);
+                return response()->json(["error"=>["info"=>$e->getMessage()]],503);
             }
         } else {
-            return response()->json(['result'=>'IdentificacionExistente']);
+            return response()->json(['result'=>'IdentificacionExistente'],200);
         }
     }
 }

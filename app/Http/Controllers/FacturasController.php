@@ -11,6 +11,30 @@ use Carbon\Carbon;
 
 class FacturasController extends Controller
 {
+    /**
+    * @OA\Post(
+    *     path="/api/factxvende",
+    *     tags={"Facturas"},
+    *     summary="Retorna datos de Facturas y Notas de Ventas del perido de fechas y vendedor indicado.",
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(
+     *              required={"VENDEDOR","FECHAINI","FECHAFIN"},
+     *              @OA\Property(property="VENDEDOR", type="string", format="string", example="VEN009"),
+    *               @OA\Property(property="FECHAINI", type="string", format="string", example="22-01-2020"),
+    *               @OA\Property(property="FECHAFIN", type="string", format="string", example="22-12-2020")
+     *         )
+     *      ),
+    *     @OA\Response(
+    *         response=200,
+    *         description="Retorna datos de Facturas y Notas de Ventas del perido de fechas y vendedor indicado.."
+    *     ),
+    *     @OA\Response(
+    *         response="default",
+    *         description="Ha ocurrido un error."
+    *     )
+    * )
+    */
     public function GetCabeceras(Request $r)
     {
         $vendedor = $r['VENDEDOR'];
