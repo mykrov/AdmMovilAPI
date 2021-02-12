@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use \App\NumeroLetras as Letras;
+use Carbon\Carbon;
 
 class NumLetrasController extends Controller
 {
@@ -57,9 +58,9 @@ class NumLetrasController extends Controller
     public function ConvertirNumeros(Request $r)
     {
         $numeros = $r['numero'];
-
+        $date = Carbon::now()->subHours(5);
         $letras = $this->convertir($numeros,'DOLARES','CENTAVOS');
-
+        return response()->json(['date'=>$date->format('H:i:s')]);
         return response()->json(['letras'=>$letras]);
 
     }

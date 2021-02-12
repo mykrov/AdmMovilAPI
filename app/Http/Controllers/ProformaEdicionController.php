@@ -16,7 +16,9 @@ class ProformaEdicionController extends Controller
         $cabecera = $r->cabecera[0];
         $detalles = $r->detalles;
 
-        if (count($detalles) == 0) {
+        $numDetalles = count($detalles);
+        Log::info("Nueva Edicion de Proforma con detalles",['CountDet'=>$numDetalles]);
+        if ($numDetalles == 0) {
             Log::error("Cabecera Sin Detalles",['cabecera'=>$cabecera]);
             return response()->json(['error'=>'Cabecera Sin Detalles']);
         }
@@ -83,8 +85,8 @@ class ProformaEdicionController extends Controller
                     $d->DESCUENTO = floatval($det['descuento']);
                     $d->IVA = round(floatval($det['iva']),2);
                     $d->NETO = round(floatval($det['neto']),2);
-                    $d->COSTOP = $itemData->COSTOP;
-                    $d->COSTOU = $itemData->COSTOU;
+                    $d->COSTOP = round($itemData->COSTOP,2);
+                    $d->COSTOU = round($itemData->COSTOU,2);
                     $d->TIPOITEM = $det['tipo_item'];
                     $d->FORMAVTA = $det['forma_venta'];
                     $d->GRAVAIVA = $grabaIvadet;
@@ -94,7 +96,7 @@ class ProformaEdicionController extends Controller
                     $linea++;
                 } 
                 DB::commit();
-                Log::info("Actualizacion de PedidoProformaController ", ["cabecera" => $cabe,"detalles"=> $d,"TiempoPreciso"=>Carbon::now()->subHours(5)->format('H:m:s.u')]);
+                Log::info("Actualizacion de PedidoProformaController ", ["cabecera" => $cabe,"detalles"=> $detalles,"TiempoPreciso"=>Carbon::now()->subHours(5)->format('H:m:s.u')]);
                 return response()->json(["estado"=>"actualizado", "Npedido"=>$cabe->NUMERO, "secuencial"=>$cabe->SECUENCIAL]);
     
             } else {

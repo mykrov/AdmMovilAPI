@@ -613,7 +613,7 @@ class Cliente extends Controller
                 $ClientNew->CTACLIENTE = "";
                 $ClientNew->CUPO = 0;
                 $ClientNew->GRUPO = $datos['GRUPO'];
-                $ClientNew->ORDEN = $standar->ORDEN;
+                $ClientNew->ORDEN = $datos["ORDEN"];
                 $ClientNew->CODFRE = $datos['CODFRE'];
                 $ClientNew->CREDITO = $standar->CREDITO;
                 $ClientNew->DIA = $diaSemana + 1;
@@ -832,7 +832,7 @@ class Cliente extends Controller
                 $ClientNew->CTACLIENTE = "";
                 $ClientNew->CUPO = 0;
                 $ClientNew->GRUPO = '';
-                $ClientNew->ORDEN = $standar->ORDEN;
+                $ClientNew->ORDEN = $datos["ORDEN"];
                 $ClientNew->CODFRE = $standar->CODFRE;
                 $ClientNew->CREDITO = $standar->CREDITO;
                 $ClientNew->DIA = $diaSemana + 1;
