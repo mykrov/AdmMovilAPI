@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -35,7 +36,7 @@ Route::get('/clientelikexvd/{nombre}/{vendedor}','Cliente@ClienteLikeDiaVende');
 Route::get('/clientelikexvc/{codigo}/{vendedor}','Cliente@ClienteLikeCodVende');
 
 //Items
-Route::get('/items/{bod}','Item@ItemXBodega');
+Route::get('/items/{bod}','Item@ItemXBodega')->middleware('EmpresaPago');
 Route::get('/itemstodos/{bod}','Item@ItemTodosBodega');
 Route::get('/items/{bod}/{categoria}','Item@ItemBodegaXCategoria');
 Route::get('/item/{codigo}','Item@ItemXCodigo');

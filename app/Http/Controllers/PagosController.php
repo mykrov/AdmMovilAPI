@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use \App\ADMPARAMETROV;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class PagosController extends Controller
 {
@@ -41,6 +42,8 @@ class PagosController extends Controller
             ->where([['estadocaja','=','A'],['estado','=','A'],['fechaini','<=',$date->format('d-m-Y')],['fechafin','>=',$date->format('d-m-Y')]])
             ->select('codigo')
             ->get();
+
+            Log::info("caja abierta",['caja'=>$cajaAbierta]);
 
             if($cajaAbierta == null or COUNT($cajaAbierta) == 0){
                 return response()->json(['estado'=>'error','info'=>'NO HAY CAJA']);

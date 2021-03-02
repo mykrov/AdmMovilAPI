@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class Cliente extends Controller
 {
@@ -778,6 +779,8 @@ class Cliente extends Controller
 
         $datos = $request;
 
+        Log::info("Datos de Request",['req'=>$datos]);
+
         $check = \App\Cliente::where('RUC','=',$datos['RUC'])->count();
 
         //return response()->json($datos);
@@ -812,7 +815,7 @@ class Cliente extends Controller
                 $dt = Carbon::now();
                 $dt2 = $dt->format('Y-d-m');
                 //return response()->json($dt2);
-            
+                
                 $ClientNew->CODIGO = $inicial.$codigo;
                 $ClientNew->RAZONSOCIAL = $datos['RAZONSOCIAL'];
                 $ClientNew->NEGOCIO = $standar->NEGOCIO;
@@ -827,7 +830,20 @@ class Cliente extends Controller
                 $ClientNew->PROVINCIA = trim($standar->PROVINCIA);
                 $ClientNew->CANTON = trim($standar->CANTON);
                 $ClientNew->PARROQUIA = trim($standar->PARROQUIA);
-                $ClientNew->SECTOR = trim($standar->SECTOR);
+                
+                //Sector y zona opcional en el request
+                if ($datos['SECTOR'] == null or $datos['SECTOR'] == 'NA') {
+                    $datos['SECTOR'] = trim($standar->SECTOR);
+                }else{
+                    $ClientNew->SECTOR = $datos['SECTOR'];
+                }
+
+                if ($datos['ZONA'] == null or $datos['ZONA'] == 'NA') {
+                    $datos['ZONA'] = trim($standar->ZONA);
+                }else{
+                    $ClientNew->ZONA = $datos['ZONA'];
+                }
+
                 $ClientNew->RUTA = trim($standar->RUTA);
                 $ClientNew->CTACLIENTE = "";
                 $ClientNew->CUPO = 0;
@@ -863,7 +879,6 @@ class Cliente extends Controller
                 $ClientNew->TIPOCONTRIBUYENTE = $standar->TIPOCONTRIBUYENTE;
                 $ClientNew->RETIENEFUENTE = $standar->RETIENEFUENTE;
                 $ClientNew->RETIENEIVA = $standar->RETIENEIVA;
-                $ClientNew->ZONA = trim($standar->ZONA);
                 $ClientNew->FECNAC = $dt2;
                 $ClientNew->FECMOD = $dt2;
                 $ClientNew->OPEMOD = $standar->OPEMOD;
