@@ -2,7 +2,6 @@
 
 namespace App\Http\Middleware;
 use Illuminate\Support\Facades\DB;
-use App\ADMPARAMETROBO;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Closure;
@@ -19,8 +18,8 @@ class VerificaPago
     public function handle($request, Closure $next)
     {
 
-        $fechVenceBase = Cache::remember('fechaBase',3600, function () {
-            return ADMPARAMETROBO::first()->select('fechapedido');
+        $fechVenceBase = Cache::remember('fechaBase6',3600, function () {
+            return DB::table('ADMPARAMETROBO')->first();
         });
 
         $dc = $fechVenceBase->fechapedido;
