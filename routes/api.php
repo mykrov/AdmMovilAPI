@@ -23,10 +23,10 @@ Route::get('/clientetodos','Cliente@listado2');
 Route::get('/clientexv/{vendedor}','Cliente@ClienteXVendedor');
 Route::get('/clientexvdia/{vendedor}','Cliente@ClienteXVendedorDia');
 Route::get('/cliente/{id?}','Cliente@byID');
-Route::post('/cliente','Cliente@CreateClient');
+Route::post('/cliente','Cliente@CreateClient')->middleware('EmpresaPago');
 Route::get('/clientedia','Cliente@ClienteXDia'); //Cliente por del dia actual del server
-Route::post('/clienteven','Cliente@CreateClientVen');
-Route::post('/clientebasico','Cliente@CreateClientBasic');
+Route::post('/clienteven','Cliente@CreateClientVen')->middleware('EmpresaPago');
+Route::post('/clientebasico','Cliente@CreateClientBasic')->middleware('EmpresaPago');
 Route::get('/clientelike/{nombre}','Cliente@BuscarNombre');
 Route::get('/clientelikexv/{nombre}/{vendedor}','Cliente@BuscarNombreXVendedor');
 Route::get('/clientelikexdia/{nombre}','Cliente@BuscarNombreXDia');
@@ -83,14 +83,14 @@ Route::get('/deudapos/{codigo}','DeudaPosController@GetDeudaXCliente');
 
 
 //Rutas Pedidos
-Route::post('/pedido','PedidoController@PostPedido');
+Route::post('/pedido','PedidoController@PostPedido')->middleware('EmpresaPago');
 Route::post('/proformaoff','PedidoXController@PostPedidoProformaOff');
-Route::post('/proforma','PedidoProformaController@PostPedidoProforma');
+Route::post('/proforma','PedidoProformaController@PostPedidoProforma')->middleware('EmpresaPago');
 Route::post('/proformaedit','ProformaEdicionController@EditarProforma');
 Route::post('/proformadelete','ProformaEdicionController@EliminarPedido');
 
 //Ruta Ventas POS
-Route::post('/ventapos','VentaPos@Pedido');
+Route::post('/ventapos','VentaPos@Pedido')->middleware('EmpresaPago');
 Route::get('/rangopre/{it}','RangoPrecio@RangoPrecioItem');
 
 //Facturas por vendedor
@@ -106,9 +106,9 @@ Route::post('/detxproforma','ProformasController@GetDetalles');
 Route::post('/cabxproforma','ProformasController@GetCabecera');
 
 //Pagos
-Route::post('/pago','PagosController@Pago');
+Route::post('/pago','PagosController@Pago')->middleware('EmpresaPago');
 Route::get('/mediospago','MedioPagoController@GetMedioPago');
-Route::post('/pagosposa','PagosPosController@Pagopos');
+Route::post('/pagosposa','PagosPosController@Pagopos')->middleware('EmpresaPago');
 
 Route::post('/pagopostcab','PagPosConsultaController@GetCabeceras');
 Route::post('/pagopostdet','PagPosConsultaController@GetDetalles');
@@ -144,7 +144,7 @@ Route::get('/notipushtest','PushNotificacionController@NewItem2');
 //Guias de Cobro
 Route::get('/guiacobro/{numero}','GuiaCobroController@GetGuiaCobro');
 Route::get('/deudacuotas/{sec}','DeudaCuotasController@GetDeudaCuotas');
-Route::post('/pagocuota','PagoCuotasController@PagoCuota');
+Route::post('/pagocuota','PagoCuotasController@PagoCuota')->middleware('EmpresaPago');
 
 //DeudasCuotasDet
 Route::get('/deudacuotasdet/{pago}','DeudasCoutasDetController@CuotasAfectadas');

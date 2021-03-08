@@ -21,6 +21,7 @@ class PagosController extends Controller
         $parametrov = ADMPARAMETROV::first();
         $NumCre = \App\ADMTIPODOC::where('TIPO','=','PAG')->first();
         $date = Carbon::now()->subHours(5);
+        $observacionReq = $r->observacion;
         
         $fcChq = Carbon::createFromFormat('Y-m-d',$fechaChq)->Format('d-m-Y');
         $observacionCre = "";
@@ -71,7 +72,13 @@ class PagosController extends Controller
 
             $pago->monto = $montoPagar;
             $pago->operador = $operador1;
-            $pago->observacion = "Pago ".$tipoPago. " por ADMGO Nro:".$pago->numero;
+
+            if ($observacionReq == 'NA'){
+                $pago->observacion = "Pago ".$tipoPago. " por ADMGO Nro:".$pago->numero;
+            }else{
+                $pago->observacion = $observacionReq;
+            }
+
             $pago->numpapel = "";
             $pago->fecha = $date->Format('d-m-Y');
             $pago->vendedor = $vendedor;
