@@ -28,6 +28,10 @@ class VerificaPago
             return $next($request);
         }
 
+        // if (true){
+        //     return $next($request);
+        // }
+
         $substrin = substr($dc,0,8);
         $numeroreales = [];
         $array = str_split($substrin);

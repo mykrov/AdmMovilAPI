@@ -20,7 +20,7 @@ class ParametrosController extends Controller
         $paramV = \App\ADMPARAMETROV::first();
 
 
-        return response()->json([['NOMBRECIA'=>$paramV->NOMBRECIA,
+        return response()->json([['NOMBRECIA'=>trim($paramV->NOMBRECIA),
                                     'IVA'=>$paramV->IVA,
                                     'BODEGAPOS'=>$paramV->BODEGAPOS,
                                     'FACLIN'=>$paramV->FACLIN,
@@ -33,7 +33,10 @@ class ParametrosController extends Controller
                                     'ESQUEMAELE'=>$paramV->ESQUEMAELE,
                                     'FACLIN'=>$paramV->FACLIN,
                                     'NVTLIN'=>$paramV->NVTLIN,
-                                    'POSFACLIN' => $paramV->POSFACLIN
+                                    'POSFACLIN' => $paramV->POSFACLIN,
+                                    'ESQUEMAFARMA' => $paramV->ESQUEMAFARMA,
+                                    'posrangoprecio'=> $paramV->posrangoprecio,
+                                    'PORPRECIOPISO' => $paramV->PORPRECIOPISO
                                 ]]);
    }
 }
