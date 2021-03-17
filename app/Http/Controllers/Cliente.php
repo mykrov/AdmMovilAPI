@@ -159,7 +159,7 @@ class Cliente extends Controller
         $clientes = \App\Cliente::where('RAZONSOCIAL', 'like', '%' . $like . '%')
         ->where('ESTADO','=','A')
         ->where('VENDEDOR','=',$vendedor)
-        ->select(['CODIGO','RAZONSOCIAL','NEGOCIO','DIRECCION','TELEFONOS','FAX','EMAIL','RUC','GRUPO','TIPONEGO','TIPO'])
+        ->select(['CODIGO','RAZONSOCIAL','NEGOCIO','DIRECCION','TELEFONOS','FAX','EMAIL','RUC','GRUPO','TIPONEGO','TIPO','latitud','longuitud'])
         ->get();
         return response()->json($clientes);
     }
@@ -668,7 +668,7 @@ class Cliente extends Controller
                 $ClientNew->GERENTE = $standar->GERENTE;
                 $ClientNew->TELEFONO = $standar->TELEFONO;
                 $ClientNew->CONTACTOPAGO = $standar->CONTACTOPAGO;
-                $ClientNew->CORREO1 = $datos['EMAIL'];
+                $ClientNew->CORREO1 = $standar->CORREO1;
                 $ClientNew->CORREO2 = $standar->CORREO2;
                 $ClientNew->CARGO1 = $standar->CARGO1;
                 $ClientNew->CARGO2 = $standar->CARGO2;
@@ -901,7 +901,7 @@ class Cliente extends Controller
                 $ClientNew->GERENTE = $standar->GERENTE;
                 $ClientNew->TELEFONO = $standar->TELEFONO;
                 $ClientNew->CONTACTOPAGO = $standar->CONTACTOPAGO;
-                $ClientNew->CORREO1 = $datos['EMAIL'];
+                $ClientNew->CORREO1 = $standar->CORREO1;
                 $ClientNew->CORREO2 = $standar->CORREO2;
                 $ClientNew->CARGO1 = $standar->CARGO1;
                 $ClientNew->CARGO2 = $standar->CARGO2;
@@ -1160,7 +1160,7 @@ class Cliente extends Controller
                 $ClientNew->GERENTE = $standar->GERENTE;
                 $ClientNew->TELEFONO = $standar->TELEFONO;
                 $ClientNew->CONTACTOPAGO = $standar->CONTACTOPAGO;
-                $ClientNew->CORREO1 = $datos['EMAIL'];
+                $ClientNew->CORREO1 = $standar->CORREO1;
                 $ClientNew->CORREO2 = $standar->CORREO2;
                 $ClientNew->CARGO1 = $standar->CARGO1;
                 $ClientNew->CARGO2 = $standar->CARGO2;

@@ -143,12 +143,15 @@ Route::get('/notipushtest','PushNotificacionController@NewItem2');
 
 //Guias de Cobro
 Route::get('/guiacobro/{numero}','GuiaCobroController@GetGuiaCobro');
+Route::get('/guiacobrouni/{numero}','GuiaCobroController@GetGuiaCobroUnificada');
 Route::get('/deudacuotas/{sec}','DeudaCuotasController@GetDeudaCuotas');
 Route::post('/pagocuota','PagoCuotasController@PagoCuota')->middleware('EmpresaPago');
 
 //DeudasCuotasDet
 Route::get('/deudacuotasdet/{pago}','DeudasCoutasDetController@CuotasAfectadas');
 Route::get('/detguiacob/{guia}/{secuencial}','DeudasCoutasDetController@ItemDetGuia');
+
+Route::post('/historicopre','HistPrecioController@GetHistorico');
 
 Route::middleware('auth:api')->group(function () {
     Route::get('/vendedores','Vendedor@listado');
