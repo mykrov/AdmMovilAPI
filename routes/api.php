@@ -36,7 +36,7 @@ Route::get('/clientelikexvd/{nombre}/{vendedor}','Cliente@ClienteLikeDiaVende');
 Route::get('/clientelikexvc/{codigo}/{vendedor}','Cliente@ClienteLikeCodVende');
 
 //Items
-Route::get('/items/{bod}','Item@ItemXBodega')->middleware('EmpresaPago');
+Route::get('/items/{bod}','Item@ItemXBodega');
 Route::get('/itemstodos/{bod}','Item@ItemTodosBodega');
 Route::get('/items/{bod}/{categoria}','Item@ItemBodegaXCategoria');
 Route::get('/item/{codigo}','Item@ItemXCodigo');
@@ -152,6 +152,7 @@ Route::get('/deudacuotasdet/{pago}','DeudasCoutasDetController@CuotasAfectadas')
 Route::get('/detguiacob/{guia}/{secuencial}','DeudasCoutasDetController@ItemDetGuia');
 
 Route::post('/historicopre','HistPrecioController@GetHistorico');
+Route::post('/clidiaveninfo','InformeVisitaController@GetClientesDiaVendedor');
 
 Route::middleware('auth:api')->group(function () {
     Route::get('/vendedores','Vendedor@listado');

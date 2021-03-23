@@ -18,7 +18,7 @@ class VerificaPago
     public function handle($request, Closure $next)
     {
 
-        $fechVenceBase = Cache::remember('fechaBase6',3600, function () {
+        $fechVenceBase = Cache::remember('fechaBase5',180, function () {
             return DB::table('ADMPARAMETROBO')->first();
         });
 
@@ -54,7 +54,7 @@ class VerificaPago
         if($fechActual < $fechVence){
             return $next($request);
         }else{
-            return response()->json(['error'=>['info'=>'Empresa Inactiva por pago.']]);
+            return response()->json(['error'=>['info'=>'Empresa está Inactiva por falta de pago.']]);
         } 
     }
 }

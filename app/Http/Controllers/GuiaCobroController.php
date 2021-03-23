@@ -37,7 +37,10 @@ class GuiaCobroController extends Controller
                         RTRIM(ADMCLIENTE.ESTADO) as ESTADO'))
         ->join('ADMDETGUIACOB','ADMDETGUIACOB.CLIENTE','ADMCLIENTE.CODIGO')
         ->where('ADMDETGUIACOB.NUMGUIA','=',$numero)
+        ->distinct()
         ->get();
+
+        //return response()->json($dataClienteFull);
 
         $dataCuotasFull = DB::table('ADMDEUDACUOTA')
         ->select(DB::raw('ADMDEUDACUOTA.SECDEUDA,
