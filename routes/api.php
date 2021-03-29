@@ -112,6 +112,7 @@ Route::post('/pagosposa','PagosPosController@Pagopos')->middleware('EmpresaPago'
 
 Route::post('/pagopostcab','PagPosConsultaController@GetCabeceras');
 Route::post('/pagopostdet','PagPosConsultaController@GetDetalles');
+Route::post('/pagoanticipo','GenerarAnticipo@PagoAnticipo');
 
 //Credito
 Route::get('/credito/{num}','CreditoController@GetCredito');
@@ -153,6 +154,10 @@ Route::get('/detguiacob/{guia}/{secuencial}','DeudasCoutasDetController@ItemDetG
 
 Route::post('/historicopre','HistPrecioController@GetHistorico');
 Route::post('/clidiaveninfo','InformeVisitaController@GetClientesDiaVendedor');
+
+//Items de Electrodomesticos
+Route::get('/itemelec/{item}','ElectroController@GetItem');
+Route::get('/itemliquida/{item}','ElectroController@GetItemLiquidacion');
 
 Route::middleware('auth:api')->group(function () {
     Route::get('/vendedores','Vendedor@listado');

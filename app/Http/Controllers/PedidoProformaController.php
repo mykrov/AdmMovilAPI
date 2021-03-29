@@ -47,13 +47,13 @@ class PedidoProformaController extends Controller
         $observacion = "Gracias por su Compra.";
         if(trim($cabecera['observacion']) != "" && $cabecera['observacion'] != null){
             $observacion = $cabecera['observacion'];
-            Log::info("Observacion de PedidoProforma: ",['Contenido'=>$cabecera['observacion']]);
+            //Log::info("Observacion de PedidoProforma: ",['Contenido'=>$cabecera['observacion']]);
         }
 
         $campo_adi = "Gracias por su Compra.";
         if(trim($cabecera['datos_adi']) != ""  && $cabecera['datos_adi'] != null){
             $campo_adi = $cabecera['datos_adi'];
-            Log::info("Datos Adi de PedidoProforma: ",['Contenido'=>$cabecera['datos_adi']]);
+            //Log::info("Datos Adi de PedidoProforma: ",['Contenido'=>$cabecera['datos_adi']]);
         }
 
         DB::beginTransaction();
@@ -131,7 +131,7 @@ class PedidoProformaController extends Controller
             } else {
                 DB::rollback();
                 Log::error("Cabecera Sin Detalles",['cabecera'=>$cabe]);
-                return response()->json(['error'=>'Cabecera Sin Detalles']);
+                return response()->json(['error'=>["info"=>'Cabecera Sin Detalles']]);
             }
             
         } catch (\Exception $e) {
