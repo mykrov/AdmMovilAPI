@@ -20,8 +20,11 @@ class InfoPagoController extends Controller
         ->whereBetween('ADMPAGO.fecha',[$fecha1, $fecha2])
         ->where('ADMPAGO.vendedor','=',$vendedor)
         ->join('ADMCLIENTE','ADMPAGO.cliente','=','ADMCLIENTE.CODIGO')
+        ->join('ADMCREDITO','ADMCREDITO.NUMCRE','=','ADMPAGO.numero')
+        ->where('ADMCREDITO.TIPO','=','PAG')
         ->select('ADMCLIENTE.RAZONSOCIAL','ADMPAGO.tipo','ADMPAGO.numero',
-        'ADMPAGO.fecha','ADMPAGO.cliente','ADMPAGO.secuencial','ADMPAGO.monto','ADMPAGO.observacion')->get();
+        'ADMPAGO.fecha','ADMPAGO.cliente','ADMPAGO.secuencial','ADMPAGO.monto','ADMPAGO.observacion','ADMCREDITO.SALDO')
+        ->get();
 
         return response()->json($pagos);
     }

@@ -1216,4 +1216,14 @@ class Cliente extends Controller
             return response()->json(['result'=>'IdentificacionExistente'],200);
         }
     }
+
+
+    public function ClientesPorRuta($ruta)
+    {
+        $clientes = \App\Cliente::where('RUTA','=',$ruta)
+        ->where('ESTADO','=','A')
+        ->select(['CODIGO','RAZONSOCIAL','NEGOCIO','DIRECCION','TELEFONOS','FAX','EMAIL','RUC','GRUPO','TIPONEGO','TIPO','latitud','longuitud'])
+        ->get();
+        return response()->json($clientes);
+    }
 }

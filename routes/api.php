@@ -34,6 +34,7 @@ Route::get('/clientexcd/{codigo}','Cliente@ClienteCodDia');
 Route::get('/clientexvcod/{id}/{vendedor}','Cliente@BuscarIdXVendedor');
 Route::get('/clientelikexvd/{nombre}/{vendedor}','Cliente@ClienteLikeDiaVende');
 Route::get('/clientelikexvc/{codigo}/{vendedor}','Cliente@ClienteLikeCodVende');
+Route::get('/clixruta/{ruta}','Cliente@ClientesPorRuta');
 
 //Items
 Route::get('/items/{bod}','Item@ItemXBodega');
@@ -43,6 +44,10 @@ Route::get('/item/{codigo}','Item@ItemXCodigo');
 Route::get('/itemslike/{like}','Item@ItemsXNombre');
 Route::get('/itemsnostock/{bod}','Item@ItemsSinStock');
 Route::get('/categoria','CategoriaController@GetCategorias');
+Route::get('/itemregalo/{item}','ItemRegaloController@ItemRegalo');
+Route::get('/itemselec/{bodega}','ItemElectroController@GetItemsElectro');
+Route::get('/eleclike/{bodega}/{nombre}','ItemElectroController@GetItemsElectroNombre');
+Route::get('/eleccod/{bodega}/{cod}','ItemElectroController@GetItemsElectroCod');
 
 //Rutas Ubicacion
 Route::get('/canton','CantonController@GetCantones');
@@ -129,6 +134,8 @@ Route::post('/actubicacion','UbicacionController@UpdateCoordinates');
 
 //Test
 Route::get('/invertir/{cadena}','PedidoController@InvertirCadena');
+Route::get('/tipoitem/{item}','VentaElectroController@tipoItemElec');
+Route::get('/testemail','VentaElectroController@TestEmail');
 
 //Mapas
 Route::get('/vendemaps','MapsController@GetVendedores');
@@ -158,6 +165,10 @@ Route::post('/clidiaveninfo','InformeVisitaController@GetClientesDiaVendedor');
 //Items de Electrodomesticos
 Route::get('/itemelec/{item}','ElectroController@GetItem');
 Route::get('/itemliquida/{item}','ElectroController@GetItemLiquidacion');
+Route::post('/ventaelec','VentaElectroController@PostPedidoElectro');
+
+//Dias restantes
+Route::get('/diasrestantes','VerificaFechaController@DiasRestantes');
 
 Route::middleware('auth:api')->group(function () {
     Route::get('/vendedores','Vendedor@listado');

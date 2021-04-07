@@ -467,8 +467,8 @@ class PagoCuotasController extends Controller
                     $deCuoDet->SECDEUDA = $secuencial;
                     $deCuoDet->SECINV = $admdeuda->SECINV;
                     $deCuoDet->NUMCUOTA = $numCuota;
-                    $deCuoDet->VALORCUOTA = $deCuo->MONTO;
-                    $deCuoDet->MONTO = $deCuo->SALDO;
+                    $deCuoDet->VALORCUOTA = round($deCuo->MONTO,2);
+                    $deCuoDet->MONTO = round($deCuo->SALDO,2);
                     $deCuoDet->SALDO = 0;
                     $deCuoDet->NUMPAGO = $pago;
                     $deCuoDet->FECHACANCELA = $fecha->format('Y-d-m');
@@ -529,7 +529,7 @@ class PagoCuotasController extends Controller
     }
 
     public function CambioEstado(int $Numguia,int $secuencial,float $monto,string $tipopago){
-        Log::info("CambioEstado",["Guia"=>$Numguia,"sec"=>$secuencial]);
+        //Log::info("CambioEstado",["Guia"=>$Numguia,"sec"=>$secuencial]);
         DB::beginTransaction();
         try{
             $DetGuiaCobro = DB::table('ADMDETGUIACOB')
@@ -538,7 +538,7 @@ class PagoCuotasController extends Controller
             ->first();
 
             if($DetGuiaCobro != NULL){
-                Log::info("entra en el DETGUIACOB valido");
+                //Log::info("entra en el DETGUIACOB valido");
                 $chq = 0;
                 $efect = 0;
                 $otro = 0;

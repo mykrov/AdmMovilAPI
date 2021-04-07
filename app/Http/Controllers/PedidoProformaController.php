@@ -42,15 +42,27 @@ class PedidoProformaController extends Controller
             $grabaIva = "S";
         }
 
-         
-        //En caso de Observacion.
         $observacion = "Gracias por su Compra.";
+        $campo_adi = "Gracias por su Compra.";
+
+        //Observacion y Datos del cliente.
+        $clienteObservacion  = $cliente->OBSERVACION;
+        $clienteReferencia = $cliente->REFERENCIA;
+
+        if($clienteObservacion != null && trim($clienteObservacion) != "" ){
+            $observacion = $clienteObservacion;
+        }
+
+        if($clienteReferencia != null && trim($clienteReferencia) != "" ){
+            $campo_adi = $clienteReferencia;
+        }
+
+        //En caso de Observacion y Datos del Request.
         if(trim($cabecera['observacion']) != "" && $cabecera['observacion'] != null){
             $observacion = $cabecera['observacion'];
             //Log::info("Observacion de PedidoProforma: ",['Contenido'=>$cabecera['observacion']]);
         }
 
-        $campo_adi = "Gracias por su Compra.";
         if(trim($cabecera['datos_adi']) != ""  && $cabecera['datos_adi'] != null){
             $campo_adi = $cabecera['datos_adi'];
             //Log::info("Datos Adi de PedidoProforma: ",['Contenido'=>$cabecera['datos_adi']]);

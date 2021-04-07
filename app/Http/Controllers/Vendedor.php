@@ -46,12 +46,15 @@ class Vendedor extends Controller
           
             
             if ($operador && implode($UpDown) == trim($operador->clave)){
-                //return($operador);
+                
+                $vendedorRel = \App\ADMVENDEDOR::where('operadormovil',$operador->codigo)
+                ->first();
+
                 try {
                     Auth::loginUsingId($operador->codigo, TRUE);
                     $user = Auth::user();
                     $token = $operador->createToken('authToken')->accessToken;
-                    return response()->json(['operador'=>$operador,'token'=>$token,'ID'=>$user]);
+                    return response()->json(['operador'=>$operador,'token'=>$token,'ID'=>$user,'dataVendedor'=>$vendedorRel]);
                 } catch (\Throwable $th) {
                     return response()->json(['message'=>$th->getMessage()]);
                 }

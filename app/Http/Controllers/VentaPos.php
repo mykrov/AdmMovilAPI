@@ -31,7 +31,7 @@ class VentaPos extends Controller
             }
 
             $campo_adi = "Gracias por su Compra.";
-            if(trim($cabecera['observacion']) != ""){
+            if(trim($cabecera['datos_adi']) != ""){
                 $campo_adi = $cabecera['datos_adi'];
             }
 

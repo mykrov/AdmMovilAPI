@@ -5,12 +5,14 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class GenerarAnticipo extends Controller
 {
     public function PagoAnticipo(Request $r)
     {
-       
+        //return response()->json($r);
+        //Log::info("request",["body"=>$r]);
         $operador = $r->operador;
         $deudas = $r->facturas;
         $tipoPago = $r->medioPago;
@@ -360,7 +362,7 @@ class GenerarAnticipo extends Controller
             $nDeuda->FECHADES =  $fcPagFormated;
             $nDeuda->OPERADOR =  $operador1;
             $nDeuda->VENDEDOR = $vendedor;
-            $nDeuda->OBSERVACION = "Anticipo ADM GO.!";
+            $nDeuda->OBSERVACION = $observacionCre;
             $nDeuda->HORA =  $date->Format('H:s:i');
             $nDeuda->save();
 
