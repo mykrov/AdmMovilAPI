@@ -10,8 +10,14 @@ class InformeVisitaController extends Controller
 {
     public function GetClientesDiaVendedor(Request $r)
     {
-        $dia = $r->DIA;
+        $diaR = $r->DIA;
         $vendedor = $r->VENDEDOR;
+
+        if($diaR != 7){
+            $dia = $diaR + 1;
+        }else {
+            $dia = 1;
+        }
 
         $clientesDelDia = DB::table('ADMCLIENTE')
         ->select(DB::raw('RTRIM(ADMCLIENTE.CODIGO) as CODIGO,

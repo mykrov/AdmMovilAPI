@@ -32,7 +32,7 @@ class CreditoController extends Controller
         $creditos = \App\ADMCREDITO::where('TIPOCR','=','PAG')
         ->where('TIPO','<>','ANT')
         ->where('NUMCRE','=',$numero)
-        ->select('NUMERO','TIPO','SERIE','MONTO')
+        ->select('NUMERO','TIPO','SERIE','MONTO','SALDO')
         ->get();
 
         return response()->json($creditos);

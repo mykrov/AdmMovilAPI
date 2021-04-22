@@ -9,7 +9,8 @@ use Illuminate\Support\Facades\DB;
 class InfoPagoController extends Controller
 {
     public function GetPagoCab(Request $r){
-        
+
+               
         $vendedor = $r['VENDEDOR'];
         $f1 = Carbon::createFromFormat('d-m-Y',$r['FECHAINI']);
         $f2 = Carbon::createFromFormat('d-m-Y',$r["FECHAFIN"]);
@@ -20,12 +21,10 @@ class InfoPagoController extends Controller
         ->whereBetween('ADMPAGO.fecha',[$fecha1, $fecha2])
         ->where('ADMPAGO.vendedor','=',$vendedor)
         ->join('ADMCLIENTE','ADMPAGO.cliente','=','ADMCLIENTE.CODIGO')
-        ->join('ADMCREDITO','ADMCREDITO.NUMCRE','=','ADMPAGO.numero')
-        ->where('ADMCREDITO.TIPO','=','PAG')
+        ->where('ADMPAGO.TIPO','=','PAG')
         ->select('ADMCLIENTE.RAZONSOCIAL','ADMPAGO.tipo','ADMPAGO.numero',
-        'ADMPAGO.fecha','ADMPAGO.cliente','ADMPAGO.secuencial','ADMPAGO.monto','ADMPAGO.observacion','ADMCREDITO.SALDO')
+        'ADMPAGO.fecha','ADMPAGO.cliente','ADMPAGO.secuencial','ADMPAGO.monto','ADMPAGO.observacion')
         ->get();
-
         return response()->json($pagos);
     }
 

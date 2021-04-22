@@ -105,6 +105,7 @@ Route::post('/factxvende','FacturasController@GetCabeceras');
 //FacturasPOS por vendedor
 Route::post('/detxvendepos','VentasController@GetDetalles');
 Route::post('/factxvendepos','VentasController@GetCabeceras');
+Route::post('/factxvendepos2','VentasController@GetCabeceras2');
 
 //Proformas Detalles
 Route::post('/detxproforma','ProformasController@GetDetalles');
@@ -169,9 +170,9 @@ Route::post('/ventaelec','VentaElectroController@PostPedidoElectro');
 
 //Dias restantes
 Route::get('/diasrestantes','VerificaFechaController@DiasRestantes');
+Route::get('/vendedores','Vendedor@listado');
 
 Route::middleware('auth:api')->group(function () {
-    Route::get('/vendedores','Vendedor@listado');
     Route::get('/vendedorinfo',function (Request $request) {
         return $request->user();
     });

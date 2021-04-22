@@ -120,7 +120,7 @@ class PedidoXController extends Controller
                 DB::commit();
                 DB::statement("UPDATE ADMCABPEDIDOX SET SECUENCIAL = SECAUTO,NUMERO = SECAUTO where SECAUTO = " .$secAutoNew);
                 Log::info("Registro de PedidoProformaController ", ["cabecera" => $cabe,"detalles"=> $d,"TiempoPreciso"=>Carbon::now()->subHours(5)->format('H:m:s.u')]);
-                return response()->json(["estado"=>"guardado", "Npedido"=>$cabe->NUMERO, "secuencial"=>$cabe->SECUENCIAL]);
+                return response()->json(["estado"=>"guardado", "Npedido"=>$secAutoNew, "secuencial"=>$secAutoNew]);
                 
             } else {
                 DB::rollback();
@@ -130,7 +130,7 @@ class PedidoXController extends Controller
             
         } catch (\Exception $e) {
             DB::rollback();
-            Log::error("Error PedidoProformaController ", ["cabecera" => $cabe,"TiempoPreciso"=>Carbon::now()->subHours(5)->format('H:m:s.u'),"Datos"=>$e->getMessage()]);
+            Log::error("Error PedidoProformaController Last", ["cabecera" => $cabe,"TiempoPreciso"=>Carbon::now()->subHours(5)->format('H:m:s.u'),"Datos"=>$e->getMessage()]);
             return response()->json(["error"=>["info"=>"Error Insertando Pedido"]]);
         }
     }    

@@ -54,7 +54,7 @@ class Vendedor extends Controller
                     Auth::loginUsingId($operador->codigo, TRUE);
                     $user = Auth::user();
                     $token = $operador->createToken('authToken')->accessToken;
-                    return response()->json(['operador'=>$operador,'token'=>$token,'ID'=>$user,'dataVendedor'=>$vendedorRel]);
+                    return response()->json(['operador'=>$operador,'token'=>$token,'ID'=>$user,'vendedor'=>$vendedorRel]);
                 } catch (\Throwable $th) {
                     return response()->json(['message'=>$th->getMessage()]);
                 }
@@ -89,7 +89,6 @@ class Vendedor extends Controller
     }
 
     public function listado(){
-
         $vendedores = \App\ADMVENDEDOR::all();
         return response()->json($vendedores);
     }

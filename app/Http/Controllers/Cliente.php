@@ -780,9 +780,9 @@ class Cliente extends Controller
         $datos = $request;
 
         Log::info("Datos de Request",['req'=>$datos]);
-
+        
         $check = \App\Cliente::where('RUC','=',$datos['RUC'])->count();
-
+        //return response()->json($standar);
         //return response()->json($datos);
 
         DB::beginTransaction();
@@ -799,18 +799,22 @@ class Cliente extends Controller
             if ($datos['GRUPO'] == null ) {
                 $datos['GRUPO'] = '';
             }
-
+          
             try {
 
                 $cliBase = \App\ADMPARAMETROC::first();
+                $standar = \App\Cliente::where('CODIGO','=',$cliBase->CLIENTEMODELOCARRO)->first();
+               
                 $inicial = $cliBase->LETRAINI;
                 $numeroCli = $cliBase->NUMCLIENTE + 1;
 
                 $str_length = 6;
                 $codigo = substr("000000{$numeroCli}", -$str_length);
 
-                $standar = \App\Cliente::where('CODIGO','=',$cliBase->CLIENTEMODELOCARRO)->first();
-                //return response()->json($standar);
+                if ($datos['RUTA'] == null ) {
+                    $datos['RUTA'] = trim($standar->RUTA);
+                }
+              
                 $ClientNew  = new \App\Cliente;
                 $dt = Carbon::now();
                 $dt2 = $dt->format('Y-d-m');
@@ -844,7 +848,7 @@ class Cliente extends Controller
                     $ClientNew->ZONA = $datos['ZONA'];
                 }
 
-                $ClientNew->RUTA = trim($standar->RUTA);
+                $ClientNew->RUTA = $datos['RUTA'];
                 $ClientNew->CTACLIENTE = "";
                 $ClientNew->CUPO = 0;
                 $ClientNew->GRUPO = '';
@@ -1012,7 +1016,7 @@ class Cliente extends Controller
     public function CreateClientBasic(Request $request){
         
         $fecha_actual = Carbon::now();
-        $diaSemana = $fecha_actual->dayOfWeek; 
+        $diaSemana = $fecha_actual->dayOfWeek;
 
         if($diaSemana == 7){
             $diaSemana = 0;

@@ -12,7 +12,7 @@ class GenerarAnticipo extends Controller
     public function PagoAnticipo(Request $r)
     {
         //return response()->json($r);
-        //Log::info("request",["body"=>$r]);
+        Log::info("request",["body"=>$r]);
         $operador = $r->operador;
         $deudas = $r->facturas;
         $tipoPago = $r->medioPago;

@@ -35,13 +35,16 @@ class VentaElectroController extends Controller
             return response()->json(['error'=>'Cabecera Sin Detalles']);
         }
 
-        $operador1 = $cabecera['usuario'];
+        $operador1 = "";
 
-        //Datos del Vendedor segun el Operador
-        $vendedorData = \App\ADMVENDEDOR::where('operadormovil','=',$cabecera['usuario'])->first();
+        //Datos del Operador segun el Vendedor
+        $vendedorData = \App\ADMVENDEDOR::where('CODIGO','=',$cabecera['usuario'])->first();
+        //return response()->json($vendedorData);
        
-        if($vendedorData == null){
-            return response()->json(["error"=>["info"=>"No existe vendedor asociado a el Operador: " .$operador1]]);
+        if($vendedorData->operadormovil == null or trim($vendedorData->operadormovil) == ""){
+            return response()->json(["error"=>["info"=>"No existe Operador asociado a el Vendedor: " .$cabecera['usuario']]]);
+        }else{
+            $operador1 = $vendedorData->operadormovil;
         }
      
         $parametrov = ADMPARAMETROV::first();
@@ -446,9 +449,9 @@ class VentaElectroController extends Controller
             $detalles = \App\ADMDETEGRESO::where('SECUENCIAL',$cab->SECUENCIAL)->get();
             $pdf = \PDF::loadView('pdfs/pdffactura2',['cabecera'=>$order,'cliente'=>$cliente,'parametrobo'=>$parametrobo,'detalles'=>$detalles]);
 
-            $vendedor = \App\ADMVENDEDOR::where('operadormovil','=',$cabecera['usuario'])->first();
+            $vendedor = \App\ADMVENDEDOR::where('CODIGO','=',$cabecera['usuario'])->first();
 
-            Log::info('Vendedor',['vendedor'=> $vendedor]);
+            //Log::info('Vendedor',['vendedor'=> $vendedor]);
             $vendEmail = $vendedor->email;
 
             

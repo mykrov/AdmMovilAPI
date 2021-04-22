@@ -13,20 +13,23 @@ class PagoCuotasController extends Controller
 {
     public function PagoCuota(Request $r)
     {
+        Log::info("PagoCuota",['resquest'=>$r]);
         $operador1 = $r->operador;
         $deudas = $r->facturas;
         $tipoPago = $r->medioPago;
         $cliente = $r->cliente;
-        $fechaChq = $r->fecha;
+        $fechaChq = $r->fechaVen;
+        $fechaPago = $r->fechaPago;
         $montoPagar = $r->total;
         $parametrov = ADMPARAMETROV::first();
         $NumCre = \App\ADMTIPODOC::where('TIPO','=','PAG')->first();
         $date = Carbon::now()->subHours(5);
         $numeroGuia = $r->numguia;
         $fcChq = Carbon::createFromFormat('Y-m-d',$fechaChq)->Format('d-m-Y');
+        $fcPag = Carbon::createFromFormat('Y-m-d',$fechaPago)->Format('d-m-Y');
+       
         $observacionCre = "";
         $bodegaDeuda = 10;
-
         $secDelPago = 0;
 
         //Vendedor de la deuda a pagar
@@ -62,6 +65,7 @@ class PagoCuotasController extends Controller
             $operadorData = \App\ADMOPERADOR::where('CODIGO','=',$operador1)->first();
             $cobrador = '';
 
+
             if($operadorData == null || $operadorData->COBRADOR == null || trim($operadorData->COBRADOR) == ''){
                 $cobrador = 'ADM';
             }else{
@@ -70,6 +74,8 @@ class PagoCuotasController extends Controller
                 $cajaAbierta = DB::table('ADMCAJACOB')->where([['estadocaja','=','A'],['estado','=','A'],['codigo','=',$operadorData->caja]])
                 ->select('codigo','DIRECCION')
                 ->get();
+
+
                     
                 if($cajaAbierta == null){
                     return response()->json(['estado'=>'error','info'=>'NO HAY CAJA']);
@@ -91,10 +97,10 @@ class PagoCuotasController extends Controller
             $pago->operador = $operador1;
             $pago->observacion = "Pago ".$tipoPago. " por ADMGO Nro:".$pago->numero;
             $pago->numpapel = "";
-            $pago->fecha = $date->Format('d-m-Y');
+            $pago->fecha = $fcPag;
             $pago->vendedor = $vendedor->VENDEDOR;
             $pago->oripago = "C";
-            $pago->hora = $date->Format('H:i:s');
+            $pago->hora =  $date->Format('H:i:s');
             $pago->nombrepc = 'Servidor Laravel';
             $pago->cajac = $cajaAbierta[0]->codigo;
             $pago->fechaeli = "";
@@ -158,7 +164,7 @@ class PagoCuotasController extends Controller
                 $deudaChq->MONTO = $montoPagar;
                 $deudaChq->CREDITO = 0;
                 $deudaChq->SALDO = $montoPagar;
-                $deudaChq->FECHAEMI = $date->Format('Y-d-m');
+                $deudaChq->FECHAEMI = $fcPag;
                 $deudaChq->FECHAVEN = $fcChq;
                 $deudaChq->FECHADES = $fcChq;
                 $deudaChq->BANCO = trim($r->banco);
@@ -187,7 +193,7 @@ class PagoCuotasController extends Controller
                 $creditoLinea2->CLIENTE = $deudaChq->CLIENTE;
                 $creditoLinea2->TIPO = $deudaChq->TIPO;
                 $creditoLinea2->NUMERO = $deudaChq->NUMERO;
-                $creditoLinea2->FECHA = $date->Format('Y-d-m');
+                $creditoLinea2->FECHA = $fcPag;
                 $creditoLinea2->MONTO = $montoPagar;
                 $creditoLinea2->SALDO = $montoPagar;
                 $creditoLinea2->OPERADOR = $operador1;
@@ -235,7 +241,7 @@ class PagoCuotasController extends Controller
                 $movibanco->numdocumento = $r->numCheque;
                 $movibanco->banco = $r->banco;
                 $movibanco->cuenta = $r->cuentaChq;
-                $movibanco->fecha = $date->Format('d-m-Y');
+                $movibanco->fecha = $fcPag;
                 
                 $movibanco->fechavence = $fcChq;
                 $movibanco->monto = $montoPagar;
@@ -266,7 +272,7 @@ class PagoCuotasController extends Controller
             $cabCompro->secuencial = $parametroBO->secuencial + 1;
 
             $numComproContable = $cabCompro->secuencial;
-            $cabCompro->fecha = $date->Format('Y-d-m');
+            $cabCompro->fecha = $fcPag;
             $cabCompro->tipoComprobante = 18;
             $cabCompro->numero = -1;
             $cabCompro->cliente = trim($clienteData->RAZONSOCIAL);
@@ -274,7 +280,7 @@ class PagoCuotasController extends Controller
             $cabCompro->debito = $montoPagar;
             $cabCompro->credito = $montoPagar;
             $cabCompro->estado = "C";
-            $cabCompro->fechao = $date->Format('Y-d-m');
+            $cabCompro->fechao = $fcPag;
             $cabCompro->retencion = "N";
             $cabCompro->operador = $operador1;
             $cabCompro->modulo = "CXC";
@@ -384,7 +390,7 @@ class PagoCuotasController extends Controller
                     $creditoLinea->NUMCRE = $pago->numero;
                     $creditoLinea->SERIECRE = '';
                     $creditoLinea->NOAUTOR = '';
-                    $creditoLinea->FECHA = $date->Format('Y-d-m');
+                    $creditoLinea->FECHA = Carbon::createFromFormat('d-m-Y',$fcPag)->Format('Y-d-m');
                     $creditoLinea->IVA = 0;
                     $creditoLinea->MONTO = $montoPagar;
                     $creditoLinea->SALDO = round(($saldo - $montoPagar),2);
@@ -401,7 +407,7 @@ class PagoCuotasController extends Controller
                     $creditoLinea->seccreditogen = 0;
                     $creditoLinea->save();
 
-                    if($this->pagarCuotas($numDeuda,$montoPagar,$pago->numero,$operador1,$observacionCre && $this->CambioEstado($numeroGuia,$numDeuda,$montoPagar,$tipoPago))){
+                    if($this->pagarCuotas($numDeuda,$montoPagar,$pago->numero,$operador1,$observacionCre,$fechaPago) && $this->CambioEstado($numeroGuia,$numDeuda,$montoPagar,$tipoPago)){
                         
                     }else{
                         DB::rollback();
@@ -423,7 +429,7 @@ class PagoCuotasController extends Controller
         }
     }
 
-    public function pagarCuotas(int $secuencial, float $mon, int $pago,string $ope,string $observa)
+    public function pagarCuotas(int $secuencial, float $mon, int $pago,string $ope,string $observa, string $fechaPago)
     {
         $monto = $mon;
         $cuotas = \App\ADMDEUDACUOTA::where('SECDEUDA','=',$secuencial)
@@ -431,7 +437,7 @@ class PagoCuotasController extends Controller
         ->orderBy('NUMCUOTA','ASC')
         ->get();
 
-        $fecha = Carbon::now()->subHours(5);
+        $fecha = Carbon::createFromFormat('Y-m-d',$fechaPago)->Format('d-m-Y');
 
         DB::beginTransaction();
         try {
@@ -456,7 +462,7 @@ class PagoCuotasController extends Controller
                     ->update([
                         'SALDO' => 0,
                         'CREDITO'=>$deCuo->MONTO,
-                        'FECHACANCELACUOTA'=>$fecha->format('Y-d-m'),
+                        'FECHACANCELACUOTA'=>Carbon::createFromFormat('d-m-Y',$fecha)->Format('Y-d-m'),
                         'NUMPAGO'=>$pago
                     ]);
 
@@ -471,12 +477,12 @@ class PagoCuotasController extends Controller
                     $deCuoDet->MONTO = round($deCuo->SALDO,2);
                     $deCuoDet->SALDO = 0;
                     $deCuoDet->NUMPAGO = $pago;
-                    $deCuoDet->FECHACANCELA = $fecha->format('Y-d-m');
+                    $deCuoDet->FECHACANCELA = Carbon::createFromFormat('d-m-Y',$fecha)->Format('Y-d-m');
                     $deCuoDet->FECHAVENCE = Carbon::createFromFormat('Y-m-d H:i:s',$deCuo->FECHAVEN)->Format('Y-d-m');
                     $deCuoDet->OBSERVACION = $observa;
                     $deCuoDet->OPERADOR = $ope;
                     $deCuoDet->MAQUINA = "SERVER LARAVEL";
-                    $deCuoDet->HORA = $fecha->format('H:i:s');
+                    $deCuoDet->HORA = Carbon::now()->format('H:i:s');
                     $deCuoDet->save();
 
                 } else {
@@ -494,7 +500,7 @@ class PagoCuotasController extends Controller
                             ->update([
                                 'SALDO' => round($saldoFinal,2),
                                 'CREDITO' => round($creditoFinal,2),
-                                'FECHACANCELACUOTA'=>$fecha->format('Y-d-m'),
+                                'FECHACANCELACUOTA'=> Carbon::createFromFormat('d-m-Y',$fecha)->Format('Y-d-m'),
                                 'NUMPAGO'=>$pago
                             ]);
 
@@ -509,12 +515,12 @@ class PagoCuotasController extends Controller
                     $deCuoDet->MONTO = $monto;
                     $deCuoDet->SALDO = round($deCuo->SALDO - $monto,2);
                     $deCuoDet->NUMPAGO = $pago;
-                    $deCuoDet->FECHACANCELA = $fecha->format('Y-d-m');
+                    $deCuoDet->FECHACANCELA = Carbon::createFromFormat('d-m-Y',$fecha)->Format('Y-d-m');
                     $deCuoDet->FECHAVENCE = Carbon::createFromFormat('Y-m-d H:i:s',$deCuo->FECHAVEN)->Format('Y-d-m');
                     $deCuoDet->OBSERVACION = $observa;
                     $deCuoDet->OPERADOR = $ope;
                     $deCuoDet->MAQUINA = "SERVER LARAVEL";
-                    $deCuoDet->HORA = $fecha->format('H:i:s');
+                    $deCuoDet->HORA = Carbon::now()->format('H:i:s');
                     $deCuoDet->save();
                     break;
                 } 

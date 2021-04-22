@@ -46,4 +46,25 @@ class VentasController extends Controller
 
         return response()->json($detalles);
     }
+
+    public function GetCabeceras2(Request $r)
+    {
+        $vendedor1 = $r['VENDEDOR1'];
+        $vendedor2 = $r['VENDEDOR2'];
+        $f1 = Carbon::createFromFormat('d-m-Y',$r['FECHAINI']);
+        $f2 = Carbon::createFromFormat('d-m-Y',$r["FECHAFIN"]);
+        $fecha1 = $f1->Format('Y-d-m');
+        $fecha2 = $f2->Format('Y-d-m');
+
+        $cabeceras = DB::table('ADMCABEGRESOPOS')
+        ->whereBetween('ADMCABEGRESOPOS.FECHA',[$fecha1, $fecha2])
+        ->whereIn('ADMCABEGRESOPOS.TIPO',array('FAC','NVT'))
+        ->whereBetween('ADMCABEGRESOPOS.VENDEDOR',[$vendedor1,$vendedor2])
+        ->join('ADMCLIENTE','ADMCABEGRESOPOS.CLIENTE','=','ADMCLIENTE.CODIGO' )
+        ->select('ADMCLIENTE.RAZONSOCIAL','ADMCABEGRESOPOS.TIPO','ADMCABEGRESOPOS.SERIE',
+        'ADMCABEGRESOPOS.NUMERO','ADMCABEGRESOPOS.FECHA','ADMCABEGRESOPOS.CLIENTE','ADMCABEGRESOPOS.SECUENCIAL',
+        'ADMCABEGRESOPOS.SUBTOTAL','ADMCABEGRESOPOS.DESCUENTO','ADMCABEGRESOPOS.IVA','ADMCABEGRESOPOS.NETO','ADMCABEGRESOPOS.VENDEDOR')->get();
+
+        return response()->json($cabeceras);
+    }
 }

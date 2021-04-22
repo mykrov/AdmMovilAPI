@@ -34,8 +34,7 @@ class PedidoController extends Controller
 
         $operador1 = '';
 
-        //return response()->json($r);
-
+        
         //Datos del Operador segun vendedor
         $vendedorData = \App\ADMVENDEDOR::where('CODIGO','=',$cabecera['usuario'])->first();
         $operador1 = '';
@@ -70,8 +69,7 @@ class PedidoController extends Controller
             $cliente = Cliente::where('CODIGO','=',$cabecera['cliente'])->first();
             $parametrobo = ADMPARAMETROBO::first();
 
-            //return response()->json($bodega);
-
+            
             $grabaIva = "N";
             if(floatval($cabecera['iva']) > 0){
                 $grabaIva = "S";

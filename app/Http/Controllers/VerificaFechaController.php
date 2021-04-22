@@ -11,7 +11,7 @@ class VerificaFechaController extends Controller
 {
     public function DiasRestantes()
     {
-        $fechVenceBase = Cache::remember('fechaBase07',5, function () {
+        $fechVenceBase = Cache::remember('fechaBase34',5, function () {
             return DB::table('ADMPARAMETROBO')->first();
         });
 
@@ -38,7 +38,7 @@ class VerificaFechaController extends Controller
         }
         
         
-        $fechVence = Carbon::createFromFormat('dmY', implode($numeroreales))->subDays(1)->subHours(5);
+        $fechVence = Carbon::createFromFormat('dmY', implode($numeroreales))->subHours(5);
         $fechActual = Carbon::now()->subHours(5);
         
         $diasRestantes = $fechVence->diffInDays($fechActual);
