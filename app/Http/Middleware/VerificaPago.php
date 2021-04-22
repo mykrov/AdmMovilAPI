@@ -48,13 +48,13 @@ class VerificaPago
             }
         }
         //return response()->json(implode($numeroreales));
-        $fechVence = Carbon::createFromFormat('dmY', implode($numeroreales))->subDays(1)->subHours(5);
+        $fechVence = Carbon::createFromFormat('dmY', implode($numeroreales));
         $fechActual = Carbon::now()->subHours(5);
 
-        if($fechActual < $fechVence){
+        if($fechActual <= $fechVence){
             return $next($request);
         }else{
-            return response()->json(['error'=>['info'=>'Empresa está Inactiva por falta de pago.']]);
+            return response()->json(['error'=>['info'=>'Empresa Inactiva por pago.']]);
         } 
     }
 }
