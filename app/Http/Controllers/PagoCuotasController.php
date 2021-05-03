@@ -13,7 +13,7 @@ class PagoCuotasController extends Controller
 {
     public function PagoCuota(Request $r)
     {
-        Log::info("PagoCuota",['resquest'=>$r]);
+        Log::info("Peticion de PagoCuota",["Request"=>$r]);
         $operador1 = $r->operador;
         $deudas = $r->facturas;
         $tipoPago = $r->medioPago;
@@ -34,9 +34,14 @@ class PagoCuotasController extends Controller
 
         //Vendedor de la deuda a pagar
         $secDeuda = $deudas[0]['numero'];
-
+        Log::info("Sec Deuda ".$secDeuda);
         $serieDeuda = DB::table('ADMDEUDA')->where('SECUENCIAL',$secDeuda)
         ->first();
+
+        // if($serieDeuda == null or COUNT($serieDeuda) == 0){
+        //     Log::error("Error pagoCuota:",['Mensaje'=>"Secuencial no encontrado en Deudas " .$secDeuda]); 
+        //     return response()->json(['error'=>'Secuencial no encontrado en Deudas, Secuencial Nro ' .$secDeuda]);
+        // }
 
         $codigoPunto = substr($serieDeuda->SERIE, 0, 3);
 
@@ -77,7 +82,7 @@ class PagoCuotasController extends Controller
 
 
                     
-                if($cajaAbierta == null){
+                if($cajaAbierta == null or COUNT($cajaAbierta) == 0){
                     return response()->json(['estado'=>'error','info'=>'NO HAY CAJA']);
                 }
             }
@@ -408,10 +413,10 @@ class PagoCuotasController extends Controller
                     $creditoLinea->save();
 
                     if($this->pagarCuotas($numDeuda,$montoPagar,$pago->numero,$operador1,$observacionCre,$fechaPago) && $this->CambioEstado($numeroGuia,$numDeuda,$montoPagar,$tipoPago)){
-                        
+                        Log::info("Proceso de Pago y Cambio de estado Exitoso.");
                     }else{
                         DB::rollback();
-                        return response()->json(['error'=>'Pagando Deuda en DEUDACUOTA , DEUDACUOTADET secuencial: '.$numDeuda]);
+                        return response()->json(['error'=>'Error en proceso de pago y cambio de estado, Secuencial: '.$numDeuda.' de la guia: '. $numeroGuia]);
                     }
                     
                 }else{
@@ -543,7 +548,7 @@ class PagoCuotasController extends Controller
             ->where('NUMGUIA',$Numguia)
             ->first();
 
-            if($DetGuiaCobro != NULL){
+            if($DetGuiaCobro != NULL or COUNT($DetGuiaCobro) == 0){
                 //Log::info("entra en el DETGUIACOB valido");
                 $chq = 0;
                 $efect = 0;
@@ -570,6 +575,7 @@ class PagoCuotasController extends Controller
                         'OTRO' => round($DetGuiaCobro->OTRO + $otro,2),
                         'FECULTPAG'=> Carbon::now()->format('Y-d-m')
                     ]);
+                    //Log::info("valor del result en el update 1 CAMBIOESTADO",['result'=>$result]);
                     DB::commit();
                     return true;
                 } else {
@@ -584,6 +590,7 @@ class PagoCuotasController extends Controller
                         'OTRO' => round($DetGuiaCobro->OTRO + $otro,2),
                         'FECULTPAG'=> Carbon::now()->format('Y-d-m')
                     ]);
+                    //Log::info("valor del result en el update 2 CAMBIOESTADO",['result'=>$result]);
                     DB::commit();
                     return true;
                 }
