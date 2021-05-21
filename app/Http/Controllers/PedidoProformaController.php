@@ -58,12 +58,12 @@ class PedidoProformaController extends Controller
         }
 
         //En caso de Observacion y Datos del Request.
-        if(trim($cabecera['observacion']) != "" && $cabecera['observacion'] != null){
+        if(trim($cabecera['observacion']) != "NA" && $cabecera['observacion'] != null){
             $observacion = $cabecera['observacion'];
             //Log::info("Observacion de PedidoProforma: ",['Contenido'=>$cabecera['observacion']]);
         }
 
-        if(trim($cabecera['datos_adi']) != ""  && $cabecera['datos_adi'] != null){
+        if(trim($cabecera['datos_adi']) != "NA"  && $cabecera['datos_adi'] != null){
             $campo_adi = $cabecera['datos_adi'];
             //Log::info("Datos Adi de PedidoProforma: ",['Contenido'=>$cabecera['datos_adi']]);
         }

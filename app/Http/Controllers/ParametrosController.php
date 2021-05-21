@@ -18,6 +18,8 @@ class ParametrosController extends Controller
    {
         $paramBO = \App\ADMPARAMETROBO::first();
         $paramV = \App\ADMPARAMETROV::first();
+        $paramC = \App\ADMPARAMETROC::first();
+
 
 
         return response()->json([['NOMBRECIA'=>trim($paramV->NOMBRECIA),
@@ -36,7 +38,9 @@ class ParametrosController extends Controller
                                     'POSFACLIN' => $paramV->POSFACLIN,
                                     'ESQUEMAFARMA' => $paramV->ESQUEMAFARMA,
                                     'posrangoprecio'=> $paramV->posrangoprecio,
-                                    'PORPRECIOPISO' => $paramV->PORPRECIOPISO
+                                    'PORPRECIOPISO' => $paramV->PORPRECIOPISO,
+                                    'interes'=> $paramC->interes,
+                                    'porintmoradia'=>round($paramC->porintmoradia,5)
                                 ]]);
    }
 }

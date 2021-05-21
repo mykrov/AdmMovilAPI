@@ -24,13 +24,15 @@ class VerificaPago
 
         $dc = $fechVenceBase->fechapedido;
 
-        if ($dc == null){
-            return $next($request);
-        }
+         if ($dc == null){
+             return $next($request);
+         }
 
-        // if (true){
-        //     return $next($request);
-        // }
+
+         
+        //if (true){
+        //    return $next($request);
+        //}
 
         $substrin = substr($dc,0,8);
         $numeroreales = [];

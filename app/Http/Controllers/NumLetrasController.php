@@ -60,7 +60,7 @@ class NumLetrasController extends Controller
         $numeros = $r['numero'];
         $date = Carbon::now()->subHours(5);
         $letras = $this->convertir($numeros,'DOLARES','CENTAVOS');
-        return response()->json(['date'=>$date->format('H:i:s')]);
+        //return response()->json(['date'=>$date->format('H:i:s')]);
         return response()->json(['letras'=>$letras]);
 
     }

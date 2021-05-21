@@ -852,7 +852,7 @@ class Cliente extends Controller
                 $ClientNew->CTACLIENTE = "";
                 $ClientNew->CUPO = 0;
                 $ClientNew->GRUPO = '';
-                $ClientNew->ORDEN = $datos["ORDEN"];
+                $ClientNew->ORDEN = $standar->ORDEN;
                 $ClientNew->CODFRE = $standar->CODFRE;
                 $ClientNew->CREDITO = $standar->CREDITO;
                 $ClientNew->DIA = $diaSemana + 1;

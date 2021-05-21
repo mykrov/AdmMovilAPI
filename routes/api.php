@@ -172,6 +172,11 @@ Route::post('/ventaelec','VentaElectroController@PostPedidoElectro');
 Route::get('/diasrestantes','VerificaFechaController@DiasRestantes');
 Route::get('/vendedores','Vendedor@listado');
 
+//Visitas
+Route::post('/visitaxvende','VisitaClienteController@GetVisitas');
+Route::post('/visitaxruta','VisitaClienteController@GetVisitasRuta');
+Route::post('/visitamarca','VisitaClienteController@SaveVisita');
+
 Route::middleware('auth:api')->group(function () {
     Route::get('/vendedorinfo',function (Request $request) {
         return $request->user();

@@ -44,21 +44,25 @@ class GenerarAnticipo extends Controller
         try {
              //ADMPAGO
             $cajaOperador = DB::table("ADMOPERADOR")
-            ->where(['codigo','=',$operador])
+            ->where([['codigo','=',$operador],['estado','=','A']])
             ->get();
+            //return response()->json($operador);
+            //return response()->json($cajaOperador);
 
             if($cajaOperador == null or COUNT($cajaOperador) == 0){
                 return response()->json(['estado'=>'error','info'=>'Operador Sin Caja']);
             }
 
+            //return response()->json($cajaOperador[0]->caja);
+
             $cajaAbierta = DB::table('ADMCAJACOB')
             ->where([['estadocaja','=','A'],['estado','=','A'],['fechaini','<=',$fcPag],['fechafin','>=',$fcPag]])
-            ->where(['codigo','=',$cajaOperador[0]->caja])
+            ->where([['codigo','=',$cajaOperador[0]->caja]])
             ->select('codigo')
             ->get();
-
+            //return response()->json($cajaAbierta);
             //Log::info("caja abierta",['caja'=>$cajaAbierta]);
-
+            
             if($cajaAbierta == null or COUNT($cajaAbierta) == 0){
                 return response()->json(['estado'=>'error','info'=>'NO HAY CAJA']);
             }
