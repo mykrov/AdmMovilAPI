@@ -27,7 +27,7 @@ class Cliente extends Controller
     public function listado(){
         
         $clientes = \App\Cliente::where('ESTADO','=','A')
-        ->select(['CODIGO','RAZONSOCIAL','NEGOCIO','DIRECCION','TELEFONOS','FAX','EMAIL','RUC','GRUPO','TIPONEGO','TIPO'])
+        ->select(['CODIGO','ORDEN','RAZONSOCIAL','NEGOCIO','DIRECCION','TELEFONOS','FAX','EMAIL','RUC','GRUPO','TIPONEGO','TIPO'])
         ->simplePaginate(100);
 
         return response()->json($clientes);
@@ -52,7 +52,7 @@ class Cliente extends Controller
     public function listado2(){
         
         $clientes2 = \App\Cliente::where('ESTADO','=','A')
-        ->select(['CODIGO','RAZONSOCIAL','NEGOCIO','DIRECCION','TELEFONOS','FAX','EMAIL','RUC','GRUPO','TIPONEGO','TIPO'])
+        ->select(['CODIGO','ORDEN','RAZONSOCIAL','NEGOCIO','DIRECCION','TELEFONOS','FAX','EMAIL','RUC','GRUPO','TIPONEGO','TIPO'])
         ->get();
         return response()->json($clientes2);
 
@@ -119,7 +119,7 @@ class Cliente extends Controller
     {
         $clientes = \App\Cliente::where('RAZONSOCIAL', 'like', '%' . $like . '%')
         ->where('ESTADO','=','A')
-        ->select(['CODIGO','RAZONSOCIAL','NEGOCIO','DIRECCION','TELEFONOS','FAX','EMAIL','RUC','GRUPO','TIPONEGO','TIPO','latitud','longuitud'])
+        ->select(['CODIGO','ORDEN','RAZONSOCIAL','NEGOCIO','DIRECCION','TELEFONOS','FAX','EMAIL','RUC','GRUPO','TIPONEGO','TIPO','latitud','longuitud'])
         ->get();
         return response()->json($clientes);
     }
@@ -159,7 +159,7 @@ class Cliente extends Controller
         $clientes = \App\Cliente::where('RAZONSOCIAL', 'like', '%' . $like . '%')
         ->where('ESTADO','=','A')
         ->where('VENDEDOR','=',$vendedor)
-        ->select(['CODIGO','RAZONSOCIAL','NEGOCIO','DIRECCION','TELEFONOS','FAX','EMAIL','RUC','GRUPO','TIPONEGO','TIPO','latitud','longuitud'])
+        ->select(['CODIGO','ORDEN','RAZONSOCIAL','NEGOCIO','DIRECCION','TELEFONOS','FAX','EMAIL','RUC','GRUPO','TIPONEGO','TIPO','latitud','longuitud'])
         ->get();
         return response()->json($clientes);
     }
@@ -201,7 +201,7 @@ class Cliente extends Controller
         $clientes = \App\Cliente::where('RAZONSOCIAL', 'like', '%' . $like . '%')
         ->where('ESTADO','=','A')
         ->where('DIA','=',$diaSemana + 1)
-        ->select(['CODIGO','RAZONSOCIAL','NEGOCIO','DIRECCION','TELEFONOS','FAX','EMAIL','RUC','GRUPO','TIPONEGO','TIPO','latitud','longuitud'])
+        ->select(['CODIGO','ORDEN','RAZONSOCIAL','NEGOCIO','DIRECCION','TELEFONOS','FAX','EMAIL','RUC','GRUPO','TIPONEGO','TIPO','latitud','longuitud'])
         ->get();
         return response()->json($clientes);
     }
@@ -240,7 +240,7 @@ class Cliente extends Controller
         $clientes = \App\Cliente::where('CODIGO','=',$id)
         ->where('ESTADO','=','A')
         ->where('VENDEDOR','=',$vendedor)
-        ->select(['CODIGO','RAZONSOCIAL','NEGOCIO','DIRECCION','TELEFONOS','FAX','EMAIL','RUC','GRUPO','TIPONEGO','TIPO'])
+        ->select(['CODIGO','ORDEN','RAZONSOCIAL','NEGOCIO','DIRECCION','TELEFONOS','FAX','EMAIL','RUC','GRUPO','TIPONEGO','TIPO'])
         ->get();
         return response()->json($clientes);
     }
@@ -275,7 +275,7 @@ class Cliente extends Controller
         $clientes = \App\Cliente::where('VENDEDOR','=',$vendedor)
         ->orWhere('VENDEDORAUX','=', $vendedor)
         ->where('ESTADO','=','A')
-        ->select(['CODIGO','RAZONSOCIAL','NEGOCIO','DIRECCION','TELEFONOS','FAX','EMAIL','RUC','GRUPO','TIPONEGO','TIPO'])
+        ->select(['CODIGO','ORDEN','RAZONSOCIAL','NEGOCIO','DIRECCION','TELEFONOS','FAX','EMAIL','RUC','GRUPO','TIPONEGO','TIPO'])
         ->get();
         return response()->json($clientes);
     }
@@ -323,7 +323,7 @@ class Cliente extends Controller
         ->where('VENDEDOR','=',$vendedor)
         ->where('DIA','=',$diaSemana + 1)
         ->where('ESTADO','=','A')
-        ->select(['CODIGO','RAZONSOCIAL','NEGOCIO','DIRECCION','TELEFONOS','FAX','EMAIL','RUC','GRUPO','TIPONEGO','TIPO','latitud','longuitud'])
+        ->select(['CODIGO','ORDEN','RAZONSOCIAL','NEGOCIO','DIRECCION','TELEFONOS','FAX','EMAIL','RUC','GRUPO','TIPONEGO','TIPO','latitud','longuitud'])
         ->get();
         return response()->json($clientes);
     }
@@ -371,7 +371,7 @@ class Cliente extends Controller
         ->where('VENDEDOR','=',$vendedor)
         ->where('DIA','=',$diaSemana + 1)
         ->where('ESTADO','=','A')
-        ->select(['CODIGO','RAZONSOCIAL','NEGOCIO','DIRECCION','TELEFONOS','FAX','EMAIL','RUC','GRUPO','TIPONEGO','TIPO'])
+        ->select(['CODIGO','ORDEN','RAZONSOCIAL','NEGOCIO','DIRECCION','TELEFONOS','FAX','EMAIL','RUC','GRUPO','TIPONEGO','TIPO'])
         ->get();
         return response()->json($clientes);
     }
@@ -411,7 +411,7 @@ class Cliente extends Controller
         $clientes = \App\Cliente::where('CODIGO','=',$codigo)
         ->where('DIA','=',$diaSemana + 1)
         ->where('ESTADO','=','A')
-        ->select(['CODIGO','RAZONSOCIAL','NEGOCIO','DIRECCION','TELEFONOS','FAX','EMAIL','RUC','GRUPO','TIPONEGO','TIPO'])
+        ->select(['CODIGO','ORDEN','RAZONSOCIAL','NEGOCIO','DIRECCION','TELEFONOS','FAX','EMAIL','RUC','GRUPO','TIPONEGO','TIPO'])
         ->get();
         return response()->json($clientes);
     }
@@ -451,7 +451,7 @@ class Cliente extends Controller
         $clientes = \App\Cliente::where('VENDEDOR','=',$vendedor)
         ->where('ESTADO','=','A')
         ->where('DIA','=',$diaSemana + 1)
-        ->select(['CODIGO','RAZONSOCIAL','NEGOCIO','DIRECCION','TELEFONOS','FAX','EMAIL','RUC','GRUPO','TIPONEGO','TIPO'])
+        ->select(['CODIGO','ORDEN','RAZONSOCIAL','NEGOCIO','DIRECCION','TELEFONOS','FAX','EMAIL','RUC','GRUPO','TIPONEGO','TIPO'])
         ->get();
         return response()->json($clientes);
     }
@@ -483,7 +483,7 @@ class Cliente extends Controller
         }
 
         $clientes = \App\Cliente::where('DIA','=',$diaSemana + 1)
-        ->select(['CODIGO','RAZONSOCIAL','NEGOCIO','DIRECCION','TELEFONOS','FAX','EMAIL','RUC','GRUPO','TIPONEGO','TIPO'])
+        ->select(['CODIGO','ORDEN','RAZONSOCIAL','NEGOCIO','DIRECCION','TELEFONOS','FAX','EMAIL','RUC','GRUPO','TIPONEGO','TIPO'])
         ->get();
         return response()->json($clientes);
     }

@@ -6,7 +6,8 @@ use Illuminate\Http\Request;
 
 class ParametrosController extends Controller
 {
-   public function GetParametros(){
+   public function GetParametros()
+   {
        $paramBO = \App\ADMPARAMETROBO::get();
        //$paramV = \App\ADMPARAMETROV::get();
        $paramC = \App\ADMPARAMETROC::get();
@@ -40,7 +41,8 @@ class ParametrosController extends Controller
                                     'posrangoprecio'=> $paramV->posrangoprecio,
                                     'PORPRECIOPISO' => $paramV->PORPRECIOPISO,
                                     'interes'=> $paramC->interes,
-                                    'porintmoradia'=>round($paramC->porintmoradia,5)
+                                    'porintmoradia'=>round($paramC->porintmoradia,5),
+                                    'CONFAC' => $paramV->CONFAC
                                 ]]);
    }
 }
