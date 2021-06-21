@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Log;
 
 class ProformaEdicionController extends Controller
 {
-    public function EditarProforma(Request $r)
+    public function EditarProforma(Request $r)    
     {
         $cabecera = $r->cabecera[0];
         $detalles = $r->detalles;
@@ -97,7 +97,7 @@ class ProformaEdicionController extends Controller
                 } 
                 DB::commit();
                 Log::info("Actualizacion de PedidoProformaController ", ["cabecera" => $cabe,"detalles"=> $detalles,"TiempoPreciso"=>Carbon::now()->subHours(5)->format('H:m:s.u')]);
-                return response()->json(["estado"=>"actualizado", "Npedido"=>$cabe->NUMERO, "secuencial"=>$cabe->SECUENCIAL]);
+                return response()->json(["estado"=>"guardado", "Npedido"=>$cabe->NUMERO, "secuencial"=>$cabe->SECUENCIAL]);
     
             } else {
                 DB::rollback();
