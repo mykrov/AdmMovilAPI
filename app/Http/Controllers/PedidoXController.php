@@ -31,14 +31,41 @@ class PedidoXController extends Controller
         }
 
          //En caso de Observacion.
+        // $observacion = "Gracias por su Compra.";
+        // if(trim($cabecera['observacion']) != ""){
+        //     $observacion = $cabecera['observacion'];
+        // }
+
+        // $campo_adi = "Gracias por su Compra.";
+        // if(trim($cabecera['datos_adi']) != ""){
+        //     $campo_adi = $cabecera['datos_adi'];
+        // }
+
+        
         $observacion = "Gracias por su Compra.";
-        if(trim($cabecera['observacion']) != ""){
-            $observacion = $cabecera['observacion'];
+        $campo_adi = "Gracias por su Compra.";
+
+        //Observacion y Datos del cliente.
+        $clienteObservacion  = $cliente->OBSERVACION;
+        $clienteReferencia = $cliente->REFERENCIA;
+
+        if($clienteObservacion != null && trim($clienteObservacion) != "" ){
+            $observacion = $clienteObservacion;
         }
 
-        $campo_adi = "Gracias por su Compra.";
-        if(trim($cabecera['datos_adi']) != ""){
+        if($clienteReferencia != null && trim($clienteReferencia) != "" ){
+            $campo_adi = $clienteReferencia;
+        }
+
+        //En caso de Observacion y Datos del Request.
+        if(trim($cabecera['observacion']) != "NA" && $cabecera['observacion'] != null){
+            $observacion = $cabecera['observacion'];
+            //Log::info("Observacion de PedidoProforma: ",['Contenido'=>$cabecera['observacion']]);
+        }
+
+        if(trim($cabecera['datos_adi']) != "NA"  && $cabecera['datos_adi'] != null){
             $campo_adi = $cabecera['datos_adi'];
+            //Log::info("Datos Adi de PedidoProforma: ",['Contenido'=>$cabecera['datos_adi']]);
         }
 
         $secAutoNew = 0;

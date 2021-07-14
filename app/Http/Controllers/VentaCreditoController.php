@@ -1,52 +1,51 @@
 <?php
-
 namespace App\Http\Controllers;
-
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use \App\ADMBODEGA;
 use \App\ADMPARAMETROV;
 use \App\ADMPARAMETROBO;
 use \App\Cliente;
-use \App\ADMCABEGRBOD;
 use \App\ADMDETEGRBOD;
+use \App\ADMCABEGRBOD;
 use \App\ADMDEUDA;
 use \App\ADMCREDITO;
-use \App\ADMCAJACOB;
-use \App\ADMPUNTOASIENTOS;
 use \App\Mail\FacturaInvoice;
-use Illuminate\Support\Facades\Log;
+use \App\ADMDETEGRESO;
 
-class VentaElectroController extends Controller
+
+class VentaCreditoController extends Controller
 {
-    public function PostPedidoElectro(Request $r)
+    
+    public function PostVentaCre(Request $r)
     {
-        
         $cabecera = $r->cabecera[0];
         $detalles = $r->detalles;
-        
-        Log::info('Nueva Venta de electrodomestico',['cabecera'=>$cabecera]);
+        Log::info(['cab'=>$cabecera,'detalle'=>$detalles]);
+        //return response()->json(['CAB'=>$r]);
 
-        //return response()->json(['CONTEO'=>COUNT($detalles)]);
         $detallesContador = COUNT($detalles);
+        
         if($detallesContador == 0){
             return response()->json(['error'=>'Cabecera Sin Detalles']);
         }
 
-        $operador1 = "";
+        $operador1 = '';
 
-        //Datos del Operador segun el Vendedor
+        
+        //Datos del Operador segun vendedor
         $vendedorData = \App\ADMVENDEDOR::where('CODIGO','=',$cabecera['usuario'])->first();
-        //return response()->json($vendedorData);
-       
-        if($vendedorData->operadormovil == null or trim($vendedorData->operadormovil) == ""){
-            return response()->json(["error"=>["info"=>"No existe Operador asociado a el Vendedor: " .$cabecera['usuario']]]);
-        }else{
-            $operador1 = $vendedorData->operadormovil;
+        $operador1 = '';
+        if($vendedorData == null || $vendedorData->operadormovil == null){
+            $operador1 = 'ADM';
         }
      
+
+       
         $parametrov = ADMPARAMETROV::first();
         $secuencialNew = $parametrov->SECUENCIAL;
         $parametrov->SECUENCIAL = $parametrov->SECUENCIAL + 1;
@@ -57,25 +56,22 @@ class VentaElectroController extends Controller
 
         //En caso de Observacion.
         $observacion = "Gracias por su Compra.";
-        if(trim($cabecera['observacion']) != null){
+        if(trim($cabecera['observacion']) != ""){
             $observacion = $cabecera['observacion'];
         }
 
         $campo_adi = "Gracias por su Compra.";
-        if(trim($cabecera['datos_adi']) != null){
+        if(trim($cabecera['datos_adi']) != ""){
             $campo_adi = $cabecera['datos_adi'];
         }
 
         try {
         
             $bodega = ADMBODEGA::where('CODIGO','=',$cabecera['bodega'])->first();
-            $cajaCob = ADMCAJACOB::where('codigo','=',$cabecera['caja'])->first();
             $cliente = Cliente::where('CODIGO','=',$cabecera['cliente'])->first();
             $parametrobo = ADMPARAMETROBO::first();
-            Log::info('Cliente',['cliente'=>$cliente]);
 
-            //return response()->json($bodega);
-
+            
             $grabaIva = "N";
             if(floatval($cabecera['iva']) > 0){
                 $grabaIva = "S";
@@ -89,12 +85,12 @@ class VentaElectroController extends Controller
             $cab->BODEGA = intval($cabecera['bodega']); 
              
             if($cabecera['tipo'] == 'NVT'){
-                $cab->NUMERO = $cajaCob->NUMNVT + 1;
+                $cab->NUMERO = $bodega->NONOTA + 1;
             }else{
-                $cab->NUMERO = $cajaCob->NUMFAC + 1;
+                $cab->NUMERO = $bodega->NOFACTURA + 1;
             }
 
-            $cab->SERIE = trim($cajaCob->SERIE); 
+            $cab->SERIE = trim($bodega->SERIE); 
             $cab->SECUENCIAL = $secuencialNew + 1; 
             $cab->NUMPROCESO = null; 
             $cab->NUMPEDIDO = 0; 
@@ -110,10 +106,12 @@ class VentaElectroController extends Controller
             $cab->CLIENTE = $cabecera['cliente']; 
             $cab->VENDEDOR = $cabecera['usuario']; 
             $cab->PROVEEDOR = null; 
+
             $cab->SUBTOTAL = round($cabecera['subtotal'],2); 
             $cab->DESCUENTO = round($cabecera['descuento'],2); 
             $cab->IVA = round($cabecera['iva'],2); 
             $cab->NETO = round($cabecera['neto'],2); 
+
             $cab->TRANSPORTE = 0; 
             $cab->RECARGO = 0; 
             $cab->BODEGADES = 0; 
@@ -125,7 +123,7 @@ class VentaElectroController extends Controller
             $cab->TIPOVTA = "BIE"; 
             $cab->INTECXC = null; 
             $cab->OBSERVA =  $observacion; 
-            $cab->COMENTA = $campo_adi; 
+            $cab->COMENTA = $campo_adi;
             $cab->INTEGRADO = null; 
             $cab->SECCON = 0; //Pendiente, se Actualiza al guardar todo.
             $cab->NUMSERIE = null; 
@@ -133,15 +131,15 @@ class VentaElectroController extends Controller
             $cab->APLSRI = null; 
             $cab->NUMFISICO = null; 
             $cab->HORA = $cabecera['hora_ingreso']; 
-            $cab->NOMBREPC = "ServidorLaravel"; 
+            $cab->NOMBREPC = "Servidor - Laravel 2021"; 
             $cab->claseAjuEgreso = null; 
             $cab->SUBTOTAL0 = 0; 
             $cab->NUMGUIATRANS = null; 
             $cab->GRAVAIVA = $grabaIva; 
-            $cab->CREDITO = "N"; 
+            $cab->CREDITO = $cabecera["credito"]; 
             $cab->ESTADODESPACHO = "N"; 
             $cab->SECAUTOVENTA = null; 
-            $cab->NUMCUOTAS = null; 
+            $cab->NUMCUOTAS = $cabecera["numCuotas"]; 
             $cab->NUMGUIAREMISION = $bodega->NUMGUIAREMISION + 1; 
             $cab->SBTBIENES = round($cabecera['subtotal'],2); 
             $cab->SBTSERVICIOS = 0; 
@@ -161,25 +159,26 @@ class VentaElectroController extends Controller
             $cab->GRMFACELEC = "N"; 
             $cab->NOAUTOGRM = null; 
             $cab->mescredito = 0; 
-            $cab->tipopago = ""; 
-            $cab->numeropagos = 0; 
-            $cab->entrada = 0; 
-            $cab->valorfinanciado = 0; 
-            $cab->porinteres = 0; 
-            $cab->montointeres = 0; 
-            $cab->totaldeuda = 0; 
-            $cab->xsubtotal = 0; 
-            $cab->xsubtotal0 = 0; 
+            $cab->tipopago = $cabecera["tipoPago"]; 
+            $cab->numeropagos = $cabecera["numeroPagos"]; 
+            $cab->mesescredito = $cabecera["mesesCredito"];
+            $cab->entrada = $cabecera["entrada"]; 
+            $cab->valorfinanciado = $cabecera["valorFinanciado"]; 
+            $cab->porinteres = $cabecera["porInteres"]; 
+            $cab->montointeres = $cabecera["montoInteres"]; 
+            $cab->totaldeuda = $cabecera["totalDeuda"]; 
+            $cab->xsubtotal = $cabecera["xSubtotal"]; 
+            $cab->xsubtotal0 = $cabecera["xSubtotal0"]; 
+            $cab->fechainipago = $cabecera["fechaIniPago"];
             $cab->xdescuento = 0; 
             $cab->xdescuento0 = 0; 
             $cab->xiva = 0; 
-            $cab->numerosolicitud = 0; 
-            $cab->mesescredito = 0; 
+            $cab->numerosolicitud = 0;              
             $cab->ENVIADONESTLE = "N"; 
             $cab->tipotienda = null; 
             $cab->CodShip = null; 
             $cab->NUMPESAJE = 0; 
-            $cab->ESFOMENTO = "N";
+            $cab->ESFOMENTO = "N";            
 
             $lengh_str = 9;
             $secuencial_str = strval($cab->NUMERO);
@@ -190,7 +189,7 @@ class VentaElectroController extends Controller
 
             $cab->save();
 
-            //Generar Cabecera de Egreso Bodega.
+            //Generar Cabecera de Egreso.
             $cabEgr = new ADMCABEGRBOD();
 
             $cabEgr->SECUENCIAL = $cab->SECUENCIAL;
@@ -204,25 +203,14 @@ class VentaElectroController extends Controller
             $cabEgr->save();
             
             if($cabecera['tipo'] == 'NVT'){
-                $cajaCob->NUMNVT = $cajaCob->NUMNVT + 1;
+                $bodega->NONOTA = $bodega->NONOTA + 1;
             }else{
-                $cajaCob->NUMFAC = $cajaCob->NUMFAC + 1;
+                $bodega->NOFACTURA = $bodega->NOFACTURA + 1;
             }
-            $cajaCob->save();
+            
             $bodega->NUMGUIAREMISION = $cab->NUMGUIAREMISION;
             $bodega->NOEGR = $bodega->NOEGR + 1;
             
-            //Variables para asiento Contable.
-            $subTotal0 = 0;
-            $subTotal = 0;
-            $neto = $cab->NETO;
-            $iva = $cab->IVA;
-            $desc0 = 0;
-            $desc = 0;
-            $cost0 = 0;
-            $cost = 0;
-            $inv0 = 0;
-            $inv = 0;
 
             //Procesado de los Detalles.
             foreach ($detalles as $det) {
@@ -234,27 +222,16 @@ class VentaElectroController extends Controller
                     $grabaIvadet = "S";
                 }
 
-
-                if($det["detalle_producto"] == null)
-                {
-                    $det["detalle_producto"] = "";
-                }
-
-                if($det["serie"] == null or trim($det["serie"]) == '')
-                {
-                    $det["serie"] = "XXX";
-                }
-
                 $itemData = \App\ADMITEM::where('ITEM','=',trim($det['item']))->first();
-                $usaSerie = $itemData->pserie;
+                $itemElectData = \App\ADMITEMPRECIOELE::where('ITEM','=',trim($det['item']))->first();
 
                 $d->SECUENCIAL = intval($cab->SECUENCIAL);
                 $d->LINEA = intval($det['linea']);
                 $d->ITEM = $det['item'];
                 $d->TIPOITEM = $det['tipo_item'];
                 $d->PRECIO = floatval($det['precio']);
-                $d->COSTOP = $itemData->COSTOP;
-                $d->COSTOU = $itemData->COSTOU;
+                $d->COSTOP = $itemElectData->costo;
+                $d->COSTOU = $itemElectData->costo;
                 $d->CANTIU = intval($det['total_unidades']) % $itemData->FACTOR;
                 $d->CANTIC = intval($det['total_unidades']  / $itemData->FACTOR);
                 $d->CANTFUN = intval($det['total_unidades']);
@@ -271,43 +248,45 @@ class VentaElectroController extends Controller
                 $d->PORDES2 = 0;
                 $d->CANTENTREGADA = 0;
                 $d->CANTPORENTREGAR = null;
-                $d->DETALLE = $det["detalle_producto"];
+                $d->DETALLE = $campo_adi;
                 $d->FECHAELA = null;
                 $d->FECHAVEN = null;
                 $d->LOTE = null;
                 $d->preciox = 0;
-                $d->serialitem = $det['serie'];
-                
-                if($iva > 0){
-                    $subTotal += $d->SUBTOTAL;
-                    $desc += $d->DESCUENTO;
-                    $cost += $d->COSTOP;
-                    $inv += $d->COSTOP;
+
+                if($det['serialItem'] == null and $det['tipo_item'] == 'R' ){
+                    $d->serialitem = 'XXXXXX';
+                }elseif($det['serialItem'] === null and $det['tipo_item'] == 'V' ){
+                    $d->serialitem = '';
                 }else{
-                    $subTotal0 += $d->SUBTOTAL;
-                    $desc0 += $d->DESCUENTO;
-                    $cost0 += $d->COSTOP;
-                    $inv0 += $d->COSTOP;
+                    $d->serialitem = $det['serialItem'];
                 }
-        
-                //Bajar Stock del Item.
-                $itemData->STOCK = $itemData->STOCK - $d->CANTFUN;
-                $itemData->save();
                 
-                //Bajar Stock de la Bodega del ITEM utilizando otro metodo ya que no posee PK.
-                $itemBog = \App\ADMITEMBOD::where('ITEM',trim($d->ITEM))
-                ->where('BODEGA',$cab->BODEGA)
-                ->first();
+                Log::info("Detalle de fac");
 
-                $stockBod = $itemBog->STOCK - $d->CANTFUN;
+                //Bajar Stock del item.
+                if($det['item'] != 'INTFIN'){
+                    $itemData->STOCK = $itemData->STOCK - $d->CANTFUN;
+                    $itemData->save();
 
-                $result = DB::table('ADMITEMBOD')
-                            ->where('ITEM', trim($d->ITEM))
-                            ->where('BODEGA',$cab->BODEGA)
-                            ->update([
-                                'STOCK' =>$stockBod,
-                                'ULTFECEGR' => Carbon::now()->subHours(5)->Format('Y-d-m')
-                            ]);
+                    //Bajar Stock de la Bodega del ITEM utilizando otro metodo ya que no posee PK.
+                    $itemBog = \App\ADMITEMBOD::where('ITEM',trim($d->ITEM))
+                    ->where('BODEGA',$cab->BODEGA)
+                    ->first();
+
+                    $stockBod = $itemBog->STOCK - $d->CANTFUN;
+
+                    $result = DB::table('ADMITEMBOD')
+                                ->where('ITEM', trim($d->ITEM))
+                                ->where('BODEGA',$cab->BODEGA)
+                                ->update([
+                                    'STOCK' =>$stockBod,
+                                    'ULTFECEGR' => Carbon::now()->subHours(5)->Format('Y-d-m')
+                                ]);
+
+                    Log::info("modifica stock");
+
+                }               
                 
                 //Generar el Detalle de Egreso.
                 $detEgr = new ADMDETEGRBOD();
@@ -318,13 +297,13 @@ class VentaElectroController extends Controller
                 $detEgr->COSTOP = $d->COSTOP;
                 $detEgr->COSTOU = $d->COSTOU;
                 $detEgr->CANTFUN = $d->CANTFUN;
-                $detEgr->LINEA = $d->LINEA;
-                $detEgr->serialitem = $d->serialitem;
+                $derEgr->SERIALITEM = $d->serialitem;
                 
                 $d->save();
                 $detEgr->save();
 
-                //Dar de baja Item Modelo Electrodomesticos.
+                Log::info("Guarda det egreso");
+
                 $tipoItem = $this->tipoItemElec($detEgr->ITEM);
 
                 if($tipoItem != 'BASICO')
@@ -392,15 +371,15 @@ class VentaElectroController extends Controller
             $deuda->NUMEROFAC = 0;
             $deuda->ACT_SCT = "N";
             $deuda->montodocumento = 0;
-            $deuda->tipoventa = "";
-            $deuda->mesescredito = 0;
+            $deuda->tipoventa = $cabecera['tipoVenta']; // 'CRE'
+            $deuda->mesescredito = $cabecera['mesesCredito'];
             $deuda->tipopago = "";
-            $deuda->numeropagos = 0;
-            $deuda->entrada =0;
-            $deuda->valorfinanciado = 0;
-            $deuda->porinteres = 0;
-            $deuda->montointeres = 0;
-            $deuda->totaldeuda = 0;
+            $deuda->numeropagos = $cabecera['numeroPagos'];
+            $deuda->entrada = $cabecera['entrada'];
+            $deuda->valorfinanciado = $cabecera['valorFinanciado'];
+            $deuda->porinteres = $cabecera['porInteres'];
+            $deuda->montointeres = $cabecera['montoInteres'];
+            $deuda->totaldeuda = $cabecera['totalDeuda'];
             $deuda->seccreditogen = 0;
             $deuda->secdeudagen = 0;
             $deuda->numcuotagen = 0;
@@ -410,6 +389,17 @@ class VentaElectroController extends Controller
             $deuda->usuarioeli = 0;
             $deuda->EWEB = "N";
             //$deuda->ESTADOLIQ = "N";
+
+            //Crear Nota de Debito en caso de entrada
+            if($cab->entrada > 0){
+                Log::info("Tiene Entrada");
+                if($this->CrearNotaDebito($cab->entrada,$deuda->SECUENCIAL + 1,$deuda->SECINV,$cab->CLIENTE,$observacion,
+                $cab->VENDEDOR,$operador1,$cabEgr->BODEGA,$cab->NUMERO,$cabEgr->BODEGA,$cab->SERIE,$cab->FECHA,$deuda->mesescredito)){
+                    Log::info("se generó la nota de debito por entrada.");
+                    $parametrov->SECUENCIAL =  $parametrov->SECUENCIAL + 1;
+
+                }                
+            }
             
             //Generar el Credito.
             $credito = new \App\ADMCREDITO();
@@ -435,23 +425,36 @@ class VentaElectroController extends Controller
             $credito->save();
             $parametrov->SECUENCIAL =  $parametrov->SECUENCIAL + 1;
             $parametrov->save();
-
+            
+            //$claveAcc = $this->GenerarClave('001391200','002152','0991503102001','01','1','2','07-02-2020');
+           
             //Asiento Contable.
             $punto = substr($cab->SERIE,0,3);
+            Log::info(["Punto de la serie "=>$punto]);
             $secContable = $this->asientoContable($subTotal0,$subTotal,$neto,$iva,$desc0,$desc,$cost0,$cost,$inv0,$inv,trim($cliente->RAZONSOCIAL),$observacion,$operador1,$punto);
-            
+            Log::info(["secuencial conable "=>$secContable ]);
             $cab->SECCON = $secContable;
             $cab->save();
+            
+            //Crear las DeudaCuotas
+            if($this->CrearCuotas($cabecera['mesesCredito'],$neto,$deuda->numeropagos,$deuda->SECUENCIAL,$cab->fechainipago,$cab->tipopago) == false){
+                
+                DB::rollback();
+                Log::error("Error Creando las ADMDEUDACUOTAS");
+            }else{
+                Log::info("Creo cuotas del credito");
+            }
+           
             //Guardado de todo en caso de exito en las operaciones.
             DB::commit();
+
+            Log::info("Paso comit de la base");
 
             $order = $cab;
             $detalles = \App\ADMDETEGRESO::where('SECUENCIAL',$cab->SECUENCIAL)->get();
             $pdf = \PDF::loadView('pdfs/pdffactura2',['cabecera'=>$order,'cliente'=>$cliente,'parametrobo'=>$parametrobo,'detalles'=>$detalles]);
 
             $vendedor = \App\ADMVENDEDOR::where('CODIGO','=',$cabecera['usuario'])->first();
-
-            //Log::info('Vendedor',['vendedor'=> $vendedor]);
             $vendEmail = $vendedor->email;
 
             
@@ -506,6 +509,7 @@ class VentaElectroController extends Controller
             }
 
         } catch (\Exception $e) {
+            Log::error($e->getMessage());
             DB::rollback();
             return response()->json(["error"=>["info"=>$e->getMessage()]]);
         }
@@ -513,7 +517,7 @@ class VentaElectroController extends Controller
     
     //Vista para ver la Generacion de un PDF desde el Navegador.
     public function Facturapdf(){
-        $order = \App\ADMCABEGRESO::where('NUMERO',11895)
+        $order = \App\ADMCABEGRESO::where('NUMERO',2910)
         ->whereIn('TIPO',['FAC','NVT'])
         ->orderby('SECUENCIAL','DESC')
         ->first();
@@ -528,7 +532,8 @@ class VentaElectroController extends Controller
     //envio de email de test
 
     public function TestEmail(){
-        Mail::send('emails.TestEmailServer',[], function ($mail) {
+        
+         Mail::send('emails.TestEmailServer',[], function ($mail) {
             $mail->from(env("MAIL_USERNAME"), 'Test de Email');
             $mail->to('salvatorex89@gmail.com');
             $mail->subject('Test envio email');
@@ -635,6 +640,8 @@ class VentaElectroController extends Controller
             ->where('ANIO',$dat->format('Y'))
             ->get();
 
+            Log::info(["cuentasPunto 1"=>$cuentasPunto]);
+
             $CLI = "";
             $VE0 = "";
             $VEN = "";
@@ -650,6 +657,8 @@ class VentaElectroController extends Controller
             ->where('ANIO',Carbon::now()->format('Y'))
             ->where('ASIENTO','=','VEN')
             ->get();
+
+            Log::info(["cuentasPunto 2"=>$cuentasPunto]);
 
             foreach ($cuentasPunto->toArray() as $k => $v){
                 if(in_array('CLI',$v)){
@@ -885,11 +894,151 @@ class VentaElectroController extends Controller
             }
             return $cabecera->secuencial;
         } catch (\Exception $e) {
-            //return response()->json($e->getMessage());
+            Log::erorr(["Creado asiento"=>$e->getMessage()]);
             DB::rollback();
         }
         
     }
 
-   
+    public function CrearCuotas($meses,$montoDeuda,$numCuotas,$secDeuda,$inicioPago,$tipoPago){
+        
+        $fechaInicio = Carbon::createFromFormat('d-m-Y',$inicioPago);
+
+        $montoCuotas = round($montoDeuda / $numCuotas,2);
+        $sumatoria = $montoCuotas * $numCuotas;
+        $diferencia = $montoDeuda - $sumatoria;
+        $saldoProgramado =   $montoDeuda;
+        
+        DB::beginTransaction();
+        
+        try {
+            for ($i=1; $i <= $numCuotas; $i++) { 
+            
+                $deudaCuota = new \App\ADMDEUDACUOTA();
+                $deudaCuota->SECDEUDA = $secDeudar;
+                $deudaCuota->NUMCUOTA = $i ;
+                $deudaCuota->INTERES = null;
+                $deudaCuota->SALDOPROGRAMADO = round($saldoProgramado - $montoCuotas,2);
+    
+                if($deudaCuota->SALDOPROGRAMADO < 0){
+                    $deudaCuota->SALDOPROGRAMADO = 0;
+                }
+    
+                $deudaCuota->CREDITO = 0;
+                $deudaCuota->SALDO = round($montoCuotas,2);
+                $deudaCuota->MONTO = round($montoCuotas,2);
+                
+                if($i == $numCuotas){
+                    $deudaCuota->MONTO = round($montoCuotas + $diferencia,2);
+                    $deudaCuota->SALDO = round($montoCuotas + $diferencia,2);
+                }
+                
+                if($i == 1){                
+                    $deudaCuota->FECHAVEN = $fechaInicio->Format('Y-d-m');
+                }else{
+                    if($tipoPago == 'M'){
+                        $deudaCuota->FECHAVEN = $fechaInicio->addMonth()->Format('Y-d-m');
+                    }elseif($tipoPago == 'D'){
+                        $deudaCuota->FECHAVEN = $fechaInicio->addDay()->Format('Y-d-m');
+                    }elseif($tipoPago == 'Q'){
+                        $deudaCuota->FECHAVEN = $fechaInicio->addDay(15)->Format('Y-d-m');
+                    }                    
+                }
+                
+                $deudaCuota->FECHACANCELACUOTA = null;
+                $deudaCuota->INTERESACUMORA = 0;
+                $deudaCuota->INTERESPAGADO = 0;
+                $deudaCuota->OBSERVACION = 'Lrvl.';
+                $deudaCuota->NUMPAGO = null;    
+                $deudaCuota->save();
+
+                $saldoProgramado = $deudaCuota->SALDOPROGRAMADO;
+            }               
+            DB::commit();
+            return true;
+        } catch (\Throwable $th) {
+            Log::error("Creando cuotas del credito",['data'=>$th->getMessage()]);
+            DB::rollback();
+            return false;
+        }
+    }
+
+    public function CrearNotaDebito($monto,$secuencial,$secinv,$cliente,$observa,$vende,$ope,$caja,
+    $numFac,$bodega,$serie,$fecha,$meses){
+            
+        $numDB = \App\ADMTIPODOC::where('TIPO','=','NDB')->get();
+        $fechaVen = Carbon::createFromFormat('d-m-Y',$inicioPago);
+        
+        try {
+            $deudan = new ADMDEUDA();
+            $deudan->SECUENCIAL = $secuencial;
+            $deudan->BODEGA = $bodega;
+            $deudan->CLIENTE = $cliente;
+            $deudan->TIPO = "NDB";
+            $deudan->NUMERO = $numDB->CONTADOR + 1;
+            $deudan->SERIE = $serie;
+            $deudan->SECINV = $secinv;
+            $deudan->IVA = 0;
+            $deudan->MONTO = round($monto,2);
+            $deudan->CREDITO = round($monto,2);
+            $deudan->SALDO = 0;
+            $deudan->FECHAEMI = $fecha;
+            $deudan->FECHAVEN = $fechaVen->addMonth($meses)->Format('Y-d-m');
+            $deudan->FECHADES = $fecha;
+            $deudan->OPERADOR = $ope;
+            $deudan->VENDEDOR = $vende;
+            $deudan->OBSERVACION =  'ValorEntrada: '.$observa;
+            $deudan->NUMAUTO = "";
+            $deudan->BODEGAFAC = $bodega;
+            $deudan->SERIEFAC = $serie;
+            $deudan->NUMEROFAC = $numFac;
+            $deudan->ACT_SCT = "N";
+            $deudan->montodocumento = 0;
+            $deudan->tipoventa = ''; // 'CRE'
+            $deudan->mesescredito = 0;
+            $deudan->tipopago = "";
+            $deudan->numeropagos = 0;
+            $deudan->entrada = 0;
+            $deudan->valorfinanciado = 0;
+            $deudan->porinteres = 0;
+            $deudan->montointeres = 0;
+            $deudan->totaldeuda = 0;
+            $deudan->seccreditogen = 0;
+            $deudan->secdeudagen = 0;
+            $deudan->numcuotagen = 0;
+            $deudan->porinteresmora = 0;
+            $deudan->basecalculo = 0;
+            $deudan->diasatraso = 0;
+            $deudan->usuarioeli = 0;
+            $deudan->EWEB = "N";
+            $deudan->save();
+            
+            $creditoNdb = new \App\ADMCREDITO();
+            $creditoNdb->SECUENCIAL = $secuencial;
+            $creditoNdb->BODEGA = $bodega;
+            $creditoNdb->CLIENTE = $cliente;
+            $creditoNdb->TIPO = "NDB";
+            $creditoNdb->NUMERO = $deudan->NUMERO;
+            $creditoNdb->SERIE = $deudan->SERIE;
+            $creditoNdb->SECINV = $deudan->SECINV;
+            $creditoNdb->FECHA = $deudan->FECHA;
+            $creditoNdb->MONTO = round($deudan->MONTO,2) ;
+            $creditoNdb->SALDO = round($deudan->MONTO,2) ;
+            $creditoNdb->OPERADOR = $operador1;
+            $creditoNdb->OBSERVACION =  'ValorEntrada: '.$observacion;
+            $creditoNdb->VENDEDOR = $vende;
+            $creditoNdb->estafirmado = "N";
+            $creditoNdb->ACT_SCT = "N";
+            $creditoNdb->seccreditogen = 0;            
+            $creditoNdb->save();
+
+            $numDB->CONTADOR = $deudan->NUMERO;
+            $numDB->save();
+
+            return true;
+        } catch (\Throwable $th) {
+            Log::error("Error creando Nota de Debito por entrada: ".$th->getMessage());
+            return fañse;
+        } 
+    }
 }

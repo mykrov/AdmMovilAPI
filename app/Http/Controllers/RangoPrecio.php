@@ -20,4 +20,22 @@ class RangoPrecio extends Controller
         }  
         return response()->json(['tieneRango'=>$tienerango,'data'=>$item]);
     }
+
+    public function RangoPrecioItemPunto($it,$punto)
+    {
+        $tienerango = 'si';
+        $cont = \App\ADMRANGOPRECIO::where('codigoitem','=',"$it")
+        ->where('punto','=',$punto)
+        ->count();
+
+        if($cont == 0) {
+            $tienerango = 'no';
+            $item  = [];
+        }else{
+            $item  = \App\ADMRANGOPRECIO::where('codigoitem','=',"$it")
+            ->where('punto','=',$punto)
+            ->orderBy('minimorango', 'ASC')->get();
+        }  
+        return response()->json(['tieneRango'=>$tienerango,'data'=>$item]);
+    }
 }

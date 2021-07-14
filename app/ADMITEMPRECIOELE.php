@@ -22,6 +22,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $serie
  * @property int $tiempoini
  * @property float $interesf
+ * @property string $vcontado
+ * @property float $preciotar
+ * @property float $preciocre
  */
 class ADMITEMPRECIOELE extends Model
 {
@@ -36,6 +39,6 @@ class ADMITEMPRECIOELE extends Model
     /**
      * @var array
      */
-    protected $fillable = ['tiempo', 'costo', 'costor', 'precio', 'interes', 'tieneregalo', 'observacion', 'fecha', 'operador', 'maquina', 'preciominimo', 'preciomatricula', 'serie', 'tiempoini', 'interesf'];
+    protected $fillable = ['tiempo', 'costo', 'costor', 'precio', 'interes', 'tieneregalo', 'observacion', 'fecha', 'operador', 'maquina', 'preciominimo', 'preciomatricula', 'serie', 'tiempoini', 'interesf','vcontado','preciotar','preciocre'];
 
 }

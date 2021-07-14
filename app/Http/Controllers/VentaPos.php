@@ -124,6 +124,7 @@ class VentaPos extends Controller
             $parametrov->SECUENCIAL = $parametrov->SECUENCIAL + 1;
 
             //Procesado de los Detalles.
+            $lineaDet = 1;
             foreach ($detalles as $det) {
                 
                 $d = new \App\ADMDETEGRESOPOS;
@@ -136,7 +137,7 @@ class VentaPos extends Controller
                 $itemData = \App\ADMITEM::where('ITEM','=',trim($det['item']))->first();
 
                 $d->SECUENCIAL = intval($cab->SECUENCIAL);
-                $d->LINEA = intval($det['linea']);
+                $d->LINEA = $lineaDet;
                 $d->ITEM = $det['item'];
                 $d->TIPOITEM = $det['tipo_item'];
                 $d->PRECIO = floatval($det['precio']);
@@ -162,6 +163,7 @@ class VentaPos extends Controller
                 $d->hora = '';
                 
                 $d->save();
+                $linea++;
                 
             }
 

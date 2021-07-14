@@ -85,4 +85,10 @@ class Item extends Controller
 
         return response()->json($data);
     }
+
+    public function itemsDeRegalo() {
+        $items = \App\ADMITEM::where('REGALO','=','S')
+        ->get();
+        return response()->json($items);
+    }
 }

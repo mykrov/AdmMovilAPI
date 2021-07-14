@@ -53,6 +53,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $controlcupofvd
  * @property string $posbloqueofaccre
  * @property string $CLIENTEMODELOCARRO
+ * @property string $eletipointeres
  */
 class ADMPARAMETROC extends Model
 {
@@ -69,6 +70,6 @@ class ADMPARAMETROC extends Model
     /**
      * @var array
      */
-    protected $fillable = ['MODULO', 'NOMBRECIA', 'ANIO', 'SECUENCIAL', 'NUMHOJA', 'PROVINCIA', 'CANTON', 'PARROQUIA', 'SECTOR', 'INTEGCXC', 'LETRAINI', 'NUMCLIENTE', 'AUTOCLI', 'INTCXCCON', 'FECHACXC', 'GUIACOB', 'NOCOBRO', 'VALORNCR', 'CAJAC', 'AUTOCODIGO', 'FECHACAJA', 'CAMCRE', 'CREDDEF', 'CUPOCARTERA', 'CONTROLDEPOCIERRE', 'COBRADOR', 'CONTROLRECIBO', 'GENERACUOTAS', 'IMPNCR2', 'REPETIRNRECIBO', 'CONTROLBASESRET', 'BENEDEFAULT', 'VENDEDORPOS', 'CODVENPOS', 'SUCURSALAUTO', 'TIPOCLIENTE', 'NUMPACIENTE', 'NUMCONTRATO', 'NUMENVIOLAB', 'NUMDOCTOR', 'diasgraciavencuota', 'interes', 'generandb', 'generapagondb', 'porintmoradia', 'controlcupofvd', 'posbloqueofaccre', 'CLIENTEMODELOCARRO'];
+    protected $fillable = ['MODULO', 'NOMBRECIA', 'ANIO', 'SECUENCIAL', 'NUMHOJA', 'PROVINCIA', 'CANTON', 'PARROQUIA', 'SECTOR', 'INTEGCXC', 'LETRAINI', 'NUMCLIENTE', 'AUTOCLI', 'INTCXCCON', 'FECHACXC', 'GUIACOB', 'NOCOBRO', 'VALORNCR', 'CAJAC', 'AUTOCODIGO', 'FECHACAJA', 'CAMCRE', 'CREDDEF', 'CUPOCARTERA', 'CONTROLDEPOCIERRE', 'COBRADOR', 'CONTROLRECIBO', 'GENERACUOTAS', 'IMPNCR2', 'REPETIRNRECIBO', 'CONTROLBASESRET', 'BENEDEFAULT', 'VENDEDORPOS', 'CODVENPOS', 'SUCURSALAUTO', 'TIPOCLIENTE', 'NUMPACIENTE', 'NUMCONTRATO', 'NUMENVIOLAB', 'NUMDOCTOR', 'diasgraciavencuota', 'interes', 'generandb', 'generapagondb', 'porintmoradia', 'controlcupofvd', 'posbloqueofaccre', 'CLIENTEMODELOCARRO','eletipointeres'];
 
 }

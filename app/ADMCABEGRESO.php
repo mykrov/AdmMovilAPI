@@ -95,6 +95,12 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $CodShip
  * @property integer $NUMPESAJE
  * @property string $ESFOMENTO
+ * @property string $METODOINTERES
+ * @property string $FACTURAFINANCIERA
+ * @property int $cajac
+ * @property string $fechainipago
+ * @property float $valorcouta
+ * @property string $ESTADOTRA
  * @property ADMDETEGRESO[] $aDMDETEGRESOs
  */
 class ADMCABEGRESO extends Model
@@ -132,7 +138,7 @@ class ADMCABEGRESO extends Model
     /**
      * @var array
      */
-    protected $fillable = ['TIPO', 'BODEGA', 'NUMERO', 'SERIE', 'NUMPROCESO', 'NUMPEDIDO', 'NUMGUIA', 'CAMION', 'CHOFER', 'DOCREL', 'NUMEROREL', 'FECHA', 'FECHAVEN', 'FECHADES', 'OPERADOR', 'CLIENTE', 'VENDEDOR', 'PROVEEDOR', 'SUBTOTAL', 'DESCUENTO', 'IVA', 'NETO', 'TRANSPORTE', 'RECARGO', 'BODEGADES', 'PESO', 'VOLUMEN', 'MOTIVO', 'ESTADO', 'ESTADODOC', 'TIPOVTA', 'INTECXC', 'OBSERVA', 'COMENTA', 'INTEGRADO', 'SECCON', 'NUMSERIE', 'NOCARGA', 'APLSRI', 'NUMAUTO', 'NUMFISICO', 'HORA', 'NOMBREPC', 'claseAjuEgreso', 'SUBTOTAL0', 'NUMGUIATRANS', 'GRAVAIVA', 'CREDITO', 'ESTADODESPACHO', 'SECAUTOVENTA', 'NUMCUOTAS', 'NUMGUIAREMISION', 'SBTBIENES', 'SBTSERVICIOS', 'TIPOCLIENTE', 'SUCURSAL', 'ACT_SCT', 'NUMPRODUCCION', 'porentregar', 'ENTREGADA', 'REFERENCIA', 'FECHA_EMBARQUE', 'BUQUE', 'NAVIERA', 'ALMACENARA', 'PRODUCTO', 'CODIGORETAILPRO', 'GRMFACELEC', 'NOAUTOGRM', 'mescredito', 'tipopago', 'numeropagos', 'entrada', 'valorfinanciado', 'porinteres', 'montointeres', 'totaldeuda', 'xsubtotal', 'xsubtotal0', 'xdescuento', 'xdescuento0', 'xiva', 'numerosolicitud', 'mesescredito', 'ENVIADONESTLE', 'tipotienda', 'CodShip', 'NUMPESAJE', 'ESFOMENTO'];
+    protected $fillable = ['TIPO', 'BODEGA', 'NUMERO', 'SERIE', 'NUMPROCESO', 'NUMPEDIDO', 'NUMGUIA', 'CAMION', 'CHOFER', 'DOCREL', 'NUMEROREL', 'FECHA', 'FECHAVEN', 'FECHADES', 'OPERADOR', 'CLIENTE', 'VENDEDOR', 'PROVEEDOR', 'SUBTOTAL', 'DESCUENTO', 'IVA', 'NETO', 'TRANSPORTE', 'RECARGO', 'BODEGADES', 'PESO', 'VOLUMEN', 'MOTIVO', 'ESTADO', 'ESTADODOC', 'TIPOVTA', 'INTECXC', 'OBSERVA', 'COMENTA', 'INTEGRADO', 'SECCON', 'NUMSERIE', 'NOCARGA', 'APLSRI', 'NUMAUTO', 'NUMFISICO', 'HORA', 'NOMBREPC', 'claseAjuEgreso', 'SUBTOTAL0', 'NUMGUIATRANS', 'GRAVAIVA', 'CREDITO', 'ESTADODESPACHO', 'SECAUTOVENTA', 'NUMCUOTAS', 'NUMGUIAREMISION', 'SBTBIENES', 'SBTSERVICIOS', 'TIPOCLIENTE', 'SUCURSAL', 'ACT_SCT', 'NUMPRODUCCION', 'porentregar', 'ENTREGADA', 'REFERENCIA', 'FECHA_EMBARQUE', 'BUQUE', 'NAVIERA', 'ALMACENARA', 'PRODUCTO', 'CODIGORETAILPRO', 'GRMFACELEC', 'NOAUTOGRM', 'mescredito', 'tipopago', 'numeropagos', 'entrada', 'valorfinanciado', 'porinteres', 'montointeres', 'totaldeuda', 'xsubtotal', 'xsubtotal0', 'xdescuento', 'xdescuento0', 'xiva', 'numerosolicitud', 'mesescredito', 'ENVIADONESTLE', 'tipotienda', 'CodShip', 'NUMPESAJE', 'ESFOMENTO','METODOINTERES','FACTURAFINANCIERA','cajac','fechainipago','valorcouta','ESTADOTRA'];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
