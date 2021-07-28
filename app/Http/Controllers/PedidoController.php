@@ -425,6 +425,8 @@ class PedidoController extends Controller
     
     //Vista para ver la Generacion de un PDF desde el Navegador.
     public function Facturapdf(){
+        
+        return response()->json($detEgr2->INDICE);
         $order = \App\ADMCABEGRESO::where('NUMERO',2910)
         ->whereIn('TIPO',['FAC','NVT'])
         ->orderby('SECUENCIAL','DESC')
@@ -441,11 +443,16 @@ class PedidoController extends Controller
 
     public function TestEmail(){
         
-         Mail::send('emails.TestEmailServer',[], function ($mail) {
-            $mail->from(env("MAIL_USERNAME"), 'Test de Email');
-            $mail->to('salvatorex89@gmail.com');
-            $mail->subject('Test envio email');
-        });
+        try {
+            Mail::send('emails.TestEmailServer',[], function ($mail) {
+                $mail->from(env("MAIL_USERNAME"), 'Test de Email');
+                $mail->to('salvatorex89@gmail.com');
+                $mail->subject('Test envio email');
+            });            
+            return "Mensaje enviado";
+        } catch (\Throwable $th) {
+            return $th->getMessage();
+        }      
     }
 
     //Funcion para Clave de Acceso.

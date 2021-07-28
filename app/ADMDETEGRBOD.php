@@ -13,8 +13,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property float $COSTOP
  * @property float $COSTOU
  * @property float $INDICE
- * @property string $SERIALITEM
+ * @property int $LINEA
+ * @property string $SERIALITEM 
  */
+
 class ADMDETEGRBOD extends Model
 {
     
@@ -44,6 +46,6 @@ class ADMDETEGRBOD extends Model
     /**
      * @var array
      */
-    protected $fillable = ['SECUENCIAL', 'ITEM', 'CANTIU', 'CANTIC', 'CANTFUN', 'COSTOP', 'COSTOU','SERIALITEM'];
+    protected $fillable = ['SECUENCIAL', 'ITEM', 'CANTIU', 'CANTIC', 'CANTFUN', 'COSTOP', 'COSTOU','LINEA','SERIALITEM'];
 
 }

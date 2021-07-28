@@ -23,6 +23,7 @@ Route::get('/clientetodos','Cliente@listado2');
 Route::get('/clientexv/{vendedor}','Cliente@ClienteXVendedor');
 Route::get('/clientexvdia/{vendedor}','Cliente@ClienteXVendedorDia');
 Route::get('/cliente/{id?}','Cliente@byID');
+Route::get('/clienteruc/{ruc?}','Cliente@byRUC');
 Route::post('/cliente','Cliente@CreateClient')->middleware('EmpresaPago');
 Route::get('/clientedia','Cliente@ClienteXDia'); //Cliente por del dia actual del server
 Route::post('/clienteven','Cliente@CreateClientVen')->middleware('EmpresaPago');
@@ -167,10 +168,10 @@ Route::post('/historicopre','HistPrecioController@GetHistorico');
 Route::post('/clidiaveninfo','InformeVisitaController@GetClientesDiaVendedor');
 
 //Items de Electrodomesticos
-Route::get('/itemelec/{item}','ElectroController@GetItem');
+Route::get('/itemelec/{item}/{bodega}','ElectroController@GetItem');
 Route::get('/itemelectodos','ElectroController@GetItemTodos');
-Route::get('/itemliquida/{item}','ElectroController@GetItemLiquidacion');
-Route::get('/itemliquidatodos','ElectroController@GetItemLiquidacionTodos');
+Route::get('/itemliquida/{item}/{bodega}','ElectroController@GetItemLiquidacion');
+Route::get('/itemliquidatodos/{bodega}','ElectroController@GetItemLiquidacionTodos');
 Route::post('/ventaelec','VentaElectroController@PostPedidoElectro');
 Route::get('/itemregalo','Item@itemsDeRegalo');
 

@@ -91,6 +91,15 @@ class Cliente extends Controller
 
     }
 
+    public function byRUC($ruc){
+
+        $cliente = \App\Cliente::where('RUC','like', '%' . $ruc . '%')
+        ->where('ESTADO','=','A')
+        ->get();
+        return response()->json($cliente);
+
+    }
+
      /**
     * @OA\Get(
     *     path="/api/clientelike/{nombre}",

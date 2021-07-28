@@ -43,7 +43,8 @@ class ParametrosController extends Controller
                                     'interes'=> $paramC->interes,
                                     'porintmoradia'=>round($paramC->porintmoradia,5),
                                     'CONFAC' => $paramV->CONFAC,
-                                    'eletipointeres'=> $paramC->eletipointeres
+                                    'eletipointeres'=> $paramC->eletipointeres,
+                                    'eleusarvariosprecios'=> $paramV->eleusarvariosprecios
                                 ]]);
    }
 }

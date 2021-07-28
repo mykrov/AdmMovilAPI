@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 class ElectroController extends Controller
 {
-    public function GetItem($item)
+    public function GetItem($item,$bodega)
     {
         //$itemPrecio = \App\ADMITEMPRECIOELE::where('item','=',$item)->get();
         
@@ -40,7 +40,7 @@ class ElectroController extends Controller
         return response()->json(['series'=>$itemSerie,'motor'=>$datosMotor]);
     }
 
-    public function GetItemLiquidacion($item)
+    public function GetItemLiquidacion($item,$bodega)
     {
         $itemLiq = \App\ADMITEMLIQELE::where('ESTADO','=','A')
         ->where('CANTIDAD','>',0)
@@ -50,7 +50,7 @@ class ElectroController extends Controller
         return response()->json($itemLiq);
     }
 
-    public function GetItemLiquidacionTodos()
+    public function GetItemLiquidacionTodos($bodega)
     {
         $itemLiq = \App\ADMITEMLIQELE::where('ESTADO','=','A')
         ->where('CANTIDAD','>',0)        

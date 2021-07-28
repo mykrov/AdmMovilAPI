@@ -41,6 +41,7 @@ class VentaPos extends Controller
             $parametrobo = ADMPARAMETROBO::first();
             //Campos de Venta-Vendedor
             $vendedor = ADMVENDEDOR::where('CODIGO','=',$cabecera['usuario'])->first();
+            $usaDecimal = $parametrov->usardecimales;
             
             $cajaPos = AMDCAJAPOS::where('codigo','=',$vendedor->caja)->first();
 
@@ -136,16 +137,23 @@ class VentaPos extends Controller
 
                 $itemData = \App\ADMITEM::where('ITEM','=',trim($det['item']))->first();
 
+                if($usaDecimal == 'N'){
+                    $d->CANTIU = intval($det['total_unidades']) % $itemData->FACTOR;
+                    $d->CANTIC = intval($det['total_unidades']  / $itemData->FACTOR);
+                    $d->CANTFUN = intval($det['total_unidades']);
+                }else{
+                    $d->CANTIU = round(floatval($det['total_unidades']) % $itemData->FACTOR,2);
+                    $d->CANTIC =  round(floatval($det['total_unidades']  / $itemData->FACTOR),2);
+                    $d->CANTFUN =  round(floatval($det['total_unidades']),2);
+                }
+
                 $d->SECUENCIAL = intval($cab->SECUENCIAL);
                 $d->LINEA = $lineaDet;
                 $d->ITEM = $det['item'];
                 $d->TIPOITEM = $det['tipo_item'];
                 $d->PRECIO = floatval($det['precio']);
                 $d->COSTOP = $itemData->COSTOP;
-                $d->COSTOU = $itemData->COSTOU;
-                $d->CANTIU = intval($det['total_unidades']) % $itemData->FACTOR;
-                $d->CANTIC = intval($det['total_unidades']  / $itemData->FACTOR);
-                $d->CANTFUN = intval($det['total_unidades']);
+                $d->COSTOU = $itemData->COSTOU;               
                 $d->CANTDEV = null;
                 $d->SUBTOTAL = round(floatval($det['subtotal']),2);
                 $d->DESCUENTO = round(floatval($det['descuento']),2);
@@ -163,7 +171,7 @@ class VentaPos extends Controller
                 $d->hora = '';
                 
                 $d->save();
-                $linea++;
+                $lineaDet++;
                 
             }
 

@@ -211,7 +211,16 @@ class VentaCreditoController extends Controller
             $bodega->NUMGUIAREMISION = $cab->NUMGUIAREMISION;
             $bodega->NOEGR = $bodega->NOEGR + 1;
             
+            $lineaDet = 1;
 
+            //variables para comprobante contable
+            $costo0_det = 0;
+            $costo_det = 0;
+            $subtotal0_det = 0;
+            $subtotal_det = 0;
+            $desc0_det = 0;
+            $desc_det = 0;
+            
             //Procesado de los Detalles.
             foreach ($detalles as $det) {
                 
@@ -220,6 +229,8 @@ class VentaCreditoController extends Controller
                 $grabaIvadet = "N";
                 if(floatval($det['iva']) > 0){
                     $grabaIvadet = "S";
+
+
                 }
 
                 $itemData = \App\ADMITEM::where('ITEM','=',trim($det['item']))->first();
@@ -254,16 +265,16 @@ class VentaCreditoController extends Controller
                 $d->LOTE = null;
                 $d->preciox = 0;
 
-                if($det['serialItem'] == null and $det['tipo_item'] == 'R' ){
+                if($det['serialItem'] == null and $det['forma_venta'] == 'R' ){
                     $d->serialitem = 'XXXXXX';
-                }elseif($det['serialItem'] === null and $det['tipo_item'] == 'V' ){
+                }elseif($det['serialItem'] == null and $det['forma_venta'] == 'V' ){
                     $d->serialitem = '';
                 }else{
                     $d->serialitem = $det['serialItem'];
                 }
-                
-                Log::info("Detalle de fac");
 
+                $d->save();
+               
                 //Bajar Stock del item.
                 if($det['item'] != 'INTFIN'){
                     $itemData->STOCK = $itemData->STOCK - $d->CANTFUN;
@@ -286,25 +297,36 @@ class VentaCreditoController extends Controller
 
                     Log::info("modifica stock");
 
-                }               
+                }              
                 
                 //Generar el Detalle de Egreso.
-                $detEgr = new ADMDETEGRBOD();
-                $detEgr->SECUENCIAL =$cab->SECUENCIAL;
-                $detEgr->ITEM = $d->ITEM;
-                $detEgr->CANTIU = $d->CANTIU;
-                $detEgr->CANTIC = $d->CANTIC; 
-                $detEgr->COSTOP = $d->COSTOP;
-                $detEgr->COSTOU = $d->COSTOU;
-                $detEgr->CANTFUN = $d->CANTFUN;
-                $derEgr->SERIALITEM = $d->serialitem;
+
+                $serial = $d->serialitem;
+                $detEgr2 = new \App\ADMDETEGRBOD();
+                $detEgr2->SECUENCIAL = $cab->SECUENCIAL;
+                $detEgr2->ITEM = $d->ITEM;
+                $detEgr2->CANTIU = $d->CANTFUN;
+                $detEgr2->CANTIC = $d->CANTIC; 
+                $detEgr2->COSTOP = $d->COSTOP;
+                $detEgr2->COSTOU = $d->COSTOU;
+                $detEgr2->CANTFUN = $d->CANTFUN;
+                $detEgr2->LINEA = $lineaDet;
+                //Log::info("Detalle EgresoBod ",['objeto'=>$detEgr2]);
                 
-                $d->save();
-                $detEgr->save();
+                $detEgr2->save();
 
-                Log::info("Guarda det egreso");
+                $derEgr3 = ADMDETEGRBOD::where("SECUENCIAL","$cab->SECUENCIAL")
+                ->where("ITEM",$d->ITEM)
+                ->first();
+                $derEgr3->SERIALITEM =$serial;
+                $derEgr3->save();
 
-                $tipoItem = $this->tipoItemElec($detEgr->ITEM);
+                $lineaDet++;
+
+                //Log::info("Guarda det egreso");
+
+                $tipoItem = $this->tipoItemElec($detEgr2->ITEM);
+                //Log::info($tipoItem);
 
                 if($tipoItem != 'BASICO')
                 {
@@ -392,7 +414,8 @@ class VentaCreditoController extends Controller
 
             //Crear Nota de Debito en caso de entrada
             if($cab->entrada > 0){
-                Log::info("Tiene Entrada");
+                //Log::info("Tiene Entrada");
+                //Log::info(["cab fecha"=>$cab->FECHA]);
                 if($this->CrearNotaDebito($cab->entrada,$deuda->SECUENCIAL + 1,$deuda->SECINV,$cab->CLIENTE,$observacion,
                 $cab->VENDEDOR,$operador1,$cabEgr->BODEGA,$cab->NUMERO,$cabEgr->BODEGA,$cab->SERIE,$cab->FECHA,$deuda->mesescredito)){
                     Log::info("se generó la nota de debito por entrada.");
@@ -430,19 +453,41 @@ class VentaCreditoController extends Controller
            
             //Asiento Contable.
             $punto = substr($cab->SERIE,0,3);
-            Log::info(["Punto de la serie "=>$punto]);
-            $secContable = $this->asientoContable($subTotal0,$subTotal,$neto,$iva,$desc0,$desc,$cost0,$cost,$inv0,$inv,trim($cliente->RAZONSOCIAL),$observacion,$operador1,$punto);
-            Log::info(["secuencial conable "=>$secContable ]);
-            $cab->SECCON = $secContable;
-            $cab->save();
+            //Log::info(["Punto de la serie "=>$punto]);
             
+            $secContable = $this->asientoContable(
+                $cab->xsubtotal0,
+                $cab->xsubtotal,
+                $cab->totaldeuda,
+                $cab->xiva,
+                $cab->xdescuento0,
+                $cab->xdescuento,
+                $cab->xsubtotal0,
+                $cab->xsubtotal,
+                $cab->xsubtotal0,
+                $cab->xsubtotal,
+                trim($cliente->RAZONSOCIAL),
+                $observacion,
+                $operador1,
+                $punto
+            );
+            //Log::info(["secuencial conable "=>$secContable ]);
+            
+            $cab->SECCON = $secContable;
+            $cab->save();            
+
             //Crear las DeudaCuotas
-            if($this->CrearCuotas($cabecera['mesesCredito'],$neto,$deuda->numeropagos,$deuda->SECUENCIAL,$cab->fechainipago,$cab->tipopago) == false){
-                
-                DB::rollback();
-                Log::error("Error Creando las ADMDEUDACUOTAS");
+            if($deuda->tipoventa == 'CRE'){
+                //Log::info(["Fecha de inicio de pago "=> $cab->fechainipago]);
+
+                if($this->CrearCuotas($cabecera['mesesCredito'],$deuda->MONTO,$deuda->numeropagos,$deuda->SECUENCIAL,$cab->fechainipago,$cab->tipopago) == false){
+                    DB::rollback();
+                    Log::error("Error Creando las ADMDEUDACUOTAS");
+                }else{
+                    Log::info("Creadas cuotas del credito");
+                }
             }else{
-                Log::info("Creo cuotas del credito");
+                //Log::info("Venta de contado sin cuotas.");
             }
            
             //Guardado de todo en caso de exito en las operaciones.
@@ -532,12 +577,16 @@ class VentaCreditoController extends Controller
     //envio de email de test
 
     public function TestEmail(){
-        
-         Mail::send('emails.TestEmailServer',[], function ($mail) {
-            $mail->from(env("MAIL_USERNAME"), 'Test de Email');
-            $mail->to('salvatorex89@gmail.com');
-            $mail->subject('Test envio email');
-        });
+        try {
+            Mail::send('emails.TestEmailServer',[], function ($mail) {
+                $mail->from(env("MAIL_USERNAME"), 'Test de Email');
+                $mail->to('salvatorex89@gmail.com');
+                $mail->subject('Test envio email.');
+            });            
+            return "Mensaje enviado";
+        } catch (\Throwable $th) {
+            return $th->getMessage();
+        }       
     }
 
     //Funcion para Clave de Acceso.
@@ -636,7 +685,7 @@ class VentaCreditoController extends Controller
             $dat = Carbon::now()->subHours(5);
             $dateYMD= $dat->Format('d-m-Y');
             $line = 1;
-            $cuentasPunto = ADMPUNTOASIENTOS::where('PUNTO',$punto)
+            $cuentasPunto = \App\ADMPUNTOASIENTOS::where('PUNTO',$punto)
             ->where('ANIO',$dat->format('Y'))
             ->get();
 
@@ -915,7 +964,7 @@ class VentaCreditoController extends Controller
             for ($i=1; $i <= $numCuotas; $i++) { 
             
                 $deudaCuota = new \App\ADMDEUDACUOTA();
-                $deudaCuota->SECDEUDA = $secDeudar;
+                $deudaCuota->SECDEUDA = $secDeuda;
                 $deudaCuota->NUMCUOTA = $i ;
                 $deudaCuota->INTERES = null;
                 $deudaCuota->SALDOPROGRAMADO = round($saldoProgramado - $montoCuotas,2);
@@ -966,9 +1015,9 @@ class VentaCreditoController extends Controller
     public function CrearNotaDebito($monto,$secuencial,$secinv,$cliente,$observa,$vende,$ope,$caja,
     $numFac,$bodega,$serie,$fecha,$meses){
             
-        $numDB = \App\ADMTIPODOC::where('TIPO','=','NDB')->get();
-        $fechaVen = Carbon::createFromFormat('d-m-Y',$inicioPago);
-        
+        $numDB = \App\ADMTIPODOC::where('TIPO','=','NDB')->first();
+        $fechaVen = Carbon::createFromFormat('Y-d-m',$fecha);
+        Log::info("Creando nota de debito por Entrada,");
         try {
             $deudan = new ADMDEUDA();
             $deudan->SECUENCIAL = $secuencial;
@@ -976,6 +1025,7 @@ class VentaCreditoController extends Controller
             $deudan->CLIENTE = $cliente;
             $deudan->TIPO = "NDB";
             $deudan->NUMERO = $numDB->CONTADOR + 1;
+            Log::info(["contador" =>$numDB->CONTADOR]);
             $deudan->SERIE = $serie;
             $deudan->SECINV = $secinv;
             $deudan->IVA = 0;
@@ -1024,21 +1074,23 @@ class VentaCreditoController extends Controller
             $creditoNdb->FECHA = $deudan->FECHA;
             $creditoNdb->MONTO = round($deudan->MONTO,2) ;
             $creditoNdb->SALDO = round($deudan->MONTO,2) ;
-            $creditoNdb->OPERADOR = $operador1;
-            $creditoNdb->OBSERVACION =  'ValorEntrada: '.$observacion;
+            $creditoNdb->OPERADOR = $ope;
+            $creditoNdb->OBSERVACION =  'ValorEntrada: '.$observa;
             $creditoNdb->VENDEDOR = $vende;
             $creditoNdb->estafirmado = "N";
             $creditoNdb->ACT_SCT = "N";
             $creditoNdb->seccreditogen = 0;            
             $creditoNdb->save();
 
-            $numDB->CONTADOR = $deudan->NUMERO;
-            $numDB->save();
-
+            $result = DB::table('ADMTIPODOC')
+                                ->where('TIPO', 'NDB')
+                                ->update([
+                                    'CONTADOR'=>  $deudan->NUMERO
+                                ]);
             return true;
         } catch (\Throwable $th) {
             Log::error("Error creando Nota de Debito por entrada: ".$th->getMessage());
-            return fañse;
+            return false;
         } 
     }
 }
