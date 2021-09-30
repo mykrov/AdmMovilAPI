@@ -44,7 +44,9 @@ class ParametrosController extends Controller
                                     'porintmoradia'=>round($paramC->porintmoradia,5),
                                     'CONFAC' => $paramV->CONFAC,
                                     'eletipointeres'=> $paramC->eletipointeres,
-                                    'eleusarvariosprecios'=> $paramV->eleusarvariosprecios
+                                    'eleusarvariosprecios'=> $paramC->eleusarvariosprecios,
+                                    'eleusarformadepago'=>$paramC->eleusarformadepago,
+                                    'tipocosto'=>$paramV->TIPOCOSTO 
                                 ]]);
    }
 }

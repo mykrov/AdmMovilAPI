@@ -12,10 +12,15 @@ use Illuminate\Support\Facades\Log;
 class PedidoXController extends Controller
 {
     public function PostPedidoProformaOff(Request $r)
-    {
-        ///return $r;
-        $cabecera = $r->cabecera[0];
-        $detalles = $r->detalles;
+    {      
+        return response()->json($r);
+        try {
+            $cabecera = $r->cabecera[0];
+            $detalles = $r->detalles;
+        } catch (\Throwable $th) {
+            return response()->json(['error'=>'Estructura de Json no compatible']);
+        }
+       
 
         if (count($detalles) == 0) {
             Log::error("Cabecera Sin Detalles",['cabecera'=>$cabecera]);
@@ -144,6 +149,19 @@ class PedidoXController extends Controller
                     $d->save();
                     $linea++;
                 } 
+
+                $visita = new \App\ADMVISITACLI();
+                $visita->CLIENTE = $cabe->CLIENTE;
+                $visita->VENDEDOR = $cabe->VENDEDOR;
+                $visita->NUMPEDIDO = 0;
+                $visita->LATITUD = "marca_pedido";
+                $visita->LONGITUD = "marca_pedido";
+                $visita->VISITADO  = "S";
+                $visita->FECHAVISITA = Carbon::now()->format('Y-m-d');
+                $visita->save();
+                Log::info(['Registro de visita por PedidoXController'=>$visita->CLIENTE]);
+
+
                 DB::commit();
                 DB::statement("UPDATE ADMCABPEDIDOX SET SECUENCIAL = SECAUTO,NUMERO = SECAUTO where SECAUTO = " .$secAutoNew);
                 Log::info("Registro de PedidoProformaController ", ["cabecera" => $cabe,"detalles"=> $d,"TiempoPreciso"=>Carbon::now()->subHours(5)->format('H:m:s.u')]);

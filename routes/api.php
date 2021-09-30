@@ -42,8 +42,8 @@ Route::get('/clisucursal/{cliente}','SucursalController@GetSucursales');
 Route::get('/items/{bod}','Item@ItemXBodega');
 Route::get('/itemstodos/{bod}','Item@ItemTodosBodega');
 Route::get('/items/{bod}/{categoria}','Item@ItemBodegaXCategoria');
-Route::get('/item/{codigo}','Item@ItemXCodigo');
-Route::get('/itemslike/{like}','Item@ItemsXNombre');
+Route::get('/item/{codigo}/{bod}','Item@ItemXCodigo');
+Route::get('/itemslike/{like}/{bodega}','Item@ItemsXNombre');
 Route::get('/itemsnostock/{bod}','Item@ItemsSinStock');
 Route::get('/categoria','CategoriaController@GetCategorias');
 Route::get('/itemregalo/{item}','ItemRegaloController@ItemRegalo');
@@ -51,6 +51,7 @@ Route::get('/itemregalotodos','ItemRegaloController@TodosItemsRegalo');
 Route::get('/itemselec/{bodega}','ItemElectroController@GetItemsElectro');
 Route::get('/eleclike/{bodega}/{nombre}','ItemElectroController@GetItemsElectroNombre');
 Route::get('/eleccod/{bodega}/{cod}','ItemElectroController@GetItemsElectroCod');
+Route::post('/codbarra','Item@ItemBarCode');
 
 //Rutas Ubicacion
 Route::get('/canton','CantonController@GetCantones');
@@ -187,6 +188,7 @@ Route::post('/visitamarca','VisitaClienteController@SaveVisita');
 //Ventas Electrodomésticos
 Route::post('/ventaelectro','VentaCreditoController@PostVentaCre');
 Route::get('/gencuotas','VentaCreditoController@CrearCuotas');
+Route::post('/proformacred','ProformaElectroController@PostProformaCredito');
 
 Route::middleware('auth:api')->group(function () {
     Route::get('/vendedorinfo',function (Request $request) {

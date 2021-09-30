@@ -16,6 +16,7 @@ use \App\ADMDEUDA;
 use \App\ADMCREDITO;
 use \App\Mail\FacturaInvoice;
 use \App\ADMDETEGRESO;
+use Image;
 
 
 class VentaCreditoController extends Controller
@@ -25,6 +26,7 @@ class VentaCreditoController extends Controller
     {
         $cabecera = $r->cabecera[0];
         $detalles = $r->detalles;
+        $tablaJson = $r->tablaAmortizacion;
         Log::info(['cab'=>$cabecera,'detalle'=>$detalles]);
         //return response()->json(['CAB'=>$r]);
 
@@ -39,12 +41,13 @@ class VentaCreditoController extends Controller
         
         //Datos del Operador segun vendedor
         $vendedorData = \App\ADMVENDEDOR::where('CODIGO','=',$cabecera['usuario'])->first();
-        $operador1 = '';
+       
         if($vendedorData == null || $vendedorData->operadormovil == null){
             $operador1 = 'ADM';
+        }else{
+            $operador1 = $vendedorData->operadormovil ;
         }
      
-
        
         $parametrov = ADMPARAMETROV::first();
         $secuencialNew = $parametrov->SECUENCIAL;
@@ -70,7 +73,6 @@ class VentaCreditoController extends Controller
             $bodega = ADMBODEGA::where('CODIGO','=',$cabecera['bodega'])->first();
             $cliente = Cliente::where('CODIGO','=',$cabecera['cliente'])->first();
             $parametrobo = ADMPARAMETROBO::first();
-
             
             $grabaIva = "N";
             if(floatval($cabecera['iva']) > 0){
@@ -387,6 +389,7 @@ class VentaCreditoController extends Controller
             $deuda->OPERADOR = $operador1;
             $deuda->VENDEDOR = $cab->VENDEDOR;
             $deuda->OBSERVACION = $observacion;
+            $deuda->CAJAC = $cabecera['caja'];
             $deuda->NUMAUTO = "";
             $deuda->BODEGAFAC = 0;
             $deuda->SERIEFAC = "";
@@ -479,15 +482,37 @@ class VentaCreditoController extends Controller
             //Crear las DeudaCuotas
             if($deuda->tipoventa == 'CRE'){
                 //Log::info(["Fecha de inicio de pago "=> $cab->fechainipago]);
-
-                if($this->CrearCuotas($cabecera['mesesCredito'],$deuda->MONTO,$deuda->numeropagos,$deuda->SECUENCIAL,$cab->fechainipago,$cab->tipopago) == false){
-                    DB::rollback();
-                    Log::error("Error Creando las ADMDEUDACUOTAS");
+                if($cabecera['aprobarTabla'] ==  'N'){
+                    Log::info("Se debe crea la tabla de amortización desde el Backend.");
+                    if($this->CrearCuotas($cabecera['mesesCredito'],$deuda->MONTO,$deuda->numeropagos,$deuda->SECUENCIAL,$cab->fechainipago,$cab->tipopago) == false){
+                        DB::rollback();
+                        Log::error("Error Creando las ADMDEUDACUOTAS");
+                    }else{ 
+                        Log::info("Creadas cuotas del credito");
+                    }
                 }else{
-                    Log::info("Creadas cuotas del credito");
+                    Log::info("Se debe leer la tabla de amortización desde el JSON.");
+                    foreach ($tablaJson as $cuNum) {
+                            
+                        $deudaCuotaj = new \App\ADMDEUDACUOTA();
+                        $deudaCuotaj->SECDEUDA = $deuda->SECUENCIAL;
+                        $deudaCuotaj->NUMCUOTA = $cuNum['NUMCUOTA'];
+                        $deudaCuotaj->MONTO = $cuNum['MONTO'];
+                        $deudaCuotaj->FECHAVEN = $cuNum['FECHAVEN'];
+                        $deudaCuotaj->INTERES = 0;
+                        $deudaCuotaj->CREDITO = 0;
+                        $deudaCuotaj->SALDO = $cuNum['MONTO'];
+                        $deudaCuotaj->SALDOPROGRAMADO = round($cuNum['SALDOPROGRAMADO'],2);
+                        $deudaCuotaj->FECHACANCELACUOTA = null;
+                        $deudaCuotaj->INTERESACUMORA = 0;
+                        $deudaCuotaj->INTERESPAGADO = "N";
+                        $deudaCuotaj->OBSERVACION = "";
+                        $deudaCuotaj->NUMPAGO = null;
+                        $deudaCuotaj->save();
+                    }                    
                 }
             }else{
-                //Log::info("Venta de contado sin cuotas.");
+                Log::info("Venta de contado sin cuotas.");
             }
            
             //Guardado de todo en caso de exito en las operaciones.
@@ -647,6 +672,7 @@ class VentaCreditoController extends Controller
             }
             return $ret_claveAcceso;
         } catch (\Excepyion $e) {
+            Log::error("Error creando clave de acceso.");
             return false;
         }
 

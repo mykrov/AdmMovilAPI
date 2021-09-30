@@ -136,6 +136,17 @@ class PedidoProformaController extends Controller
                     $d->save();
                     $linea++;
                 } 
+
+                $visita = new \App\ADMVISITACLI();
+                $visita->CLIENTE = $cabe->CLIENTE;
+                $visita->VENDEDOR = $cabe->VENDEDOR;
+                $visita->NUMPEDIDO = $numPed;
+                $visita->LATITUD = "marca_pedido";
+                $visita->LONGITUD = "marca_pedido";
+                $visita->VISITADO  = "S";
+                $visita->FECHAVISITA = Carbon::now()->format('Y-m-d');
+                $visita->save();
+
                 DB::commit();
                 Log::info("Registro de PedidoProformaController ", ["cabecera" => $cabe,"detalles"=> $d,"TiempoPreciso"=>Carbon::now()->subHours(5)->format('H:m:s.u')]);
                 return response()->json(["estado"=>"guardado", "Npedido"=>$cabe->NUMERO, "secuencial"=>$cabe->SECUENCIAL]);

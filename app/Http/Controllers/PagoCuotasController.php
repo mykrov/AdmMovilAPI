@@ -66,7 +66,7 @@ class PagoCuotasController extends Controller
         try {
 
             //ADMPAGO
-            $cajaAbierta = array(['codigo'=>10,'DIRECCION'=>'MatrizDefault']);
+            $cajaAbierta = array(['codigo'=> null,'DIRECCION'=>'MatrizDefault']);
 
             if(strlen($operador1 == 3)){
                 Log::info('Es un código de operador.' .$operador1);
@@ -77,19 +77,44 @@ class PagoCuotasController extends Controller
             $cobrador = '';
 
             Log::info('operadorData',['data'=> $operadorData]);
+           
             if($operadorData == null || $operadorData->COBRADOR == null || trim($operadorData->COBRADOR) == ''){
                 $cobrador = 'ADM';
-            }else{
-                $cobrador = trim($operadorData->COBRADOR);
-                Log::info('Cobrador',['cobrador'=>$cobrador]);
+                
                 $cajaAbierta = DB::table('ADMCAJACOB')->where([['estadocaja','=','A'],['estado','=','A'],['codigo','=',$operadorData->caja]])
                 ->select('codigo','DIRECCION')
                 ->get();
+
                 Log::info('objeto de caja',['caja'=>$cajaAbierta]);
 
-                    
                 if($cajaAbierta == null or COUNT($cajaAbierta) == 0){
                     return response()->json(['estado'=>'error','info'=>'NO HAY CAJA']);
+                }
+
+                if($cajaAbierta[0]->codigo != $operadorData->caja){
+                    return response()->json(['estado'=>'error','info'=>'Caja'. $operadorData->caja .' de operador cerrada']);
+                }
+            }else{
+                
+                $cobrador = trim($operadorData->COBRADOR);
+                
+                if(trim($operadorData->COBRADOR) == ""){
+                    return response()->json(['estado'=>'error','info'=>'Operador no tiene asignado Cobrador.']);
+                }
+                Log::info('Cobrador',['cobrador'=>$cobrador]);
+                
+                $cajaAbierta = DB::table('ADMCAJACOB')->where([['estadocaja','=','A'],['estado','=','A'],['codigo','=',$operadorData->caja]])
+                ->select('codigo','DIRECCION')
+                ->get();
+                
+                Log::info('objeto de caja',['caja'=>$cajaAbierta]);
+
+                if($cajaAbierta == null or COUNT($cajaAbierta) == 0){
+                    return response()->json(['estado'=>'error','info'=>'NO HAY CAJA']);
+                }
+
+                if($cajaAbierta[0]->codigo != $operadorData->caja){
+                    return response()->json(['estado'=>'error','info'=>'Caja'. $operadorData->caja .' de operador cerrada']);
                 }
             }
 
@@ -123,10 +148,11 @@ class PagoCuotasController extends Controller
             $pago->horaeli = "";
             $pago->maquinaeli = "";
             $pago->operadoreli = "";
-            $pago->save();
+           
+            
 
             $observacionCre = $pago->observacion;
-            Log::info('Pasa el Pago');
+            Log::info('Pasa el Pago en la caja: '.$cajaAbierta[0]->codigo);
             //ADMDETPAGO
             $detPago = new \App\ADMDETPAGO();
             $detPago->secuencial = $pago->secuencial;
