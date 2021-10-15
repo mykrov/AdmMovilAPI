@@ -190,6 +190,10 @@ Route::post('/ventaelectro','VentaCreditoController@PostVentaCre');
 Route::get('/gencuotas','VentaCreditoController@CrearCuotas');
 Route::post('/proformacred','ProformaElectroController@PostProformaCredito');
 
+//Retios
+Route::post('retiro','RetiroController@GuardaRetiro');
+Route::get('motretiro','RetiroController@getMotivosRetiros');
+
 Route::middleware('auth:api')->group(function () {
     Route::get('/vendedorinfo',function (Request $request) {
         return $request->user();

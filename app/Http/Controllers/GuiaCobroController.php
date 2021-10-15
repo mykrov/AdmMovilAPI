@@ -23,7 +23,7 @@ class GuiaCobroController extends Controller
 
     public function GetGuiaCobroUnificada(int $numero)
     {
-
+        $numeroGuia = $numero;
         $dataClienteFull = DB::table('ADMCLIENTE')
         ->select(DB::raw('RTRIM(ADMCLIENTE.CODIGO) as CODIGO,
                         RTRIM(ADMCLIENTE.RAZONSOCIAL) as RAZONSOCIAL,
@@ -55,30 +55,18 @@ class GuiaCobroController extends Controller
         ->where('ADMDEUDACUOTA.SALDO','>',0.009)
         ->get();
 
-        $dataDeudaFull = DB::table('ADMDEUDA')
-        ->select(DB::raw('ADMDEUDA.SECUENCIAL,
-                            ADMDEUDA.BODEGA,
-                            RTRIM(ADMDEUDA.CLIENTE) as CLIENTE,
-                            ADMDEUDA.TIPO,
-                            ADMDEUDA.NUMERO,
-                            ADMDEUDA.SERIE,
-                            ADMDEUDA.IVA,
-                            ADMDEUDA.MONTO,
-                            ADMDEUDA.CREDITO,
-                            ADMDEUDA.SALDO,
-                            ADMDEUDA.FECHAEMI,
-                            ADMDEUDA.FECHAVEN,
-                            ADMDEUDA.valorfinanciado,
-                            ADMDEUDA.montointeres,
-                            ADMDEUDA.entrada,
-                            ADMDEUDA.OPERADOR,
-                            RTRIM(ADMDEUDA.VENDEDOR) as VENDEDOR,
-                            ADMDEUDA.mesescredito,
-                            ADMDEUDA.numeropagos,
-                            ADMDEUDA.diasatraso'))
-        ->join('ADMDETGUIACOB','ADMDETGUIACOB.SECUENCIAL','ADMDEUDA.SECUENCIAL')
-        ->where('ADMDETGUIACOB.NUMGUIA','=',$numero)
-        ->get();
+
+
+        $dataDeudaFull = DB::select('SELECT DISTINCT ADMDEUDA.SECUENCIAL, ADMDEUDA.BODEGA, RTRIM(ADMDEUDA.CLIENTE) as CLIENTE, 
+        ADMDEUDA.TIPO, ADMDEUDA.NUMERO, ADMDEUDA.SERIE, ADMDEUDA.IVA, ADMDEUDA.MONTO, ADMDEUDA.CREDITO,
+        ADMDEUDA.SALDO, ADMDEUDA.FECHAEMI, tt.FECHAVEN, ADMDEUDA.valorfinanciado, ADMDEUDA.montointeres,
+        ADMDEUDA.entrada, ADMDEUDA.OPERADOR, RTRIM(ADMDEUDA.VENDEDOR) as VENDEDOR, ADMDEUDA.mesescredito,
+        ADMDEUDA.numeropagos, ADMDEUDA.diasatraso 
+        from [ADMDEUDA] 
+        inner join [ADMDETGUIACOB] on [ADMDETGUIACOB].[SECUENCIAL] = [ADMDEUDA].[SECUENCIAL] 
+        inner join [ADMDEUDACUOTA] on [ADMDEUDACUOTA].[SECDEUDA] = [ADMDEUDA].[SECUENCIAL]
+        join  (select SECDEUDA,MAX(FECHAVEN) as FECHAVEN from  [ADMDEUDACUOTA] group by SECDEUDA ) tt  on tt.SECDEUDA = ADMDEUDA.SECUENCIAL 
+        where [ADMDETGUIACOB].[NUMGUIA] = ? ',[$numero]);
 
         return response()->json(['dataDeuda'=>$dataDeudaFull,'dataCliente'=>$dataClienteFull,'dataCuotas'=>$dataCuotasFull]);
     }
