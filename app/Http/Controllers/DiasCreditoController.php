@@ -6,9 +6,9 @@ use Illuminate\Http\Request;
 
 class DiasCreditoController extends Controller
 {
-     /**
+    /**
     * @OA\Get(
-    *     path="/api/deudacuotasdet/{pago}",
+    *     path="/api/diascredito",
     *     tags={"Datos"},
     *     summary="Retorna registros de ADMDIASCREDITO.",
     *     @OA\Response(

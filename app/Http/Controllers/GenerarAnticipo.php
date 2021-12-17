@@ -93,7 +93,7 @@ class GenerarAnticipo extends Controller
             $pago->monto = $montoPagar;
             $pago->operador = $operador1;
 
-            if ($observacionReq == 'NA'){
+            if ($observacionReq == 'NA' || $observacionReq == null || trim($observacionReq) == ''){
                 $pago->observacion = "Pago ".$tipoPago. " por ADMGO Nro:".$pago->numero;
             }else{
                 $pago->observacion = $observacionReq;

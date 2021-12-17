@@ -13,7 +13,7 @@ class PedidoXController extends Controller
 {
     public function PostPedidoProformaOff(Request $r)
     {      
-        return response()->json($r);
+       Log::info("Nuevo Pedido X----------------");
         try {
             $cabecera = $r->cabecera[0];
             $detalles = $r->detalles;
@@ -95,8 +95,8 @@ class PedidoXController extends Controller
             $cabe->PESO = 0;
             $cabe->VOLUMEN = 0;
             $cabe->OPERADOR = "ADM";
-            $cabe->COMENTARIO = $campo_adi;
-            $cabe->OBSERVACION =  $observacion;
+            $cabe->COMENTARIO = trim($campo_adi);
+            $cabe->OBSERVACION =  trim($observacion);
             $cabe->GRAVAIVA = $grabaIva;
             $cabe->DOCFAC = trim($cabecera['tipo']);
             $cabe->DIASCRED = $cliente->TDCREDITO ;
@@ -148,8 +148,10 @@ class PedidoXController extends Controller
                     $d->PORDESADIC = 0;
                     $d->save();
                     $linea++;
+                    usleep(1000000);
                 } 
-
+                
+                
                 $visita = new \App\ADMVISITACLI();
                 $visita->CLIENTE = $cabe->CLIENTE;
                 $visita->VENDEDOR = $cabe->VENDEDOR;
@@ -159,12 +161,28 @@ class PedidoXController extends Controller
                 $visita->VISITADO  = "S";
                 $visita->FECHAVISITA = Carbon::now()->format('Y-m-d');
                 $visita->save();
-                Log::info(['Registro de visita por PedidoXController'=>$visita->CLIENTE]);
-
-
                 DB::commit();
-                DB::statement("UPDATE ADMCABPEDIDOX SET SECUENCIAL = SECAUTO,NUMERO = SECAUTO where SECAUTO = " .$secAutoNew);
-                Log::info("Registro de PedidoProformaController ", ["cabecera" => $cabe,"detalles"=> $d,"TiempoPreciso"=>Carbon::now()->subHours(5)->format('H:m:s.u')]);
+                Log::info('Registro de visita por PedidoXController '.$visita->CLIENTE);
+
+               
+                // if($this->UpdateCabX($secAutoNew)){
+                //     Log::info("Se hizo update de CabX exitoso.");
+                // }else{
+                //     Log::error("Error en el Update CabX");
+                // }     
+                
+                //Se debe crear el tigger en la BASE
+                // CREATE TRIGGER UpdateSecAuto 
+                // ON  ADMCABPEDIDOX 
+                // AFTER INSERT
+                // AS 
+                // BEGIN 	
+                //     UPDATE ADMCABPEDIDOX SET SECUENCIAL = SECAUTO,NUMERO = SECAUTO WHERE SECAUTO = (SELECT i.SECAUTO FROM inserted i);
+                // END
+                // GO
+
+
+                Log::info("Registro de PedidoXController ", ["cabecera" => $cabe,"detalles"=> $d,"TiempoPreciso"=>Carbon::now()->subHours(5)->format('H:m:s.u')]);
                 return response()->json(["estado"=>"guardado", "Npedido"=>$secAutoNew, "secuencial"=>$secAutoNew]);
                 
             } else {
@@ -175,8 +193,23 @@ class PedidoXController extends Controller
             
         } catch (\Exception $e) {
             DB::rollback();
-            Log::error("Error PedidoProformaController Last", ["cabecera" => $cabe,"TiempoPreciso"=>Carbon::now()->subHours(5)->format('H:m:s.u'),"Datos"=>$e->getMessage()]);
+            Log::error("Error PedidoXController Last", ["cabecera" => $cabe,"TiempoPreciso"=>Carbon::now()->subHours(5)->format('H:m:s.u')]);
+            Log::error($e->getMessage());
+            DB::statement("Delete ADMCABPEDIDOX where SECAUTO = " .$secAutoNew);
+            Log::info("Se procedió a eliminar el secauto ".$secAutoNew);
+            DB::statement("Delete ADMDETPEDIDOX where SECUENCIAL = " .$secAutoNew);
             return response()->json(["error"=>["info"=>"Error Insertando Pedido"]]);
         }
     }    
+
+    public function UpdateCabX($secAuto){
+        try {
+            DB::statement("UPDATE ADMCABPEDIDOX SET SECUENCIAL = SECAUTO,NUMERO = SECAUTO where SECAUTO = " .$secAuto);
+            return true;
+        } catch (\Throwable $th) {
+            Log::error("Error en el Update de ADMCABPEDIDOX",['Error'=>$th->getMessage()]);
+            return false;
+        }
+    }
+
 }

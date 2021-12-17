@@ -159,6 +159,7 @@ class PedidoProformaController extends Controller
             
         } catch (\Exception $e) {
             DB::rollback();
+          
             Log::error("Error PedidoProformaController ", ["cabecera" => $cabe,"TiempoPreciso"=>Carbon::now()->subHours(5)->format('H:m:s.u'),"Datos"=>$e->getMessage()]);
             return response()->json(["error"=>["info"=>"Error Insertando Pedido"]]);
         }

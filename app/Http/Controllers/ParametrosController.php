@@ -46,7 +46,9 @@ class ParametrosController extends Controller
                                     'eletipointeres'=> $paramC->eletipointeres,
                                     'eleusarvariosprecios'=> $paramC->eleusarvariosprecios,
                                     'eleusarformadepago'=>$paramC->eleusarformadepago,
-                                    'tipocosto'=>$paramV->TIPOCOSTO 
+                                    'tipocosto'=>$paramV->TIPOCOSTO,
+                                    'elediferirentrada'=>$paramC->elediferirentrada,
+                                    'POSPRECIOXLOCAL'=>$paramV->POSPRECIOXLOCAL
                                 ]]);
    }
 }

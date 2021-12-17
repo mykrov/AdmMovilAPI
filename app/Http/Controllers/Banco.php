@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 *  @OA\Contact(email="basesinteligentes@birobid.com")
 * )
 * @OA\Server(url="http://181.198.213.18:8000",description="Server Pro")
+* @OA\Server(url="http://aplicacionmovil.test:8000",description="Server Local")
 */
 class Banco extends Controller
 {

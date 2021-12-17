@@ -68,6 +68,8 @@ class ProformaElectroController extends Controller
             }
             
             $date = Carbon::now()->subHours(5);
+            $inipago = Carbon::createFromFormat('Y-m-d',$cabecera['fechaIniPago']);
+            $fechaDes = Carbon::createFromFormat('Y-m-d',$cabecera['fecha_ingreso']);
             
             $cab = new \App\ADMCABEGRESO();
             
@@ -85,7 +87,7 @@ class ProformaElectroController extends Controller
             $cab->NUMEROREL = null; 
             $cab->FECHA = $date->Format('Y-d-m'); 
             $cab->FECHAVEN = $date->addDays(intval($cliente->DIASCREDIT))->format('Y-d-m'); 
-            $cab->FECHADES = $cabecera['fecha_ingreso']; 
+            $cab->FECHADES = $fechaDes->format('Y-d-m'); 
             $cab->OPERADOR = $operador1; 
             $cab->CLIENTE = $cabecera['cliente']; 
             $cab->VENDEDOR = $cabecera['usuario']; 
@@ -153,7 +155,7 @@ class ProformaElectroController extends Controller
             $cab->totaldeuda = $cabecera["totalDeuda"]; 
             $cab->xsubtotal = $cabecera["xSubtotal"]; 
             $cab->xsubtotal0 = $cabecera["xSubtotal0"]; 
-            $cab->fechainipago = $cabecera["fechaIniPago"];
+            $cab->fechainipago = $inipago->format('Y-d-m');
             $cab->xdescuento = 0; 
             $cab->xdescuento0 = 0; 
             $cab->xiva = 0; 
@@ -186,7 +188,13 @@ class ProformaElectroController extends Controller
                 $d->COSTOP = $itemElectData->costo;
                 $d->COSTOU = $itemElectData->costo;
                 $d->CANTIU = intval($det['total_unidades']) % $itemData->FACTOR;
-                $d->CANTIC = intval($det['total_unidades']  / $itemData->FACTOR);
+                
+                if(intval($det['total_unidades']) > 1){
+                    $d->CANTIC = intval($det['total_unidades']  / $itemData->FACTOR);
+                }else{
+                    $d->CANTIC = 0;
+                }
+
                 $d->CANTFUN = intval($det['total_unidades']);
                 $d->CANTDEV = null;
                 $d->SUBTOTAL = floatval($det['subtotal']);

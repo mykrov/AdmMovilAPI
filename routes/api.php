@@ -75,6 +75,7 @@ Route::get('/itemtop','ItemTopController@GetItemTop');
 Route::get('/itemxcliente','ItemXClienteController@GetItemXCliente');
 Route::get('/bancos','Banco@GetBancos');
 Route::get('/bacoscia','BancoCiaController@GetBancoCia');
+Route::get('/puntosemi','PuntosEmisionController@GetPuntos');
 
 Route::get('/diascredito','DiasCreditoController@GetDiasCredito');
 Route::get('/formapago','FormaPagoController@GetFormaPago');
@@ -170,7 +171,8 @@ Route::post('/clidiaveninfo','InformeVisitaController@GetClientesDiaVendedor');
 
 //Items de Electrodomesticos
 Route::get('/itemelec/{item}/{bodega}','ElectroController@GetItem');
-Route::get('/itemelectodos','ElectroController@GetItemTodos');
+Route::get('/itemsserieele/{bod}','ElectroController@GetItemTodos');
+Route::get('/itemregalobod/{bod}','ElectroController@GetItemRegalosTodos');
 Route::get('/itemliquida/{item}/{bodega}','ElectroController@GetItemLiquidacion');
 Route::get('/itemliquidatodos/{bodega}','ElectroController@GetItemLiquidacionTodos');
 Route::post('/ventaelec','VentaElectroController@PostPedidoElectro');

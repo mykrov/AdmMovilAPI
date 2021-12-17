@@ -12,6 +12,10 @@
         {
             "url": "http://181.198.213.18:8000",
             "description": "Server Pro"
+        },
+        {
+            "url": "http://aplicacionmovil.test:8000",
+            "description": "Server Local"
         }
     ],
     "paths": {
@@ -1315,6 +1319,72 @@
                 "responses": {
                     "200": {
                         "description": "Retorna el registro de ADMDETGUIACOB con el SECUENCIAL indicado perteneciente al numero de guia."
+                    },
+                    "default": {
+                        "description": "Ha ocurrido un error."
+                    }
+                }
+            }
+        },
+        "/api/diascredito": {
+            "get": {
+                "tags": [
+                    "Datos"
+                ],
+                "summary": "Retorna registros de ADMDIASCREDITO.",
+                "operationId": "App\\Http\\Controllers\\DiasCreditoController::GetDiasCredito",
+                "responses": {
+                    "200": {
+                        "description": "Retorna los registros de ADMDIASCREDITO."
+                    },
+                    "default": {
+                        "description": "Ha ocurrido un error."
+                    }
+                }
+            }
+        },
+        "/api/factxvende": {
+            "post": {
+                "tags": [
+                    "Facturas"
+                ],
+                "summary": "Retorna datos de Facturas y Notas de Ventas del perido de fechas y vendedor indicado.",
+                "operationId": "App\\Http\\Controllers\\FacturasController::GetCabeceras",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "VENDEDOR",
+                                    "FECHAINI",
+                                    "FECHAFIN"
+                                ],
+                                "properties": {
+                                    "VENDEDOR": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "VEN009"
+                                    },
+                                    "FECHAINI": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "22-01-2020"
+                                    },
+                                    "FECHAFIN": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "22-12-2020"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Retorna datos de Facturas y Notas de Ventas del perido de fechas y vendedor indicado.."
                     },
                     "default": {
                         "description": "Ha ocurrido un error."

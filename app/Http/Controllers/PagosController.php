@@ -22,7 +22,7 @@ class PagosController extends Controller
         $NumCre = \App\ADMTIPODOC::where('TIPO','=','PAG')->first();
         $date = Carbon::now()->subHours(5);
         $observacionReq = $r->observacion;
-        
+        $fechaPago = Carbon::createFromFormat('Y-m-d', $r->fechaPago)->Format('d-m-Y');
         $fcChq = Carbon::createFromFormat('Y-m-d',$fechaChq)->Format('d-m-Y');
         $observacionCre = "";
         $bodegaDeuda = 10;
@@ -38,16 +38,21 @@ class PagosController extends Controller
 
         DB::beginTransaction();  
         try {
-             //ADMPAGO
+            //ADMPAGO
             $cajaAbierta = DB::table('ADMCAJACOB')
-            ->where([['estadocaja','=','A'],['estado','=','A'],['fechaini','<=',$date->format('d-m-Y')],['fechafin','>=',$date->format('d-m-Y')]])
+            ->where([
+                ['estadocaja','=','A'],['estado','=','A'],
+                ['fechaini','<=',$fechaPago],
+                ['fechafin','>=',$fechaPago]
+                ]
+            )
             ->select('codigo')
             ->get();
 
             Log::info("caja abierta",['caja'=>$cajaAbierta]);
 
             if($cajaAbierta == null or COUNT($cajaAbierta) == 0){
-                return response()->json(['estado'=>'error','info'=>'NO HAY CAJA']);
+                return response()->json(['estado'=>'error','info'=>'La caja está cerrada, no puede hacer pagos con la fecha '.$fechaPago]);
             }
 
             //Datos del Operador segun vendedor

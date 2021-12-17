@@ -723,14 +723,16 @@ class Cliente extends Controller
                 $cliBase->save();
                 DB::commit();
 
-                return response()->json(['status'=>'ok','codCliente'=>$inicial.$codigo],200);
+                return response()->json(['status'=>'ok','codCliente'=>$ClientNew->CODIGO],200);
             } catch (\Exception $e) {
                 
                 DB::rollback();
                 return response()->json(["error"=>["info"=>$e->getMessage()]],503);
             }
         } else {
-            return response()->json(['result'=>'IdentificacionExistente'],200);
+            $check = \App\Cliente::where('RUC','=',$datos['RUC'])->first();
+            return response()->json(['status'=>'ok','codCliente'=>$check->CODIGO],200);
+            // return response()->json(['result'=>'IdentificacionExistente'],200);
         }
         
     }
@@ -960,14 +962,15 @@ class Cliente extends Controller
                 $cliBase->save();
                 DB::commit();
 
-                return response()->json(['status'=>'ok','codCliente'=>$inicial.$codigo]);
+                return response()->json(['status'=>'ok','codCliente'=>$ClientNew->CODIGO]);
             } catch (\Exception $e) {
                 
                 DB::rollback();
                 return response()->json(["error"=>["info"=>$e->getMessage()]]);
             }
         } else {
-            return response()->json(['result'=>'IdentificacionExistente']);
+            $check = \App\Cliente::where('RUC','=',$datos['RUC'])->first();
+            return response()->json(['status'=>'ok','codCliente'=>$check->CODIGO]);
         }
     }
 
@@ -1219,14 +1222,16 @@ class Cliente extends Controller
                 $cliBase->save();
                 DB::commit();
 
-                return response()->json(['status'=>'ok','codCliente'=>$inicial.$codigo],200);
+                return response()->json(['status'=>'ok','codCliente'=>$ClientNew->CODIGO],200);
             } catch (\Exception $e) {
                 
                 DB::rollback();
                 return response()->json(["error"=>["info"=>$e->getMessage()]],503);
             }
         } else {
-            return response()->json(['result'=>'IdentificacionExistente'],200);
+            $check = \App\Cliente::where('RUC','=',$datos['RUC'])->first();
+            return response()->json(['status'=>'ok','codCliente'=>$check->CODIGO],200);
+            // return response()->json(['result'=>'IdentificacionExistente'],200);
         }
     }
 

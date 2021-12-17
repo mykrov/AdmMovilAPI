@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ElectroController extends Controller
 {
@@ -24,20 +25,44 @@ class ElectroController extends Controller
         return response()->json(['series'=>$itemSerie,'motor'=>$datosMotor]);
     }
 
-    public function GetItemTodos()
+    public function GetItemTodos($bod)
     {
         //$itemPrecio = \App\ADMITEMPRECIOELE::where('item','=',$item)->get();
         
         $itemSerie = \App\ADMITEMSERIEELE::where('VENDIDO','=','N')
+        ->where('BODEGA',$bod)
         ->select('SERIE','ITEM')
         ->get();
 
         $datosMotor = \App\ADMDATOSMOTORELE::where('NOMBRE','MODELO')
         ->whereNull('ESTADO')
+        ->where('BODEGAAJI',$bod)
         ->select('CHASIS','ITEM')
         ->get();
 
         return response()->json(['series'=>$itemSerie,'motor'=>$datosMotor]);
+    }
+
+    public function GetItemRegalosTodos($bod){
+
+        $itemsr = DB::table('ADMITEM')
+        ->join('ADMITEMBOD','ADMITEMBOD.ITEM','ADMITEM.ITEM')
+        ->where('ADMITEMBOD.BODEGA',$bod)
+        ->where('ADMITEM.STOCK','>',0)
+        ->where('ADMITEM.REGALO','S')
+        ->select([
+            
+            DB::raw('RTRIM(ADMITEM.ITEM) as ITEM'),
+            DB::raw('RTRIM(ADMITEM.NOMBRE) as NOMBRE'),           
+            'ADMITEM.STOCK',
+            'ADMITEMBOD.BODEGA',
+            DB::raw('ROUND(ADMITEM.PRECIO1,2) as PRECIO')
+            
+        ])
+        ->get();
+
+        return response()->json($itemsr);
+
     }
 
     public function GetItemLiquidacion($item,$bodega)

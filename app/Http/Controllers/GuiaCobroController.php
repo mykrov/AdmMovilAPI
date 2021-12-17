@@ -63,9 +63,9 @@ class GuiaCobroController extends Controller
         ADMDEUDA.entrada, ADMDEUDA.OPERADOR, RTRIM(ADMDEUDA.VENDEDOR) as VENDEDOR, ADMDEUDA.mesescredito,
         ADMDEUDA.numeropagos, ADMDEUDA.diasatraso 
         from [ADMDEUDA] 
-        inner join [ADMDETGUIACOB] on [ADMDETGUIACOB].[SECUENCIAL] = [ADMDEUDA].[SECUENCIAL] 
-        inner join [ADMDEUDACUOTA] on [ADMDEUDACUOTA].[SECDEUDA] = [ADMDEUDA].[SECUENCIAL]
-        join  (select SECDEUDA,MAX(FECHAVEN) as FECHAVEN from  [ADMDEUDACUOTA] group by SECDEUDA ) tt  on tt.SECDEUDA = ADMDEUDA.SECUENCIAL 
+        left join [ADMDETGUIACOB] on [ADMDETGUIACOB].[SECUENCIAL] = [ADMDEUDA].[SECUENCIAL] 
+        left join [ADMDEUDACUOTA] on [ADMDEUDACUOTA].[SECDEUDA] = [ADMDEUDA].[SECUENCIAL]
+        left join  (select SECDEUDA,MAX(FECHAVEN) as FECHAVEN from  [ADMDEUDACUOTA] group by SECDEUDA ) tt  on tt.SECDEUDA = ADMDEUDA.SECUENCIAL 
         where [ADMDETGUIACOB].[NUMGUIA] = ? ',[$numero]);
 
         return response()->json(['dataDeuda'=>$dataDeudaFull,'dataCliente'=>$dataClienteFull,'dataCuotas'=>$dataCuotasFull]);
