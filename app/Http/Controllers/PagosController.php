@@ -27,6 +27,8 @@ class PagosController extends Controller
         $observacionCre = "";
         $bodegaDeuda = 10;
 
+        $fechaYdm = Carbon::createFromFormat('Y-m-d', $r->fechaPago)->Format('Y-d-m');
+
         $secDelPago = 0;
 
         $clienteData = \App\Cliente::where('CODIGO',$cliente)->first();
@@ -39,30 +41,38 @@ class PagosController extends Controller
         DB::beginTransaction();  
         try {
             //ADMPAGO
-            $cajaAbierta = DB::table('ADMCAJACOB')
-            ->where([
-                ['estadocaja','=','A'],['estado','=','A'],
-                ['fechaini','<=',$fechaPago],
-                ['fechafin','>=',$fechaPago]
-                ]
-            )
-            ->select('codigo')
-            ->get();
-
-            Log::info("caja abierta",['caja'=>$cajaAbierta]);
-
-            if($cajaAbierta == null or COUNT($cajaAbierta) == 0){
-                return response()->json(['estado'=>'error','info'=>'La caja está cerrada, no puede hacer pagos con la fecha '.$fechaPago]);
-            }
-
             //Datos del Operador segun vendedor
             $vendedorData = \App\ADMVENDEDOR::where('CODIGO','=',$vendedor)->first();
+            
             $operador1 = '';
             if($vendedorData == null || $vendedorData->operadormovil == null || trim($vendedorData->operadormovil) == ''){
                 $operador1 = 'ADM';
             }else{
                 $operador1 = trim($vendedorData->operadormovil);
             }
+
+            $dataOperador = DB::table('ADMOPERADOR')->where('CODIGO',$operador1)->first();
+            $relacionadoBodega = $dataOperador->relacionadobodega;
+
+            $cajaAbiertaQuery = DB::table('ADMCAJACOB')
+            ->where('estadocaja','=','A')
+            ->where('estado','=','A')
+            ->where('fechaini','<=',$fechaPago)
+            ->where('fechafin','>=',$fechaPago)
+            ->select('codigo');
+               
+            if($relacionadoBodega == 'S'){
+                $cajaAbiertaQuery->where('codigo','=',$dataOperador->caja);
+            }
+
+            $cajaAbierta = $cajaAbiertaQuery->get();
+            
+            if($cajaAbierta == null or COUNT($cajaAbierta) == 0){
+                Log::error("No hay caja abierta para proceso.");
+                return response()->json(['estado'=>'error','info'=>'La caja está cerrada, no puede hacer pagos con la fecha '.$fechaPago]);
+            }
+
+            Log::info("caja abierta ".$cajaAbierta[0]->codigo);
 
             $pago = new \App\ADMPAGO();
             $pago->secuencial = $parametrov->SECUENCIAL + 1;
@@ -85,7 +95,7 @@ class PagosController extends Controller
             }
 
             $pago->numpapel = "";
-            $pago->fecha = $date->Format('d-m-Y');
+            $pago->fecha = $fechaPago;
             $pago->vendedor = $vendedor;
             $pago->oripago = "C";
             $pago->hora = $date->Format('H:i:s');
@@ -152,7 +162,7 @@ class PagosController extends Controller
                 $deudaChq->MONTO = $montoPagar;
                 $deudaChq->CREDITO = 0;
                 $deudaChq->SALDO = $montoPagar;
-                $deudaChq->FECHAEMI = $date->Format('Y-d-m');
+                $deudaChq->FECHAEMI = $fechaYdm;
                 $deudaChq->FECHAVEN = $fcChq;
                 $deudaChq->FECHADES = $fcChq;
                 $deudaChq->BANCO = trim($r->banco);
@@ -181,7 +191,7 @@ class PagosController extends Controller
                 $creditoLinea2->CLIENTE = $deudaChq->CLIENTE;
                 $creditoLinea2->TIPO = $deudaChq->TIPO;
                 $creditoLinea2->NUMERO = $deudaChq->NUMERO;
-                $creditoLinea2->FECHA = $date->Format('Y-d-m');
+                $creditoLinea2->FECHA = $fechaYdm;
                 $creditoLinea2->MONTO = $montoPagar;
                 $creditoLinea2->SALDO = $montoPagar;
                 $creditoLinea2->OPERADOR = $operador1;
@@ -229,7 +239,7 @@ class PagosController extends Controller
                 $movibanco->numdocumento = $r->numCheque;
                 $movibanco->banco = $r->banco;
                 $movibanco->cuenta = $r->cuentaChq;
-                $movibanco->fecha = $date->Format('d-m-Y');
+                $movibanco->fecha = $fechaPago;
                 
                 $movibanco->fechavence = $fcChq;
                 $movibanco->monto = $montoPagar;
@@ -260,7 +270,7 @@ class PagosController extends Controller
             $cabCompro->secuencial = $parametroBO->secuencial + 1;
 
             $numComproContable = $cabCompro->secuencial;
-            $cabCompro->fecha = $date->Format('Y-d-m');
+            $cabCompro->fecha = $fechaYdm;
             $cabCompro->tipoComprobante = 18;
             $cabCompro->numero = -1;
             $cabCompro->cliente = trim($clienteData->RAZONSOCIAL);
@@ -268,7 +278,7 @@ class PagosController extends Controller
             $cabCompro->debito = $montoPagar;
             $cabCompro->credito = $montoPagar;
             $cabCompro->estado = "C";
-            $cabCompro->fechao = $date->Format('Y-d-m');
+            $cabCompro->fechao = $fechaYdm;
             $cabCompro->retencion = "N";
             $cabCompro->operador = $operador1;
             $cabCompro->modulo = "CXC";
@@ -378,7 +388,7 @@ class PagosController extends Controller
                     $creditoLinea->NUMCRE = $pago->numero;
                     $creditoLinea->SERIECRE = '';
                     $creditoLinea->NOAUTOR = '';
-                    $creditoLinea->FECHA = $date->Format('Y-d-m');
+                    $creditoLinea->FECHA = $fechaYdm;
                     $creditoLinea->IVA = 0;
                     $creditoLinea->MONTO = $montoPagar;
                     $creditoLinea->SALDO = round(($saldo - $montoPagar),2);
@@ -406,6 +416,7 @@ class PagosController extends Controller
 
         } catch (\Exception $e) {
             DB::rollback();
+            Log::error($e->getMessage());
             return response()->json(["error"=>["ADMPAGO"=>$e->getMessage()]]);
         }
     }

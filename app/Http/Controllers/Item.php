@@ -82,7 +82,7 @@ class Item extends Controller
         'ADMITEM.PESO',
         'ADMITEM.VOLUMEN',
         'ADMITEM.PRECIO1',
-        'ADMITEM.PRECIO2',
+        'ADMITEM.PRECIO1 ',//Stock desde Bodega
         'ADMITEM.PRECIO3',
         'ADMITEM.PRECIO4',
         'ADMITEM.PRECIO5',

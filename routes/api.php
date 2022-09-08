@@ -196,6 +196,13 @@ Route::post('/proformacred','ProformaElectroController@PostProformaCredito');
 Route::post('retiro','RetiroController@GuardaRetiro');
 Route::get('motretiro','RetiroController@getMotivosRetiros');
 
+//Orden Retiro
+Route::post('ordenretcab','OrdenRetiroController@getCabOrders');
+Route::post('ordenretdet','OrdenRetiroController@getDetOrders');
+
+//Validar instalacion
+Route::post('validarinst','ValInstallController@CheckCode');
+
 Route::middleware('auth:api')->group(function () {
     Route::get('/vendedorinfo',function (Request $request) {
         return $request->user();

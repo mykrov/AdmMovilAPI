@@ -15,6 +15,7 @@ use \App\ADMCABEGRBOD;
 use \App\ADMDEUDA;
 use \App\ADMCREDITO;
 use \App\Mail\FacturaInvoice;
+use Barryvdh\DomPDF\Facade as PDF;
 
 
 class PedidoController extends Controller
@@ -361,7 +362,7 @@ class PedidoController extends Controller
 
             $order = $cab;
             $detalles = \App\ADMDETEGRESO::where('SECUENCIAL',$cab->SECUENCIAL)->get();
-            $pdf = \PDF::loadView('pdfs/pdffactura2',['cabecera'=>$order,'cliente'=>$cliente,'parametrobo'=>$parametrobo,'detalles'=>$detalles]);
+            $pdf = PDF::loadView('pdfs/pdffactura2',['cabecera'=>$order,'cliente'=>$cliente,'parametrobo'=>$parametrobo,'detalles'=>$detalles]);
 
             $vendedor = \App\ADMVENDEDOR::where('CODIGO','=',$cabecera['usuario'])->first();
             $vendEmail = $vendedor->email;
@@ -426,8 +427,8 @@ class PedidoController extends Controller
     //Vista para ver la Generacion de un PDF desde el Navegador.
     public function Facturapdf(){
         
-        return response()->json($detEgr2->INDICE);
-        $order = \App\ADMCABEGRESO::where('NUMERO',2910)
+        //return response()->json(0);
+        $order = \App\ADMCABEGRESO::where('NUMERO',104)
         ->whereIn('TIPO',['FAC','NVT'])
         ->orderby('SECUENCIAL','DESC')
         ->first();
@@ -436,7 +437,7 @@ class PedidoController extends Controller
         $cliente = Cliente::where('CODIGO','=',$order->CLIENTE)->first();
 
         $detalles = \App\ADMDETEGRESO::where('SECUENCIAL',$order->SECUENCIAL)->get();
-        return \PDF::loadView('pdfs.pdffactura2',['cabecera'=>$order,'cliente'=>$cliente,'parametrobo'=>$parametrobo,'detalles'=> $detalles])->stream('archivo.pdf');
+        return PDF::loadView('pdfs.pdffactura2',['cabecera'=>$order,'cliente'=>$cliente,'parametrobo'=>$parametrobo,'detalles'=> $detalles])->stream('archivo.pdf');
     }
 
     //envio de email de test
@@ -512,7 +513,7 @@ class PedidoController extends Controller
                 $ret_claveAcceso = $ret_claveAcceso.strval($res);
             }
             return $ret_claveAcceso;
-        } catch (\Excepyion $e) {
+        } catch (\Exception $e) {
             return false;
         }
 

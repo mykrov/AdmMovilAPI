@@ -48,7 +48,8 @@ class ParametrosController extends Controller
                                     'eleusarformadepago'=>$paramC->eleusarformadepago,
                                     'tipocosto'=>$paramV->TIPOCOSTO,
                                     'elediferirentrada'=>$paramC->elediferirentrada,
-                                    'POSPRECIOXLOCAL'=>$paramV->POSPRECIOXLOCAL
+                                    'POSPRECIOXLOCAL'=>$paramV->POSPRECIOXLOCAL,
+                                    'CUPOCARTERA' =>$paramC->CUPOCARTERA
                                 ]]);
    }
 }

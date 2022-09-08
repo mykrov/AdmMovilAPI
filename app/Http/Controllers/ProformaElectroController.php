@@ -16,6 +16,7 @@ class ProformaElectroController extends Controller
 {
     public function PostProformaCredito(Request $r){
        
+        Log::info('Nueva ProformaElectroController');       
         $cabecera = $r->cabecera[0];
         $detalles = $r->detalles;
         //$tablaJson = $r->tablaAmortizacion;
@@ -187,13 +188,13 @@ class ProformaElectroController extends Controller
                 $d->PRECIO = floatval($det['precio']);
                 $d->COSTOP = $itemElectData->costo;
                 $d->COSTOU = $itemElectData->costo;
-                $d->CANTIU = intval($det['total_unidades']) % $itemData->FACTOR;
-                
-                if(intval($det['total_unidades']) > 1){
-                    $d->CANTIC = intval($det['total_unidades']  / $itemData->FACTOR);
-                }else{
-                    $d->CANTIC = 0;
-                }
+                $d->CANTIU = intval($det['total_unidades']) ;// % $itemData->FACTOR;
+                $d->CANTIC = 0;
+                // if(intval($det['total_unidades']) > 1){
+                //     $d->CANTIC = intval($det['total_unidades']  / $itemData->FACTOR);
+                // }else{
+                //     $d->CANTIC = 0;
+                // }
 
                 $d->CANTFUN = intval($det['total_unidades']);
                 $d->CANTDEV = null;

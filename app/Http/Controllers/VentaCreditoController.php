@@ -27,6 +27,7 @@ class VentaCreditoController extends Controller
         $cabecera = $r->cabecera[0];
         $detalles = $r->detalles;
         $tablaJson = $r->tablaAmortizacion;
+        Log::info('Nueva VentaCreditoController');
         Log::info(['cab'=>$cabecera,'detalle'=>$detalles]);
         //return response()->json(['CAB'=>$r]);
 
@@ -485,8 +486,9 @@ class VentaCreditoController extends Controller
                 if($cabecera['aprobarTabla'] ==  'N'){
                     Log::info("Se debe crea la tabla de amortización desde el Backend.");
                     if($this->CrearCuotas($cabecera['mesesCredito'],$deuda->MONTO,$deuda->numeropagos,$deuda->SECUENCIAL,$cab->fechainipago,$cab->tipopago) == false){
-                        DB::rollback();
                         Log::error("Error Creando las ADMDEUDACUOTAS");
+                        DB::rollback();
+                      
                     }else{ 
                         Log::info("Creadas cuotas del credito");
                     }
@@ -715,7 +717,7 @@ class VentaCreditoController extends Controller
             ->where('ANIO',$dat->format('Y'))
             ->get();
 
-            Log::info(["cuentasPunto 1"=>$cuentasPunto]);
+           // Log::info(["cuentasPunto 1"=>$cuentasPunto]);
 
             $CLI = "";
             $VE0 = "";
@@ -733,7 +735,7 @@ class VentaCreditoController extends Controller
             ->where('ASIENTO','=','VEN')
             ->get();
 
-            Log::info(["cuentasPunto 2"=>$cuentasPunto]);
+            // Log::info(["cuentasPunto 2"=>$cuentasPunto]);
 
             foreach ($cuentasPunto->toArray() as $k => $v){
                 if(in_array('CLI',$v)){
@@ -976,9 +978,7 @@ class VentaCreditoController extends Controller
     }
 
     public function CrearCuotas($meses,$montoDeuda,$numCuotas,$secDeuda,$inicioPago,$tipoPago){
-        
-        $fechaInicio = Carbon::createFromFormat('d-m-Y',$inicioPago);
-
+        Log::info('Creando Cuotas');  
         $montoCuotas = round($montoDeuda / $numCuotas,2);
         $sumatoria = $montoCuotas * $numCuotas;
         $diferencia = $montoDeuda - $sumatoria;
@@ -987,6 +987,9 @@ class VentaCreditoController extends Controller
         DB::beginTransaction();
         
         try {
+
+            $fechaInicio = Carbon::createFromFormat('d-m-Y',$inicioPago);
+
             for ($i=1; $i <= $numCuotas; $i++) { 
             
                 $deudaCuota = new \App\ADMDEUDACUOTA();
@@ -1032,7 +1035,7 @@ class VentaCreditoController extends Controller
             DB::commit();
             return true;
         } catch (\Throwable $th) {
-            Log::error("Creando cuotas del credito",['data'=>$th->getMessage()]);
+            Log::error("Error creando cuotas del crédito",['data'=>$th->getMessage()]);
             DB::rollback();
             return false;
         }
@@ -1051,7 +1054,7 @@ class VentaCreditoController extends Controller
             $deudan->CLIENTE = $cliente;
             $deudan->TIPO = "NDB";
             $deudan->NUMERO = $numDB->CONTADOR + 1;
-            Log::info(["contador" =>$numDB->CONTADOR]);
+            // Log::info(["contador" =>$numDB->CONTADOR]);
             $deudan->SERIE = $serie;
             $deudan->SECINV = $secinv;
             $deudan->IVA = 0;

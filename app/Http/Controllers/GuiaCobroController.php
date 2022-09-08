@@ -57,16 +57,17 @@ class GuiaCobroController extends Controller
 
 
 
-        $dataDeudaFull = DB::select('SELECT DISTINCT ADMDEUDA.SECUENCIAL, ADMDEUDA.BODEGA, RTRIM(ADMDEUDA.CLIENTE) as CLIENTE, 
+        $dataDeudaFull = DB::select("SELECT DISTINCT ADMDEUDA.SECUENCIAL, ADMDEUDA.BODEGA, RTRIM(ADMDEUDA.CLIENTE) as CLIENTE, 
         ADMDEUDA.TIPO, ADMDEUDA.NUMERO, ADMDEUDA.SERIE, ADMDEUDA.IVA, ADMDEUDA.MONTO, ADMDEUDA.CREDITO,
         ADMDEUDA.SALDO, ADMDEUDA.FECHAEMI, tt.FECHAVEN, ADMDEUDA.valorfinanciado, ADMDEUDA.montointeres,
-        ADMDEUDA.entrada, ADMDEUDA.OPERADOR, RTRIM(ADMDEUDA.VENDEDOR) as VENDEDOR, ADMDEUDA.mesescredito,
+        ADMDETGUIACOB.ENTRADA, ADMDEUDA.OPERADOR, RTRIM(ADMDEUDA.VENDEDOR) as VENDEDOR, ADMDEUDA.mesescredito,
         ADMDEUDA.numeropagos, ADMDEUDA.diasatraso 
         from [ADMDEUDA] 
-        left join [ADMDETGUIACOB] on [ADMDETGUIACOB].[SECUENCIAL] = [ADMDEUDA].[SECUENCIAL] 
+        left join [ADMDETGUIACOB] on [ADMDETGUIACOB].[SECUENCIAL] = [ADMDEUDA].[SECUENCIAL] and [ADMDEUDA].[TIPO] <> 'NDB'
         left join [ADMDEUDACUOTA] on [ADMDEUDACUOTA].[SECDEUDA] = [ADMDEUDA].[SECUENCIAL]
-        left join  (select SECDEUDA,MAX(FECHAVEN) as FECHAVEN from  [ADMDEUDACUOTA] group by SECDEUDA ) tt  on tt.SECDEUDA = ADMDEUDA.SECUENCIAL 
-        where [ADMDETGUIACOB].[NUMGUIA] = ? ',[$numero]);
+        left join (select SECDEUDA,MAX(FECHAVEN) as FECHAVEN from  [ADMDEUDACUOTA] group by SECDEUDA ) tt  
+        on tt.SECDEUDA = ADMDEUDA.SECUENCIAL 
+        where [ADMDETGUIACOB].[NUMGUIA] = ? ",[$numero]);
 
         return response()->json(['dataDeuda'=>$dataDeudaFull,'dataCliente'=>$dataClienteFull,'dataCuotas'=>$dataCuotasFull]);
     }

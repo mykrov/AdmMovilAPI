@@ -13,14 +13,29 @@ class PedidoXController extends Controller
 {
     public function PostPedidoProformaOff(Request $r)
     {      
-       Log::info("Nuevo Pedido X----------------");
+        Log::info("Nuevo Pedido X ----------------");
         try {
             $cabecera = $r->cabecera[0];
             $detalles = $r->detalles;
         } catch (\Throwable $th) {
             return response()->json(['error'=>'Estructura de Json no compatible']);
         }
-       
+
+        Log::info(["request Cabecera" => $cabecera]);
+
+        $secAndroid = $cabecera["secuencial"];
+        $vende = $cabecera["usuario"];
+        $date = Carbon::now()->subHours(5);
+
+        $registro = DB::table('ADMCABPEDIDOX')
+        ->where('SECUENCIAL',$secAndroid)
+        ->where('VENDEDOR', $vende)
+        ->where('FECHA',$date->Format('Y-d-m'))
+        ->get();
+
+        if($registro->count() > 0){
+            return response()->json(["estado"=>"guardado", "Npedido"=>$registro[0]->SECAUTO, "secuencial"=>$registro[0]->SECAUTO,"YaRegistrado"=>"si"]);
+        }
 
         if (count($detalles) == 0) {
             Log::error("Cabecera Sin Detalles",['cabecera'=>$cabecera]);
@@ -28,7 +43,7 @@ class PedidoXController extends Controller
         }
 
         $cliente = \App\Cliente::where('CODIGO','=',$cabecera['cliente'])->first();
-        $date = Carbon::now()->subHours(5);
+       
 
         $grabaIva = "N";
         if(floatval($cabecera['iva']) > 0){
@@ -82,7 +97,7 @@ class PedidoXController extends Controller
             $cabe->TIPO = "PED";
             $cabe->BODEGA = intval($cabecera['bodega']);
             $cabe->NUMERO = $cabe->SECAUTO;
-            $cabe->SECUENCIAL = $cabe->SECAUTO;
+            $cabe->SECUENCIAL = $cabecera['secuencial'];
             $cabe->CLIENTE = $cabecera['cliente'];
             $cabe->VENDEDOR = $cabecera['usuario'];
             $cabe->FECHA = $date->Format('Y-d-m');
@@ -204,7 +219,7 @@ class PedidoXController extends Controller
 
     public function UpdateCabX($secAuto){
         try {
-            DB::statement("UPDATE ADMCABPEDIDOX SET SECUENCIAL = SECAUTO,NUMERO = SECAUTO where SECAUTO = " .$secAuto);
+            DB::statement("UPDATE ADMCABPEDIDOX SET NUMERO = SECAUTO where SECAUTO = " .$secAuto);
             return true;
         } catch (\Throwable $th) {
             Log::error("Error en el Update de ADMCABPEDIDOX",['Error'=>$th->getMessage()]);

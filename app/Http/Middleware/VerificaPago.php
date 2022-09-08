@@ -24,12 +24,10 @@ class VerificaPago
 
         $dc = $fechVenceBase->fechapedido;
 
-         if ($dc == null){
+        if ($dc == null){
              return $next($request);
-         }
+        }
 
-
-         
         //if (true){
         //    return $next($request);
         //}
