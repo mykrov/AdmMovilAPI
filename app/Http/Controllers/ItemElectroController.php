@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 class ItemElectroController extends Controller
 {
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function GetItemsElectro($bodega)
     {
         $items = DB::table('ADMITEM')
@@ -36,6 +37,7 @@ class ItemElectroController extends Controller
         return response()->json($items);
     }
     
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function GetItemsElectroNombre($bodega,$nombre)
     {
         $items = DB::table('ADMITEM')
@@ -66,6 +68,7 @@ class ItemElectroController extends Controller
         return response()->json($items);
     }
 
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function GetItemsElectroCod($bodega,$cod)
     {
         $items = DB::table('ADMITEM')

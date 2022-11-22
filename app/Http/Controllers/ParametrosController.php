@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 class ParametrosController extends Controller
 {
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
    public function GetParametros()
    {
        $paramBO = \App\ADMPARAMETROBO::get();
@@ -15,6 +16,7 @@ class ParametrosController extends Controller
        return response()->json(['parametroBO'=>$paramBO,'parametroC'=>$paramC]);
    }
 
+   // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
    public function GetParametrosLite()
    {
         $paramBO = \App\ADMPARAMETROBO::first();

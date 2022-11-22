@@ -17,6 +17,7 @@ class VentaPos extends Controller
     public function Pedido(Request $r)
     {
 
+        //obtencion de cabecera y detalles del request
         $cabecera = $r->cabecera[0];
         $detalles = $r->detalles;
 
@@ -35,6 +36,7 @@ class VentaPos extends Controller
                 $campo_adi = $cabecera['datos_adi'];
             }
 
+            // consulta de parametros necesarios
             //$bodega = ADMBODEGA::where('CODIGO','=',$cabecera['bodega'])->first();
             $parametrov = ADMPARAMETROV::first();
             $cliente = Cliente::where('CODIGO','=',$cabecera['cliente'])->first();
@@ -61,6 +63,7 @@ class VentaPos extends Controller
             
             $date = Carbon::now()->subHours(5);
             
+            // creacion de entidad y guardado.
             $cab = new \App\ADMCABEGRESOPOS();
 
             $cab->CODIGOCAJA = $vendedor->caja;
@@ -128,6 +131,7 @@ class VentaPos extends Controller
             $lineaDet = 1;
             foreach ($detalles as $det) {
                 
+                // creacion y llenado del detalle
                 $d = new \App\ADMDETEGRESOPOS;
                 
                 $grabaIvadet = "N";
@@ -135,8 +139,10 @@ class VentaPos extends Controller
                     $grabaIvadet = "S";
                 }
 
+                // Datos del item
                 $itemData = \App\ADMITEM::where('ITEM','=',trim($det['item']))->first();
 
+                
                 if($usaDecimal == 'N'){
                     $d->CANTIU = intval($det['total_unidades']) % $itemData->FACTOR;
                     $d->CANTIC = intval($det['total_unidades']  / $itemData->FACTOR);

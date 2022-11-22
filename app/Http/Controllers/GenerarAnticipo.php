@@ -9,9 +9,10 @@ use Illuminate\Support\Facades\Log;
 
 class GenerarAnticipo extends Controller
 {
+    // Funcion de Generacion de Anticipos
     public function PagoAnticipo(Request $r)
     {
-        //return response()->json($r);
+        // Obtencion de los datos del request
         Log::info("request",["body"=>$r]);
         $operador = $r->operador;
         $deudas = $r->facturas;
@@ -24,15 +25,15 @@ class GenerarAnticipo extends Controller
         $NumCre = \App\ADMTIPODOC::where('TIPO','=','PAG')->first();
         $date = Carbon::now()->subHours(5);
         $observacionReq = $r->observacion;
-        
+        //conversion de fechas
         $fcChq = Carbon::createFromFormat('Y-m-d',$fechaChq)->Format('d-m-Y');
         $fcPag = Carbon::createFromFormat('Y-m-d',$fechaPago)->Format('d-m-Y');
         $fcPagFormated = Carbon::createFromFormat('Y-m-d',$fechaPago)->Format('Y-d-m');
-        //return response()->json($fcPagFormated);
+        
         $observacionCre = "";
         $bodegaDeuda = 10;
         $secDelPago = 0;
-
+        // consulta datos de cliente
         $clienteData = \App\Cliente::where('CODIGO',$cliente)->first();
 
         //para actualizar al final el seccon
@@ -43,30 +44,29 @@ class GenerarAnticipo extends Controller
         DB::beginTransaction();  
         try {
              //ADMPAGO
+             // consulta instancia
             $cajaOperador = DB::table("ADMOPERADOR")
             ->where([['codigo','=',$operador],['estado','=','A']])
             ->get();
-            //return response()->json($operador);
-            //return response()->json($cajaOperador);
-
+            
+            // verificar la nulabilidad
             if($cajaOperador == null or COUNT($cajaOperador) == 0){
                 return response()->json(['estado'=>'error','info'=>'Operador Sin Caja']);
             }
 
-            //return response()->json($cajaOperador[0]->caja);
-
+            // verifica caja abierta
             $cajaAbierta = DB::table('ADMCAJACOB')
             ->where([['estadocaja','=','A'],['estado','=','A'],['fechaini','<=',$fcPag],['fechafin','>=',$fcPag]])
             ->where([['codigo','=',$cajaOperador[0]->caja]])
             ->select('codigo')
             ->get();
-            //return response()->json($cajaAbierta);
-            //Log::info("caja abierta",['caja'=>$cajaAbierta]);
+            
             
             if($cajaAbierta == null or COUNT($cajaAbierta) == 0){
                 return response()->json(['estado'=>'error','info'=>'NO HAY CAJA']);
             }
 
+            // verificar el data del vendedor
             $opeR = \App\ADMVENDEDOR::where('operadormovil','=',$operador)->first();
             $vendedor= '';
 
@@ -75,10 +75,10 @@ class GenerarAnticipo extends Controller
             }else{
                 $vendedor = $opeR->CODIGO;
             }
-
             
             $operador1 = $operador;
            
+            // crea isntancia de pago y llena los campos
             $pago = new \App\ADMPAGO();
             $pago->secuencial = $parametrov->SECUENCIAL + 1;
 
@@ -110,11 +110,12 @@ class GenerarAnticipo extends Controller
             $pago->horaeli = "";
             $pago->maquinaeli = "";
             $pago->operadoreli = "";
+            // guardado del pago
             $pago->save();
 
             $observacionCre = $pago->observacion;
 
-            //ADMDETPAGO
+            //ADMDETPAGO instancia
             $detPago = new \App\ADMDETPAGO();
             $detPago->secuencial = $pago->secuencial;
             $detPago->tipo = $pago->tipo;
@@ -207,8 +208,10 @@ class GenerarAnticipo extends Controller
                 $creditoLinea2->estafirmado = 'N';
                 $creditoLinea2->ACT_SCT = 'N';
                 $creditoLinea2->seccreditogen = 0;
+                // guardado de la instancia.
                 $creditoLinea2->save();
 
+                // contador + 1
                 $numeroCHP->CONTADOR = $numeroCHP->CONTADOR + 1;
                 $numeroCHP->save();
 
@@ -217,6 +220,7 @@ class GenerarAnticipo extends Controller
 
                 $detPago->docrel = 'CHP';
                 $detPago->numerorel = $deudaChq->NUMERO;
+                // guardado de la instancia
                 $detPago->save();
 
             }
@@ -226,12 +230,10 @@ class GenerarAnticipo extends Controller
                 $tipoDocccb = \App\ADMTIPODOCPROV::where('TIPO','=','CCB')->first(); 
                 $paramC = \App\ADMPARAMETROC::first();
                 
-                
                 $numeroCCB = $tipoDocccb->NUMERO + 1;
                 $beneficiario =  $paramC->BENEDEFAULT;
                 
                 $numeroMoviBancoCIa = $numeroCCB;
-
                 
                 $movibanco = new \App\ADMMOVIBANCOCIA();                
                 $movibanco->secuencial =  $secDelPago;
@@ -258,6 +260,7 @@ class GenerarAnticipo extends Controller
                 $movibanco->save();
 
                 $tipoDocccb->NUMERO = $numeroCCB;
+                // guardado de la instancia
                 $tipoDocccb->save();
 
             }
@@ -288,6 +291,7 @@ class GenerarAnticipo extends Controller
             $cabCompro->nocuenta= "";
             $cabCompro->banco = "";
             $cabCompro->cheque = "0";
+            // guardado del comprobante.
             $cabCompro->save();
 
             $parametroBO->secuencial = $parametroBO->secuencial + 1;
@@ -358,8 +362,6 @@ class GenerarAnticipo extends Controller
             $tipoDocANT = \App\ADMTIPODOC::where('TIPO','=','ANT')->first();
             $dataBodega = \App\ADMBODEGA::where('CODIGO','=',$bodegaDeuda)->first();
 
-            
-
             $nDeuda = new \App\ADMDEUDA();
             $nDeuda->SECUENCIAL = $paramV->SECUENCIAL + 1; //Actualizar
             $nDeuda->BODEGA = $bodegaDeuda;
@@ -377,6 +379,7 @@ class GenerarAnticipo extends Controller
             $nDeuda->VENDEDOR = $vendedor;
             $nDeuda->OBSERVACION = $observacionCre;
             $nDeuda->HORA =  $date->Format('H:s:i');
+            // guardado de instancia y aumento de contadores
             $nDeuda->save();
 
             $paramV->SECUENCIAL = $paramV->SECUENCIAL + 1;
@@ -413,6 +416,7 @@ class GenerarAnticipo extends Controller
             $creditoLinea->seccreditogen = 0;
             $creditoLinea->save();
 
+            // respuesta Json
             DB::commit();
             return response()->json(['estado'=>'ok','numPago'=> $pago->numero,'numAnticipo'=>$nDeuda->NUMERO]);
 

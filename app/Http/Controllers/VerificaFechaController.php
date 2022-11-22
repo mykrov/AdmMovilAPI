@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Cache;
 
 class VerificaFechaController extends Controller
 {
+    // Metodo de consulta de los dias restantes de la empresa para pago mensualidad
     public function DiasRestantes()
     {
         $fechVenceBase = Cache::remember('fechaBase34',5, function () {
@@ -25,6 +26,7 @@ class VerificaFechaController extends Controller
         $numeroreales = [];
         $array = str_split($substrin);
         
+        // se itera entre los caracteres para sacar el valor ASCCI y sumar/restar posision
         foreach ($array as $key => $value) {
             try {
                 if(ord($value) % 2 == 0){
@@ -41,6 +43,7 @@ class VerificaFechaController extends Controller
         $fechVence = Carbon::createFromFormat('dmY', implode($numeroreales))->subHours(5);
         $fechActual = Carbon::now()->subHours(5);
         
+        // calcula de diferencia de dias
         $diasRestantes = $fechVence->diffInDays($fechActual);
         return response()->json(['dias'=>$diasRestantes,'mensaje'=>'Su factura del Sistema ADM GO vence el '.$fechVence->Format('d-m-Y').', tiene '.$diasRestantes.' días para cancelar la factura.']);
         

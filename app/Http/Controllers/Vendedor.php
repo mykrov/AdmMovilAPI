@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Laravel\Passport\HasApiTokens;
+use Illuminate\Support\Facades\Log;
 use Validator;
 
 
@@ -17,6 +18,9 @@ class Vendedor extends Controller
 
     
     public function login(Request $request){
+
+        Log::info('Login de:');
+        Log::info($request);
         
         $credenciales = $request->validate([
             'codigo' => 'required|string',

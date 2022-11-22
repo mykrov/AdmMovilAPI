@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 class MapsController extends Controller
 {
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function GetClientsByDay($dia){
         
         //Correnccion del dia con respecto al ADM
@@ -29,12 +30,14 @@ class MapsController extends Controller
         
     }
 
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function GetSucursales(){
 
         $sucursales = DB::table('ADMSUCURSAL')->all();
         return response()->json($sucursales);
     }
 
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function GetVendedores(){
 
         $venderores = ADMVENDEDOR::where('ESTADO','=','A')
@@ -44,6 +47,7 @@ class MapsController extends Controller
 
     }
 
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function GetPedidos(Request $r){
 
         $fecha = $r['desde'];
@@ -60,7 +64,7 @@ class MapsController extends Controller
         
     }
 
-
+    // Funcion de test."
     public function NumerosLetras(String $cantida){
 
     }

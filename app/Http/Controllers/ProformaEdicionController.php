@@ -57,11 +57,12 @@ class ProformaEdicionController extends Controller
 
             $linea = 1;
 
-            if (count($detalles) > 0) { //Cuando no trae detalles la cabecera.
+            if (count($detalles) > 0) { //Cuando trae detalles la cabecera.
                 
                 //Eliminacion de Detalles existentes.
                 $resultDB = DB::statement("DELETE ADMDETPEDIDO WHERE SECUENCIAL = " .$cabecera['secuencial']);
       
+                // recorrido de los detalles para generarlos nuevamente
                 foreach ($detalles as $det){
 
                     $d = new \App\ADMDETPEDIDO;
@@ -112,9 +113,11 @@ class ProformaEdicionController extends Controller
         }
     }
 
+    // Metodos para  eliminacion de pedidos 
     public function EliminarPedido(Request $r)
     {       
         $secuencial = $r->secuencial;
+        // consulta de la instancia
         $cabe = \App\ADMCABPEDIDO::where('SECUENCIAL','=',$secuencial)->first();
         
         if($cabe != null && $cabe->ESTADO != 'FAC')

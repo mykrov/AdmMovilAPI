@@ -8,8 +8,8 @@ use Illuminate\Support\Facades\DB;
 
 class InfoPagoController extends Controller
 {
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function GetPagoCab(Request $r){
-
                
         $vendedor = $r['VENDEDOR'];
         $f1 = Carbon::createFromFormat('d-m-Y',$r['FECHAINI']);
@@ -28,6 +28,7 @@ class InfoPagoController extends Controller
         return response()->json($pagos);
     }
 
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function GetDetallesPagos(Request $r)
     {
         $secuencial = $r['SECUENCIAL'];

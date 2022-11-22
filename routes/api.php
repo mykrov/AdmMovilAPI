@@ -76,7 +76,6 @@ Route::get('/itemxcliente','ItemXClienteController@GetItemXCliente');
 Route::get('/bancos','Banco@GetBancos');
 Route::get('/bacoscia','BancoCiaController@GetBancoCia');
 Route::get('/puntosemi','PuntosEmisionController@GetPuntos');
-
 Route::get('/diascredito','DiasCreditoController@GetDiasCredito');
 Route::get('/formapago','FormaPagoController@GetFormaPago');
 Route::get('/cliprecio','CliPrecioController@GetCliPrecio');
@@ -90,7 +89,6 @@ Route::get('deudatotal/{vendedor}','DeudaTotalXVendedor@DeudaTotal');
 //Deudas POS
 Route::get('/deudapos','DeudaPosController@GetDeudas');
 Route::get('/deudapos/{codigo}','DeudaPosController@GetDeudaXCliente');
-
 
 //Rutas Pedidos
 Route::post('/pedido','PedidoController@PostPedido')->middleware('EmpresaPago');

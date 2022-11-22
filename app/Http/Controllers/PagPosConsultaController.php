@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 class PagPosConsultaController extends Controller
 {
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function GetCabeceras(Request $r){
         $vendedor = $r['VENDEDOR'];
         $f1 = Carbon::createFromFormat('d-m-Y',$r['FECHAINI']);
@@ -26,7 +27,7 @@ class PagPosConsultaController extends Controller
         return response()->json($cabeceras);
     }
 
-
+// Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function GetDetalles(Request $r){
 
         $secuencial = $r['SECUENCIAL'];

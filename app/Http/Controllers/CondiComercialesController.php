@@ -21,6 +21,7 @@ class CondiComercialesController extends Controller
     *     )
     * )
     */
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function GetCondiComer(){
         $fecha = Carbon::now();
         $condiciones = \App\ADMCONDICOMER::get();
@@ -49,6 +50,7 @@ class CondiComercialesController extends Controller
     *     )
     * )
     */
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function GetCondiComerPorProducto($item){
         $fecha = Carbon::now();
         $condicionesi = \App\ADMCONDICOMER::where('ITEM','=',$item)->get();

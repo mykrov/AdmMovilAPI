@@ -14,9 +14,11 @@ use \App\ADMPARAMETROBO;
 
 class ProformaElectroController extends Controller
 {
+    // Metodo para guardado de proformas de credito
     public function PostProformaCredito(Request $r){
        
         Log::info('Nueva ProformaElectroController');       
+       //obtencion de cabecera y detalles
         $cabecera = $r->cabecera[0];
         $detalles = $r->detalles;
         //$tablaJson = $r->tablaAmortizacion;
@@ -24,7 +26,7 @@ class ProformaElectroController extends Controller
         Log::info(['cab'=>$cabecera,'detalle'=>$detalles]);       
 
         $detallesContador = COUNT($detalles);
-        
+        // Validar que contenga detalles        
         if($detallesContador == 0){
             return response()->json(['error'=>'Cabecera Sin Detalles']);
         }
@@ -72,6 +74,7 @@ class ProformaElectroController extends Controller
             $inipago = Carbon::createFromFormat('Y-m-d',$cabecera['fechaIniPago']);
             $fechaDes = Carbon::createFromFormat('Y-m-d',$cabecera['fecha_ingreso']);
             
+            // creacion, llenado y guardado de instancia
             $cab = new \App\ADMCABEGRESO();
             
             $cab->TIPO = $cabecera['tipo']; 
@@ -172,6 +175,7 @@ class ProformaElectroController extends Controller
             $lineaDet = 1;            
             foreach ($detalles as $det) {                
                
+                // consulta de los detalles para  el item
                 $itemData = \App\ADMITEM::where('ITEM','=',trim($det['item']))->first();
                 $itemElectData = \App\ADMITEMPRECIOELE::where('ITEM','=',trim($det['item']))->first();
                 $grabaIvadet = "N";
@@ -180,6 +184,7 @@ class ProformaElectroController extends Controller
                     $grabaIvadet = "S";
                 }
 
+                // creacion, llenado y guardado de instancia.
                 $d = new \App\ADMDETEGRESO;
                 $d->SECUENCIAL = intval($cab->SECUENCIAL);
                 $d->LINEA = intval($det['linea']);

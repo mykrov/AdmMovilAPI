@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class InformeVisitaController extends Controller
 {
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function GetClientesDiaVendedor(Request $r)
     {
         $diaR = $r->DIA;

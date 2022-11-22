@@ -21,14 +21,14 @@ use Illuminate\Support\Facades\Log;
 
 class VentaElectroController extends Controller
 {
+    // Metodo para Generar un pedido de electrodomesticos
     public function PostPedidoElectro(Request $r)
     {
-        
+        // obtener cabecera y detalles
         $cabecera = $r->cabecera[0];
         $detalles = $r->detalles;
         
         Log::info('Nueva Venta de electrodomestico',['cabecera'=>$cabecera]);
-
         //return response()->json(['CONTEO'=>COUNT($detalles)]);
         $detallesContador = COUNT($detalles);
         if($detallesContador == 0){
@@ -47,6 +47,7 @@ class VentaElectroController extends Controller
             $operador1 = $vendedorData->operadormovil;
         }
      
+        // entidades de parameotros para la venta
         $parametrov = ADMPARAMETROV::first();
         $secuencialNew = $parametrov->SECUENCIAL;
         $parametrov->SECUENCIAL = $parametrov->SECUENCIAL + 1;
@@ -68,6 +69,7 @@ class VentaElectroController extends Controller
 
         try {
         
+            // datos entidades necesarias
             $bodega = ADMBODEGA::where('CODIGO','=',$cabecera['bodega'])->first();
             $cajaCob = ADMCAJACOB::where('codigo','=',$cabecera['caja'])->first();
             $cliente = Cliente::where('CODIGO','=',$cabecera['cliente'])->first();
@@ -83,6 +85,7 @@ class VentaElectroController extends Controller
             
             $date = Carbon::now()->subHours(5);
             
+            // Creacion, llenado y almacenamiento de entidad
             $cab = new \App\ADMCABEGRESO();
             
             $cab->TIPO = $cabecera['tipo']; 
@@ -209,6 +212,7 @@ class VentaElectroController extends Controller
                 $cajaCob->NUMFAC = $cajaCob->NUMFAC + 1;
             }
             $cajaCob->save();
+            // actualizacion de numeraciones
             $bodega->NUMGUIAREMISION = $cab->NUMGUIAREMISION;
             $bodega->NOEGR = $bodega->NOEGR + 1;
             
@@ -245,6 +249,7 @@ class VentaElectroController extends Controller
                     $det["serie"] = "XXX";
                 }
 
+                // datos del item
                 $itemData = \App\ADMITEM::where('ITEM','=',trim($det['item']))->first();
                 $usaSerie = $itemData->pserie;
 
@@ -327,6 +332,7 @@ class VentaElectroController extends Controller
                 //Dar de baja Item Modelo Electrodomesticos.
                 $tipoItem = $this->tipoItemElec($detEgr->ITEM);
 
+                // actualiza el estado basado el tipo de item
                 if($tipoItem != 'BASICO')
                 {
                     //Log::info('Tipo de item',['Resultado:'=>$tipoItem]);
@@ -471,6 +477,7 @@ class VentaElectroController extends Controller
             
             $nombreMail = env("MAIL_USERNAME","facturas@sistemas.com");
 
+            // envio de email
             if (filter_var($clienteEmail, FILTER_VALIDATE_EMAIL)) {
                 //Email Valido
                 try {
@@ -526,7 +533,6 @@ class VentaElectroController extends Controller
     }
 
     //envio de email de test
-
     public function TestEmail(){
         Mail::send('emails.TestEmailServer',[], function ($mail) {
             $mail->from(env("MAIL_USERNAME"), 'Test de Email');
@@ -598,6 +604,8 @@ class VentaElectroController extends Controller
 
     }
 
+
+    // busqueda de tipo de item
     public function tipoItemElec($item)
     {
         $tipo = 'BASICO';
@@ -623,10 +631,12 @@ class VentaElectroController extends Controller
         }
     }
 
+    //Generacion del asiento contable
     public function asientoContable($subTotal0,$subTotal,$neto,$iva,$desc0,$desc,$cost0,$cost,$inv0,$inv,$nombreCli,$observa,$opera,$punto)
     {
         try {
             
+            // consulta de parametros
             $paramBO = \App\ADMPARAMETROBO::first();
             $dat = Carbon::now()->subHours(5);
             $dateYMD= $dat->Format('d-m-Y');
@@ -646,6 +656,7 @@ class VentaElectroController extends Controller
             $DES = "";
             $IVA = "";
 
+            //consulta de cuentas por punto
             $cuentasPunto = \App\ADMPUNTOASIENTOS::where('PUNTO','=',$punto)
             ->where('ANIO',Carbon::now()->format('Y'))
             ->where('ASIENTO','=','VEN')
@@ -684,6 +695,7 @@ class VentaElectroController extends Controller
                 }
             }
 
+            // crea, llena y almacena entidad
             $cabecera = new \App\ADMCABCOMPROBANTE();
             $cabecera->secuencial = $paramBO->secuencial + 1;
             $cabecera->fecha = $dateYMD;

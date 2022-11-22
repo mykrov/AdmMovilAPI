@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use \App\NumeroLetras as Letras;
 use Carbon\Carbon;
 
+// Retorna una cantidad nuemrica en letras"
 class NumLetrasController extends Controller
 {
     private static $UNIDADES = [

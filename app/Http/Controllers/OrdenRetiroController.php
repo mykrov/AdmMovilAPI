@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 
 class OrdenRetiroController extends Controller
 {
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function getCabOrders(Request $r){
 
         Log::info($r);
@@ -25,6 +26,7 @@ class OrdenRetiroController extends Controller
 
     }
 
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function getDetOrders(Request $r){
 
         $numero = $r['numero'];        

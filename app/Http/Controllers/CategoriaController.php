@@ -21,6 +21,8 @@ class CategoriaController extends Controller
     *     )
     * )
     */
+
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function GetCategorias(){
         $cate = \App\ADMCATEGORIA::where('ESTADO','=','A')->get();
         return response()->json($cate);

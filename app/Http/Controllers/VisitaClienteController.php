@@ -9,6 +9,7 @@ use Carbon\Carbon;
 
 class VisitaClienteController extends Controller
 {
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function GetVisitas(Request $r)
     {
         $vendedor = $r['VENDEDOR'];
@@ -31,6 +32,7 @@ class VisitaClienteController extends Controller
 
     }
 
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function GetVisitasRuta(Request $r)
     {
         $ruta = $r['RUTA'];
@@ -52,6 +54,7 @@ class VisitaClienteController extends Controller
 
     }
 
+    // Metodo para registrar la visita de un cliente.
     public function SaveVisita(Request $r)
     {
         $vendedor = $r['VENDEDOR'];

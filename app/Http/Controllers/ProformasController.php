@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class ProformasController extends Controller
 {
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function GetCabecera(Request $r){
        
         //return response()->json(Carbon::now()->subHours(5));
@@ -32,6 +33,7 @@ class ProformasController extends Controller
         return response()->json($cabeceras);
     }   
 
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda.
     public function GetDetalles(Request $r)
     {
         $secuencial = $r['SECUENCIAL'];

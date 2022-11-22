@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 class ItemRegaloController extends Controller
 {
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function ItemRegalo($item)
     {
         $item = DB::table('ADMITEMREGALOELE')->where('ADMITEMREGALOELE.item','=',$item)
@@ -17,6 +18,7 @@ class ItemRegaloController extends Controller
         return response()->json($item);
     }
 
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function TodosItemsRegalo()
     {
         $items = DB::table('ADMITEMREGALOELE')

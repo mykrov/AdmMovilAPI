@@ -12,6 +12,7 @@ use \App\ADMCABEGRESO;
 
 class HistPrecioController extends Controller
 {
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function GetHistorico(Request $r)
     {
         $cliente = $r['CLIENTE'];

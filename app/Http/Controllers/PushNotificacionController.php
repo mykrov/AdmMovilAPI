@@ -7,7 +7,9 @@ use \App\ADMPARAMETROBO;
 
 class PushNotificacionController extends Controller
 {
-    
+    // envio de notificacions push en la app sobre un nuevo item
+    // los datos del servicios fueron proporcionados en su momento por
+    // encargado de la aplicacion Movil ADM GO
     public function NewItem(string $item){
         $parametros = ADMPARAMETROBO::first();
         $servek = "AAAA5ytqw8A:APA91bHrZeoeaAUZ342am5YwqEBz5SfWkW5Cvl6tMMPxu1KTgt85Et1ICPyI4G6f1IkMFqo6vu7Mss7d0h0djZ3-7FDMQ3OWflhkw3vavSgAF5aT-mJKyh-Bq8bLbRAdz5Uh9Po2fYK7";
@@ -18,6 +20,7 @@ class PushNotificacionController extends Controller
         return response()->json('Se agrego ' .$item);
     }
 
+    // Mensaje de test de notificaiones
     public function NewItem2(){
         //Testing Items Notifications Google FMS.
         $parametros = ADMPARAMETROBO::first();
@@ -31,6 +34,7 @@ class PushNotificacionController extends Controller
     }
 
 
+    // funcion para envio de json con los datos de la notificacion al servicio de google
     public function sendNotification($title = "", $body = "", $customData = [], $topic = "", $serverKey = ""){
         if($serverKey != ""){
             ini_set("allow_url_fopen", "On");

@@ -10,8 +10,11 @@ use Illuminate\Support\Facades\Log;
 
 class PagosController extends Controller
 {
+
+    // Metodo para pago de Deudas
     public function Pago(Request $r)
     {
+        // obtencion de datos del request
         $vendedor = $r->vendedor;
         $deudas = $r->facturas;
         $tipoPago = $r->medioPago;
@@ -31,6 +34,7 @@ class PagosController extends Controller
 
         $secDelPago = 0;
 
+        //Datos del cliente
         $clienteData = \App\Cliente::where('CODIGO',$cliente)->first();
 
         //para actualizar al final el seccon
@@ -54,6 +58,7 @@ class PagosController extends Controller
             $dataOperador = DB::table('ADMOPERADOR')->where('CODIGO',$operador1)->first();
             $relacionadoBodega = $dataOperador->relacionadobodega;
 
+            // instancia de la caja
             $cajaAbiertaQuery = DB::table('ADMCAJACOB')
             ->where('estadocaja','=','A')
             ->where('estado','=','A')
@@ -67,6 +72,7 @@ class PagosController extends Controller
 
             $cajaAbierta = $cajaAbiertaQuery->get();
             
+            // verificacion de caja abierta
             if($cajaAbierta == null or COUNT($cajaAbierta) == 0){
                 Log::error("No hay caja abierta para proceso.");
                 return response()->json(['estado'=>'error','info'=>'La caja está cerrada, no puede hacer pagos con la fecha '.$fechaPago]);
@@ -74,6 +80,7 @@ class PagosController extends Controller
 
             Log::info("caja abierta ".$cajaAbierta[0]->codigo);
 
+            // creacion de pago
             $pago = new \App\ADMPAGO();
             $pago->secuencial = $parametrov->SECUENCIAL + 1;
 
@@ -105,6 +112,7 @@ class PagosController extends Controller
             $pago->horaeli = "";
             $pago->maquinaeli = "";
             $pago->operadoreli = "";
+            // guardado
             $pago->save();
 
             $observacionCre = $pago->observacion;
@@ -203,7 +211,7 @@ class PagosController extends Controller
                 $creditoLinea2->ACT_SCT = 'N';
                 $creditoLinea2->seccreditogen = 0;
                 $creditoLinea2->save();
-
+                // guardado y actualizacion de secuenciales
                 $numeroCHP->CONTADOR = $numeroCHP->CONTADOR + 1;
                 $numeroCHP->save();
 
@@ -252,6 +260,7 @@ class PagosController extends Controller
                 $movibanco->nombrepc = "Servidor Laravel";
                 $movibanco->cajac = $cajaAbierta[0]->codigo;
                 $movibanco->conciliado = "N";
+                // guardado y seteo de numero moviento
                 $movibanco->save();
 
                 $tipoDocccb->NUMERO = $numeroCCB;
@@ -287,6 +296,7 @@ class PagosController extends Controller
             $cabCompro->cheque = "0";
             $cabCompro->save();
 
+            // guardado y actualizacion de secuenciales
             $parametroBO->secuencial = $parametroBO->secuencial + 1;
             $parametroBO->save();
 
@@ -316,6 +326,7 @@ class PagosController extends Controller
             $detCompro->ESTADO = "C";
             $detCompro->save();
 
+            // guardado y actualizacion de secuenciales
             $detCompro2 = new \App\ADMDETCOMPROBANTE();
             $detCompro2->SECUENCIAL = $cabCompro->secuencial;
             $detCompro2->LINEA = 2;

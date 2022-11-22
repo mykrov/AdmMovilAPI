@@ -10,11 +10,13 @@ use Illuminate\Support\Facades\Log;
 
 class ValInstallController extends Controller
 {
+    // Validar la instalacion de la aplicacion con un Operador.
     public function CheckCode(Request $r){
         
         $operador = $r['operador'];
         $code = $r['codigo'];
 
+        // consulta de datos del Operador
         $dataOpe = ADMOPERADOR::where('CODIGO', $operador)
         ->where('ESTADO','A')
         ->where('CLAVEALE',$code)
@@ -22,6 +24,7 @@ class ValInstallController extends Controller
 
         if($dataOpe == 1 && $code != '0'){
             
+            // Verificacion del operado con la clave
             $dataOpe2 = ADMOPERADOR::where('CODIGO', $operador)
             ->where('ESTADO','A')
             ->where('CLAVEALE',$code)

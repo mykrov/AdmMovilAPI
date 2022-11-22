@@ -10,12 +10,12 @@ use Illuminate\Support\Facades\DB;
 
 class PagosPosController extends Controller
 {
+    // Metodo para pagos pos
     public function Pagopos(Request $r)
     {
-        //return response()->json($r);
+        //obtencion de deatos del request
         $vendedor = $r->vendedor;
-        $deudas = $r["facturas"];
-        //return response()->json($deudas);
+        $deudas = $r["facturas"];       
         $tipoPago = $r->medioPago;
         $cliente = $r->cliente;
         $fechaChq = $r->fecha;
@@ -60,6 +60,7 @@ class PagosPosController extends Controller
                 $operador1 = trim($vendedorData->operadormovil);
             }
 
+            // creacion , llenado y guardado del pago
             $pago = new \App\ADMPAGOPOS();
             $pago->CODIGOCAJA = $cajaAbiertaPOS[0]->CODIGOCAJA;
             $pago->NUMEROAPERTURA =   $cajaAbiertaPOS[0]->NUMEROAPERTURA;

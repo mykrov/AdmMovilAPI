@@ -11,37 +11,43 @@ use Illuminate\Support\Facades\Log;
 
 class PedidoXController extends Controller
 {
+    // Metodo para almacenar pedidos cuando se emplea el modo Offline
     public function PostPedidoProformaOff(Request $r)
     {      
         Log::info("Nuevo Pedido X ----------------");
         try {
+            // obtencion de los datos para cabecera y detalles
             $cabecera = $r->cabecera[0];
             $detalles = $r->detalles;
         } catch (\Throwable $th) {
             return response()->json(['error'=>'Estructura de Json no compatible']);
         }
 
+        
         Log::info(["request Cabecera" => $cabecera]);
-
         $secAndroid = $cabecera["secuencial"];
         $vende = $cabecera["usuario"];
         $date = Carbon::now()->subHours(5);
 
+        // verificar si ya existe un pedido con los parametros de busqueda
         $registro = DB::table('ADMCABPEDIDOX')
         ->where('SECUENCIAL',$secAndroid)
         ->where('VENDEDOR', $vende)
         ->where('FECHA',$date->Format('Y-d-m'))
         ->get();
 
+        // retorna guardado si consigue registro
         if($registro->count() > 0){
             return response()->json(["estado"=>"guardado", "Npedido"=>$registro[0]->SECAUTO, "secuencial"=>$registro[0]->SECAUTO,"YaRegistrado"=>"si"]);
         }
 
+        // Verificacion de detalles 
         if (count($detalles) == 0) {
             Log::error("Cabecera Sin Detalles",['cabecera'=>$cabecera]);
             return response()->json(['error'=>'Cabecera Sin Detalles']);
         }
-
+        
+        // Consulta de la instancia del cliente
         $cliente = \App\Cliente::where('CODIGO','=',$cabecera['cliente'])->first();
        
 
@@ -93,6 +99,7 @@ class PedidoXController extends Controller
         DB::beginTransaction();
         try {
 
+            // Creacion de instancia, llenado y guardado.
             $cabe = new ADMCABPEDIDOX();
             $cabe->TIPO = "PED";
             $cabe->BODEGA = intval($cabecera['bodega']);
@@ -126,7 +133,8 @@ class PedidoXController extends Controller
             $secAutoNew = $cabe->SECAUTO;
             $linea = 1;
 
-            if (count($detalles) > 0) { //Cuando no trae detalles la cabecera.
+            //Cuando trae detalles la cabecera recorrido y guardado de detalles
+            if (count($detalles) > 0) { 
                 
                 foreach ($detalles as $det){
 
@@ -166,7 +174,7 @@ class PedidoXController extends Controller
                     usleep(1000000);
                 } 
                 
-                
+                // se crea registro de visita del cliente
                 $visita = new \App\ADMVISITACLI();
                 $visita->CLIENTE = $cabe->CLIENTE;
                 $visita->VENDEDOR = $cabe->VENDEDOR;
@@ -217,6 +225,7 @@ class PedidoXController extends Controller
         }
     }    
 
+    // funcion para actualizacion de la cabecera de pedido
     public function UpdateCabX($secAuto){
         try {
             DB::statement("UPDATE ADMCABPEDIDOX SET NUMERO = SECAUTO where SECAUTO = " .$secAuto);

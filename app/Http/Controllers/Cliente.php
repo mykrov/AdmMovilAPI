@@ -24,6 +24,8 @@ class Cliente extends Controller
     *     )
     * )
     */
+
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function listado(){
         
         $clientes = \App\Cliente::where('ESTADO','=','A')
@@ -49,6 +51,8 @@ class Cliente extends Controller
     *     )
     * )
     */
+
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function listado2(){
         
         $clientes2 = \App\Cliente::where('ESTADO','=','A')
@@ -82,6 +86,7 @@ class Cliente extends Controller
     *     )
     * )
     */
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function byID($id){
 
         $cliente = \App\Cliente::where('codigo','like', '%' . $id . '%')
@@ -91,6 +96,7 @@ class Cliente extends Controller
 
     }
 
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function byRUC($ruc){
 
         $cliente = \App\Cliente::where('RUC','like', '%' . $ruc . '%')
@@ -124,6 +130,7 @@ class Cliente extends Controller
     *     )
     * )
     */
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function BuscarNombre($like)
     {
         $clientes = \App\Cliente::where('RAZONSOCIAL', 'like', '%' . $like . '%')
@@ -163,6 +170,7 @@ class Cliente extends Controller
     *     )
     * )
     */
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function BuscarNombreXVendedor($like,$vendedor)
     {
         $clientes = \App\Cliente::where('RAZONSOCIAL', 'like', '%' . $like . '%')
@@ -198,6 +206,7 @@ class Cliente extends Controller
     * )
     */
 
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function BuscarNombreXDia($like)
     {
         $fecha_actual = Carbon::now();
@@ -245,6 +254,7 @@ class Cliente extends Controller
     *     )
     * )
     */
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function BuscarIdXVendedor($id,$vendedor){
         $clientes = \App\Cliente::where('CODIGO','=',$id)
         ->where('ESTADO','=','A')
@@ -279,6 +289,7 @@ class Cliente extends Controller
     * )
     */
 
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function ClienteXVendedor($vendedor){
         
         $clientes = \App\Cliente::where('VENDEDOR','=',$vendedor)
@@ -320,6 +331,7 @@ class Cliente extends Controller
     *     )
     * )
     */
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function ClienteLikeDiaVende($nombre,$vendedor){
         $fecha_actual = Carbon::now();
         $diaSemana = $fecha_actual->dayOfWeek;  
@@ -368,6 +380,7 @@ class Cliente extends Controller
     * )
     */
     
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function ClienteLikeCodVende($codigo,$vendedor){
        
         $fecha_actual = Carbon::now();
@@ -410,6 +423,7 @@ class Cliente extends Controller
     * )
     */
     
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function ClienteCodDia($codigo){
         $fecha_actual = Carbon::now();
         $diaSemana = $fecha_actual->dayOfWeek;  
@@ -449,7 +463,7 @@ class Cliente extends Controller
     *     )
     * )
     */
-    
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function ClienteXVendedorDia($vendedor){
         $fecha_actual = Carbon::now();
         $diaSemana = $fecha_actual->dayOfWeek;  
@@ -484,6 +498,7 @@ class Cliente extends Controller
     *     )
     * )
     */
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function ClienteXDia(){
         $fecha_actual = Carbon::now();
         $diaSemana = $fecha_actual->dayOfWeek;  
@@ -553,7 +568,7 @@ class Cliente extends Controller
      * )
      */
 
-
+    // Creacion de cliente basado en los parametros del request
     public function CreateClient(Request $request){
 
         $fecha_actual = Carbon::now();
@@ -565,12 +580,14 @@ class Cliente extends Controller
 
         $datos = $request;
         
+        // chequeo de que no existe el RUC en la Base
         $check = \App\Cliente::where('RUC','=',$datos['RUC'])->count();
         //return response()->json($datos);
         
         DB::beginTransaction();
         if ($check < 1) {
 
+            // se establecen valores vacios en los campos nulos
             if ($datos['REFERENCIA'] == null ) {
                 $datos['REFERENCIA'] = '';
             }
@@ -590,6 +607,9 @@ class Cliente extends Controller
 
             try {
 
+                // Crea instancia vacia
+                // llena los campos dasados a un cliente base
+                // llena campos basados en parametros de ADM
                 $cliBase = \App\ADMPARAMETROC::first();
                 $inicial = $cliBase->LETRAINI;
                 $numeroCli = $cliBase->NUMCLIENTE + 1;
@@ -603,7 +623,9 @@ class Cliente extends Controller
                 $dt = Carbon::now();
                 $dt2 = $dt->format('Y-d-m');
                 //return response()->json($datos['RAZONSOCIAL']);
+
             
+                // Llenado de la instancia
                 $ClientNew->CODIGO = $inicial.$codigo;
                 $ClientNew->RAZONSOCIAL = $datos['RAZONSOCIAL'];
                 $ClientNew->NEGOCIO = $datos['NEGOCIO'];
@@ -717,12 +739,15 @@ class Cliente extends Controller
                 $ClientNew->CORREOCARRO = $standar->CORREOCARRO;
                 $ClientNew->CLAVECARRO = $standar->CLAVECARRO;
                 //return response()->json($ClientNew);
+
+                // Guardado de la instancia
                 $ClientNew->save();
                 
+                //contador +1
                 $cliBase->NUMCLIENTE = $cliBase->NUMCLIENTE +1;
                 $cliBase->save();
                 DB::commit();
-
+                
                 return response()->json(['status'=>'ok','codCliente'=>$ClientNew->CODIGO],200);
             } catch (\Exception $e) {
                 
@@ -779,10 +804,11 @@ class Cliente extends Controller
      * )
      */
 
+    // Creacion de cliente basado en los parametros del request
     public function CreateClientVen(Request $request){
 
         $fecha_actual = Carbon::now();
-        $diaSemana = $fecha_actual->dayOfWeek; 
+        $diaSemana = $fecha_actual->dayOfWeek;
 
         if($diaSemana == 7){
             $diaSemana = 0;
@@ -792,6 +818,7 @@ class Cliente extends Controller
 
         Log::info("Datos de Request",['req'=>$datos]);
         
+        // Chequeo de RUC no repetido
         $check = \App\Cliente::where('RUC','=',$datos['RUC'])->count();
         //return response()->json($standar);
         //return response()->json($datos);
@@ -799,6 +826,7 @@ class Cliente extends Controller
         DB::beginTransaction();
         if ($check < 1) {
 
+            // llenado de los campos nulos por campos vacios
             if ($datos['REFERENCIA'] == null ) {
                 $datos['REFERENCIA'] = '';
             }
@@ -813,6 +841,9 @@ class Cliente extends Controller
           
             try {
 
+                // creacion de la instancia
+                // y llenado de los datos en base a los parametros de ADM
+                // y de los datos del Request
                 $cliBase = \App\ADMPARAMETROC::first();
                 $standar = \App\Cliente::where('CODIGO','=',$cliBase->CLIENTEMODELOCARRO)->first();
                
@@ -859,6 +890,8 @@ class Cliente extends Controller
                     $ClientNew->ZONA = $datos['ZONA'];
                 }
 
+
+                // seteo de los campos en la entidad
                 $ClientNew->RUTA = $datos['RUTA'];
                 $ClientNew->CTACLIENTE = "";
                 $ClientNew->CUPO = 0;
@@ -956,8 +989,9 @@ class Cliente extends Controller
                 $ClientNew->CORREOCARRO = $standar->CORREOCARRO;
                 $ClientNew->CLAVECARRO = $standar->CLAVECARRO;
 
+                // guardado 
                 $ClientNew->save();
-
+                // contador + 1
                 $cliBase->NUMCLIENTE = $cliBase->NUMCLIENTE +1;
                 $cliBase->save();
                 DB::commit();
@@ -1025,6 +1059,7 @@ class Cliente extends Controller
      */
 
 
+     // Creacion de clientes con datos de request (ADM post)
     public function CreateClientBasic(Request $request){
         
         $fecha_actual = Carbon::now();
@@ -1036,6 +1071,7 @@ class Cliente extends Controller
 
         $datos = $request;
 
+        // chequeo del RUC repetido
         $check = \App\Cliente::where('RUC','=',$datos['RUC'])->count();
 
         //return response()->json($datos);
@@ -1046,6 +1082,7 @@ class Cliente extends Controller
             $cliBase = \App\ADMPARAMETROC::first();
             $standar = \App\Cliente::where('CODIGO','=',$cliBase->CLIENTEMODELOCARRO)->first();
 
+            // llenado de los campos nulos por vacios.
             if ($datos['REFERENCIA'] == null ) {
                 $datos['REFERENCIA'] = '';
             }
@@ -1089,7 +1126,8 @@ class Cliente extends Controller
 
 
             try {
-               
+               // seteo de los campos basados en el cliente base
+               // y los paramtros del sistema ADM
                 $inicial = $cliBase->LETRAINI;
                 $numeroCli = $cliBase->NUMCLIENTE + 1;
 
@@ -1103,6 +1141,7 @@ class Cliente extends Controller
                 $dt2 = $dt->format('Y-d-m');
                 //return response()->json($dt2);
             
+                // seteo de campos de la instancia
                 $ClientNew->CODIGO = $inicial.$codigo;
                 $ClientNew->RAZONSOCIAL = $datos['RAZONSOCIAL'];
                 $ClientNew->NEGOCIO = $standar->NEGOCIO;
@@ -1216,8 +1255,10 @@ class Cliente extends Controller
                 $ClientNew->CORREOCARRO = $standar->CORREOCARRO;
                 $ClientNew->CLAVECARRO = $standar->CLAVECARRO;
 
+                // guardado de la instancias.
                 $ClientNew->save();
 
+                // contador   +1
                 $cliBase->NUMCLIENTE = $cliBase->NUMCLIENTE +1;
                 $cliBase->save();
                 DB::commit();
@@ -1236,6 +1277,7 @@ class Cliente extends Controller
     }
 
 
+    // consulta de la instancia deacuerdo a los parametros de busqueda
     public function ClientesPorRuta($ruta)
     {
         $clientes = \App\Cliente::where('RUTA','=',$ruta)

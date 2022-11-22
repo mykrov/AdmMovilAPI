@@ -21,6 +21,8 @@ class BancoCiaController extends Controller
     *     )
     * )
     */
+
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function GetBancoCia(){
         $Bancos = \App\ADMBANCOCIA::where('ESTADO','=','A')->get();
         return response()->json($Bancos);

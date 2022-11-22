@@ -21,9 +21,10 @@ use Image;
 
 class VentaCreditoController extends Controller
 {
-    
+    // Metodo para almacenar Ventas de Credito
     public function PostVentaCre(Request $r)
     {
+        // obtencion de cabecera y detalles
         $cabecera = $r->cabecera[0];
         $detalles = $r->detalles;
         $tablaJson = $r->tablaAmortizacion;
@@ -33,12 +34,12 @@ class VentaCreditoController extends Controller
 
         $detallesContador = COUNT($detalles);
         
+        // verificar existencia de detalles
         if($detallesContador == 0){
             return response()->json(['error'=>'Cabecera Sin Detalles']);
         }
 
         $operador1 = '';
-
         
         //Datos del Operador segun vendedor
         $vendedorData = \App\ADMVENDEDOR::where('CODIGO','=',$cabecera['usuario'])->first();
@@ -49,7 +50,7 @@ class VentaCreditoController extends Controller
             $operador1 = $vendedorData->operadormovil ;
         }
      
-       
+        // Cosulta de instancias para guardado de datos
         $parametrov = ADMPARAMETROV::first();
         $secuencialNew = $parametrov->SECUENCIAL;
         $parametrov->SECUENCIAL = $parametrov->SECUENCIAL + 1;
@@ -68,9 +69,9 @@ class VentaCreditoController extends Controller
         if(trim($cabecera['datos_adi']) != ""){
             $campo_adi = $cabecera['datos_adi'];
         }
-
-        try {
         
+        try {
+            // Cosulta de instancias para guardado de datos
             $bodega = ADMBODEGA::where('CODIGO','=',$cabecera['bodega'])->first();
             $cliente = Cliente::where('CODIGO','=',$cabecera['cliente'])->first();
             $parametrobo = ADMPARAMETROBO::first();
@@ -81,7 +82,7 @@ class VentaCreditoController extends Controller
             }
             
             $date = Carbon::now()->subHours(5);
-            
+            // creacion, llenado y Almacenamiento de instancia
             $cab = new \App\ADMCABEGRESO();
             
             $cab->TIPO = $cabecera['tipo']; 
@@ -226,7 +227,7 @@ class VentaCreditoController extends Controller
             
             //Procesado de los Detalles.
             foreach ($detalles as $det) {
-                
+                // creacion, llenado y Almacenamiento de instancia
                 $d = new \App\ADMDETEGRESO;
                 
                 $grabaIvadet = "N";
@@ -236,6 +237,7 @@ class VentaCreditoController extends Controller
 
                 }
 
+                // Detalles del item
                 $itemData = \App\ADMITEM::where('ITEM','=',trim($det['item']))->first();
                 $itemElectData = \App\ADMITEMPRECIOELE::where('ITEM','=',trim($det['item']))->first();
 
@@ -331,6 +333,7 @@ class VentaCreditoController extends Controller
                 $tipoItem = $this->tipoItemElec($detEgr2->ITEM);
                 //Log::info($tipoItem);
 
+                // cambiar el estado dependiendo del tipo de item
                 if($tipoItem != 'BASICO')
                 {
                     //Log::info('Tipo de item',['Resultado:'=>$tipoItem]);
@@ -414,7 +417,7 @@ class VentaCreditoController extends Controller
             $deuda->diasatraso = 0;
             $deuda->usuarioeli = 0;
             $deuda->EWEB = "N";
-            //$deuda->ESTADOLIQ = "N";
+            
 
             //Crear Nota de Debito en caso de entrada
             if($cab->entrada > 0){
@@ -546,6 +549,8 @@ class VentaCreditoController extends Controller
             
             $nombreMail = env("MAIL_USERNAME","facturas@sistemas.com");
 
+
+            // enivio de EMail
             if (filter_var($clienteEmail, FILTER_VALIDATE_EMAIL)) {
                 //Email Valido
                 try {
@@ -602,7 +607,6 @@ class VentaCreditoController extends Controller
     }
 
     //envio de email de test
-
     public function TestEmail(){
         try {
             Mail::send('emails.TestEmailServer',[], function ($mail) {
@@ -680,6 +684,7 @@ class VentaCreditoController extends Controller
 
     }
 
+    // Metodo para consultar el tipo de Item
     public function tipoItemElec($item)
     {
         $tipo = 'BASICO';
@@ -705,10 +710,11 @@ class VentaCreditoController extends Controller
         }
     }
 
+    // Metodo para crear el asiento contable
     public function asientoContable($subTotal0,$subTotal,$neto,$iva,$desc0,$desc,$cost0,$cost,$inv0,$inv,$nombreCli,$observa,$opera,$punto)
     {
         try {
-            
+            // Consulta de Parametros
             $paramBO = \App\ADMPARAMETROBO::first();
             $dat = Carbon::now()->subHours(5);
             $dateYMD= $dat->Format('d-m-Y');
@@ -730,13 +736,13 @@ class VentaCreditoController extends Controller
             $DES = "";
             $IVA = "";
 
+            // consulta de las cuentas
             $cuentasPunto = \App\ADMPUNTOASIENTOS::where('PUNTO','=',$punto)
             ->where('ANIO',Carbon::now()->format('Y'))
             ->where('ASIENTO','=','VEN')
             ->get();
 
-            // Log::info(["cuentasPunto 2"=>$cuentasPunto]);
-
+            // 
             foreach ($cuentasPunto->toArray() as $k => $v){
                 if(in_array('CLI',$v)){
                     $CLI = trim($v['CUENTA']);
@@ -770,6 +776,7 @@ class VentaCreditoController extends Controller
                 }
             }
 
+            // creacion de la cabecera y almacenamiento
             $cabecera = new \App\ADMCABCOMPROBANTE();
             $cabecera->secuencial = $paramBO->secuencial + 1;
             $cabecera->fecha = $dateYMD;
@@ -977,6 +984,8 @@ class VentaCreditoController extends Controller
         
     }
 
+
+    // Metodo para generar las cuotas  del credito
     public function CrearCuotas($meses,$montoDeuda,$numCuotas,$secDeuda,$inicioPago,$tipoPago){
         Log::info('Creando Cuotas');  
         $montoCuotas = round($montoDeuda / $numCuotas,2);
@@ -1027,7 +1036,8 @@ class VentaCreditoController extends Controller
                 $deudaCuota->INTERESACUMORA = 0;
                 $deudaCuota->INTERESPAGADO = 0;
                 $deudaCuota->OBSERVACION = 'Lrvl.';
-                $deudaCuota->NUMPAGO = null;    
+                $deudaCuota->NUMPAGO = null;   
+                // Guardado de la cuota 
                 $deudaCuota->save();
 
                 $saldoProgramado = $deudaCuota->SALDOPROGRAMADO;
@@ -1041,6 +1051,7 @@ class VentaCreditoController extends Controller
         }
     }
 
+    // creacion de la nota de Debito
     public function CrearNotaDebito($monto,$secuencial,$secinv,$cliente,$observa,$vende,$ope,$caja,
     $numFac,$bodega,$serie,$fecha,$meses){
             

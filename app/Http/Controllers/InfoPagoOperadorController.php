@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class InfoPagoOperadorController extends Controller
 {
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function GetPagoOperadorCab(Request $r){
         
         $operador = $r['OPERADOR'];
@@ -26,6 +27,7 @@ class InfoPagoOperadorController extends Controller
         return response()->json($pagos);
     }
 
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function GetDetallesPagos(Request $r)
     {
         $secuencial = $r['SECUENCIAL'];

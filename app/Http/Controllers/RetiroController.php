@@ -12,6 +12,7 @@ use App\ADMPARAMETROBO;
 
 class RetiroController extends Controller
 {
+     // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function getMotivosRetiros(){
         
         $motivos = DB::table('ADMMOTIVORETIRO')
@@ -21,16 +22,17 @@ class RetiroController extends Controller
         return response()->json($motivos);
     }
 
-    public function GuardaRetiro(Request $r){
 
+    // Metodo para guardar un Retiro
+    public function GuardaRetiro(Request $r){
+        // Obtiene los datos de cabecera y detalles
         $cabecera = $r['cabecera'][0];
         $detalles = $r['detalles'];
 
         $parametrobo = ADMPARAMETROBO::first();
         $numeroLiqu = $parametrobo->NUMLIQUIDACION + 1;   
-        
-        //return response()->json($detalles);
-
+       
+        // crea,llena y almacen a instancia
         $date = Carbon::now();
         $cabRet = new ADMCABRETIRO();
         $cabRet->NUMERO = $numeroLiqu;
@@ -50,8 +52,8 @@ class RetiroController extends Controller
             $parametrobo->NUMLIQUIDACION = $cabRet->NUMERO;
             $parametrobo->save();
 
+            // Recorrido de los detalles
             foreach ($detalles as $det) {
-
                 $d = new ADMDETRETIRO();
                 $d->NUMERO = $cabRet->NUMERO;
                 $d->LINEA = $det['linea'];
@@ -63,6 +65,7 @@ class RetiroController extends Controller
                 $d->CANTAPR = 0;
                 $d->CANTCAPR = 0;
                 $d->CANTUAPR = 0;
+                //guardado 
                 $d->save();
             }
             DB::commit();

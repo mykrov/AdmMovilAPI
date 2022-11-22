@@ -27,6 +27,7 @@ class DeudaTotalXVendedor extends Controller
     *     )
     * )
     */
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function DeudaTotal(string $vendedor)
     {
         $suma = ADMDEUDA::where('SALDO','>',0.00001)

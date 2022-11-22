@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 class ElectroController extends Controller
 {
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function GetItem($item,$bodega)
     {
         //$itemPrecio = \App\ADMITEMPRECIOELE::where('item','=',$item)->get();
@@ -25,6 +26,7 @@ class ElectroController extends Controller
         return response()->json(['series'=>$itemSerie,'motor'=>$datosMotor]);
     }
 
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function GetItemTodos($bod)
     {
         //$itemPrecio = \App\ADMITEMPRECIOELE::where('item','=',$item)->get();
@@ -43,6 +45,7 @@ class ElectroController extends Controller
         return response()->json(['series'=>$itemSerie,'motor'=>$datosMotor]);
     }
 
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function GetItemRegalosTodos($bod){
 
         $itemsr = DB::table('ADMITEM')
@@ -65,6 +68,7 @@ class ElectroController extends Controller
 
     }
 
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function GetItemLiquidacion($item,$bodega)
     {
         $itemLiq = \App\ADMITEMLIQELE::where('ESTADO','=','A')
@@ -75,6 +79,7 @@ class ElectroController extends Controller
         return response()->json($itemLiq);
     }
 
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function GetItemLiquidacionTodos($bodega)
     {
         $itemLiq = \App\ADMITEMLIQELE::where('ESTADO','=','A')

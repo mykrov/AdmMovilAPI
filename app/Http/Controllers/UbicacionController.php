@@ -7,6 +7,7 @@ use \App\Cliente;
 
 class UbicacionController extends Controller
 {
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda.
     public function UpdateCoordinates(Request $r)
     {
         $cliente = trim($r['CLIENTE']);

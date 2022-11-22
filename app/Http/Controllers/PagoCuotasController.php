@@ -12,10 +12,15 @@ use Illuminate\Support\Facades\Log;
 
 class PagoCuotasController extends Controller
 {
+    // Funcion para generar Pagos de Creditos."
+    // los Log informativos son netamente para control de registro de las operaciones
+    // y contienen informacion del estado del proceso que pueden ser considerados
+    // para la comprension del codigo.
     public function PagoCuota(Request $r)
     {
         Log::info("---------------------------------------------");
         Log::info("Peticion de PagoCuota", ["Request" => $r]);
+        // obtencion de los datos del request
         $operador1 = $r->operador;
         $deudas = $r->facturas;
         $tipoPago = $r->medioPago;
@@ -42,28 +47,18 @@ class PagoCuotasController extends Controller
 
         $coutasDetPag = $deudas[0]['cuotas'];
 
-        // if(COUNT($coutasDetPag) == 0){
-        //     Log::info("La petición no tiene Detalles de las Cuotas a pagar.");
-        //     return response()->json("La petición no tiene Detalles de las Cuotas a pagar.");
-        // }
-
-        //return response()->json($coutasDetPag);
-        // $operador1 = 'CLA';
+        // consulta de datos relacionados a la deuda
         $serieDeuda = DB::table('ADMDEUDA')->where('SECUENCIAL', $secDeuda)
             ->first();
 
-        //return response()->json($deudas[0]['numero']);
-
         $codigoPunto = substr($serieDeuda->SERIE, 0, 3);
-
         $cajaDeuda = $serieDeuda->CAJAC;
 
+        // consulta del vendedor
         $vendedor = DB::table('ADMDEUDA')->where('SECUENCIAL', $secDeuda)
             ->select('VENDEDOR')->first();
 
-        //Log::info("Deuda a Procesar:",['deudas'=>$deudas]);
-        //Log::info("Vendedor de la deuda:",['vendedor'=>$vendedor]);
-
+        // consulta del cliente
         $clienteData = \App\Cliente::where('CODIGO', $cliente)->first();
 
         //para actualizar al final el seccon
@@ -87,9 +82,10 @@ class PagoCuotasController extends Controller
 
             Log::info('operadorData', ['data' => $operadorData]);
 
+            // verifica la nulabilidad del operador de ser nulo se toma ADM
             if ($operadorData == null || $operadorData->COBRADOR == null || trim($operadorData->COBRADOR) == '') {
                 $cobrador = 'ADM';
-
+                //verificar caja disponible
                 $cajaAbierta = DB::table('ADMCAJACOB')->where([
                     ['estadocaja', '=', 'A'],
                     ['estado', '=', 'A'],
@@ -110,14 +106,14 @@ class PagoCuotasController extends Controller
                     return response()->json(['estado' => 'error', 'info' => 'Caja' . $operadorData->caja . ' del operador cerrada']);
                 }
             } else {
-
+                // cosulta y verifica operadod
                 $cobrador = trim($operadorData->COBRADOR);
 
                 if (trim($operadorData->COBRADOR) == "") {
                     return response()->json(['estado' => 'error', 'info' => 'Operador no tiene asignado Cobrador.']);
                 }
                 Log::info('Cobrador', ['cobrador' => $cobrador]);
-
+                //verificar caja disponible
                 $cajaAbierta = DB::table('ADMCAJACOB')->where([
                     ['estadocaja', '=', 'A'],
                     ['estado', '=', 'A'],
@@ -129,7 +125,7 @@ class PagoCuotasController extends Controller
                     ->get();
 
                 Log::info('objeto de caja', ['caja' => $cajaAbierta]);
-
+                // cosulta y verifica caja
                 if ($cajaAbierta == null or COUNT($cajaAbierta) == 0) {
                     return response()->json(['estado' => 'error', 'info' => 'Caja Cerrada, la caja ' . $operadorData->caja . ' no puede recibir pagos con fecha ' . $fcPag]);
                 }
@@ -139,6 +135,7 @@ class PagoCuotasController extends Controller
                 }
             }
 
+            // crea y llena instancia de pago
             $pago = new \App\ADMPAGO();
             $pago->secuencial = $parametrov->SECUENCIAL + 1;
 
@@ -177,23 +174,19 @@ class PagoCuotasController extends Controller
             $pago->horaeli = "";
             $pago->maquinaeli = "";
             $pago->operadoreli = "";
+            // guarda pago
             $pago->save();
 
 
             $observacionCre = $pago->observacion;
             Log::info('Pasa el Pago en la caja: ' . $cajaAbierta[0]->codigo);
-            //ADMDETPAGO
+            //ADMDETPAGO instancia
             $detPago = new \App\ADMDETPAGO();
             $detPago->secuencial = $pago->secuencial;
             $detPago->tipo = $pago->tipo;
             $detPago->numero = $pago->numero;
             $detPago->tipopag = $tipoPago;
             $detPago->monto = $montoPagar;
-
-            // 17/03/2022
-            // if($interes > 0){
-            //     $detPago->monto = $montoPagar - $interes;
-            // }
 
             $detPago->banco = "";
             $detPago->cuenta = "";
@@ -224,7 +217,7 @@ class PagoCuotasController extends Controller
             $detPago->save();
 
             $parametrov->SECUENCIAL = $parametrov->SECUENCIAL + 1;
-
+            //aumento de contadores
             $NumCre->CONTADOR = $NumCre->CONTADOR + 1;
             $NumCre->save();
 
@@ -263,6 +256,7 @@ class PagoCuotasController extends Controller
                 $deudaChq->tipopago = "";
                 $deudaChq->usuarioeli = "";
                 $deudaChq->EWEB = "N";
+                //guardado
                 $deudaChq->save();
 
                 $creditoLinea2 = new \App\ADMCREDITO();
@@ -282,6 +276,7 @@ class PagoCuotasController extends Controller
                 $creditoLinea2->estafirmado = 'N';
                 $creditoLinea2->ACT_SCT = 'N';
                 $creditoLinea2->seccreditogen = 0;
+                // guardado
                 $creditoLinea2->save();
 
                 $numeroCHP->CONTADOR = $numeroCHP->CONTADOR + 1;
@@ -306,7 +301,7 @@ class PagoCuotasController extends Controller
                 Log::info("Número de pago con DEP o TRA " . $numeroCCB);
 
                 $numeroMoviBancoCIa = $numeroCCB;
-
+                // crea instancia y llena los campos
                 $movibanco = new \App\ADMMOVIBANCOCIA();
                 $movibanco->secuencial =  $secDelPago;
                 $movibanco->tipomovimiento = "CRE";
@@ -329,12 +324,14 @@ class PagoCuotasController extends Controller
                 $movibanco->nombrepc = "Servidor Laravel";
                 $movibanco->cajac = $cajaAbierta[0]->codigo;
                 $movibanco->conciliado = "N";
+                // guardado y actualizaion de datos
                 $movibanco->save();
                 Log::info("Numero de Movibancocia =>", ['Objeto' => $movibanco]);
                 $tipoDocccb->NUMERO = $numeroCCB;
                 $tipoDocccb->save();
             }
-
+            
+            // actualizacion de secuencial
             $parametrov->SECUENCIAL = $parametrov->SECUENCIAL + 1;
             $parametrov->save();
 
@@ -343,7 +340,7 @@ class PagoCuotasController extends Controller
             $parametroBO = \App\ADMPARAMETROBO::first();
 
             $cabCompro->secuencial = $parametroBO->secuencial + 1;
-            // Log::info("Se actualiza secuencial de PARAMBO");
+            // Se actualiza secuencial de PARAMBO
 
             $numComproContable = $cabCompro->secuencial;
             $cabCompro->fecha = $fcPag;
@@ -361,10 +358,10 @@ class PagoCuotasController extends Controller
             $cabCompro->nocuenta = "";
             $cabCompro->banco = "";
             $cabCompro->cheque = "0";
+            //guardado de la cabecera de comprobante
             $cabCompro->save();
 
-            //Log::info(["cabcomprobanteContable"=>$cabCompro]);
-
+           
             $parametroBO->secuencial = $parametroBO->secuencial + 1;
             $parametroBO->save();
 
@@ -392,6 +389,7 @@ class PagoCuotasController extends Controller
             $detCompro->DBCR = "CR";
             $detCompro->MONTO = $montoPagar;
             $detCompro->ESTADO = "C";
+            // guardado
             $detCompro->save();
 
             //Log::info(["detcomprobanteContable Linea 1"=> $detCompro]);
@@ -413,13 +411,12 @@ class PagoCuotasController extends Controller
             $detCompro2->DBCR = "DB";
             $detCompro2->MONTO = $montoPagar;
             $detCompro2->ESTADO = "C";
+            // guardado
             $detCompro2->save();
 
-            //Log::info(["detcomprobanteContable Linea 2"=> $detCompro2]);
-
-            //actualizar SECCON en el ADMPAGO y ADMMoviBancoCia
-            $pagoActualizar = \App\ADMPAGO::where('NUMERO', '=', $numeroPago)->first();
-            //Log::info(["Pago a actualizar"=> $pagoActualizar]);
+            
+            //Actualizar SECCON en el ADMPAGO y ADMMoviBancoCia
+            $pagoActualizar = \App\ADMPAGO::where('NUMERO', '=', $numeroPago)->first();           
             $pagoActualizar->seccon = $numComproContable;
             $pagoActualizar->save();
 
@@ -444,13 +441,14 @@ class PagoCuotasController extends Controller
                 $montoSinInteres = round($montoPagar - $interes, 2);
                 $sumamontoint = $montoPagarT; // - $interesT;
                 $procesoPago = false;
+                //consulta de la deuda
                 $deuda = \App\ADMDEUDA::where('SECUENCIAL', '=', $numDeuda)
                     ->whereIn('TIPO', ['NVT', 'FAC', 'NDB'])
                     ->where('CLIENTE', trim($cliente))
                     ->first();
                 
                 
-
+                // valida deuda
                 if ($deuda != null) {
                     // Consultar Credito de la Deuda
                     $credito = \App\ADMCREDITO::where('SECINV', '=', $deuda->SECINV)
@@ -560,8 +558,10 @@ class PagoCuotasController extends Controller
                     $creditoLinea->estafirmado = 'N';
                     $creditoLinea->ACT_SCT = 'N';
                     $creditoLinea->seccreditogen = 0;
+                    // guardado de credito
                     $creditoLinea->save();
 
+                    // se llama el proceso de cambio de estado en la guia de cobro
                     $procesoCambio = $this->CambioEstado($numeroGuia, $numDeuda, $montoSinInteres, $tipoPago);
                     Log::info("Resultados de los procesos, DeudaCuota => " . $procesoPago['proceso'] . ",Cambio => " . $procesoCambio);
 
@@ -588,6 +588,7 @@ class PagoCuotasController extends Controller
         }
     }
 
+    // Metodo para el pago de cuotas sin interes.
     public function pagarCuotas(int $secuencial, float $mon, int $pago, string $ope, string $observa, string $fechaPago)
     {
         Log::info("Entra a pagar Cuotas Metodo viejo: pagaCuota sin interes.");
@@ -604,6 +605,7 @@ class PagoCuotasController extends Controller
         DB::beginTransaction();
         try {
 
+            // recorre las cuotas para realizar el pago de sus saldos
             foreach ($cuotas as $index => $val) {
 
                 $saldoCuota = $val['SALDO'];
@@ -705,12 +707,15 @@ class PagoCuotasController extends Controller
             return $dataResultante;
         }
     }
+
+    // cambio de estado de la guia de cobro
     public function CambioEstado(int $Numguia, int $secuencial, float $monto, string $tipopago)
     {
         Log::info("CambioEstado", ["Guia" => $Numguia, "sec" => $secuencial]);
         DB::beginTransaction();
         try {
 
+            // consulta del detalle de la guia
             $DetGuiaCobro = DB::table('ADMDETGUIACOB')
                 ->where('SECUENCIAL', $secuencial)
                 ->where('NUMGUIA', $Numguia)
@@ -730,6 +735,7 @@ class PagoCuotasController extends Controller
                     $otro = $monto;
                 }
 
+                // actualizacion del detalle de la guia
                 if (round($DetGuiaCobro->SALDO - $monto, 2) <= 0) {
                     $result = DB::table('ADMDETGUIACOB')
                         ->where('SECUENCIAL', $secuencial)
@@ -774,6 +780,7 @@ class PagoCuotasController extends Controller
         }
     }
 
+    // Metodo para Genererar Notas de Debitos
     public function GenerarNDB($interes, $bodegaDeuda, $fcPag, $operador1, $observa, $vende, $date, $numpago, $cliente, $serie, $cajac, $seriefac, $numerofac, $bodegafac, $fechafac, $numcuotadet, $seccInvFac)
     {
         DB::beginTransaction();
@@ -782,6 +789,7 @@ class PagoCuotasController extends Controller
             $parametrov = ADMPARAMETROV::first();
             $numeroNDB =  \App\ADMTIPODOC::where('TIPO', '=', 'NDB')->first();
 
+            // Creacion de Deuda
             $deudaNDB = new \App\ADMDEUDA();
             $deudaNDB->SECUENCIAL = $parametrov->SECUENCIAL + 1;
             $deudaNDB->BODEGA = $bodegaDeuda;
@@ -823,6 +831,7 @@ class PagoCuotasController extends Controller
             $deudaNDB->save();
             Log::info("Graba Nota de Debito => DEUDA por $" . $interes);
 
+            //Creacion de Credito
             $creditoLinea2 = new \App\ADMCREDITO();
             $creditoLinea2->SECUENCIAL = $deudaNDB->SECUENCIAL;
             $creditoLinea2->SECINV = $seccInvFac;
@@ -872,6 +881,7 @@ class PagoCuotasController extends Controller
             $creditoLinea3->NUMCUOTA = $numcuotadet;
             $creditoLinea3->save();
 
+            // guardado y actualizacion de los secuanciales
             $numeroNDB->CONTADOR = $numeroNDB->CONTADOR + 1;
             $numeroNDB->save();
 
@@ -888,6 +898,7 @@ class PagoCuotasController extends Controller
         }
     }
 
+    //Metodo NO IMPLEMENTADO para Pagar cuotas con interes
     public function pagarCuotasInteres(array $deudaCuotasNew, int $secuencial, int $pago, string $ope, string $observa, string $fechaPago)
     {
 
@@ -901,6 +912,7 @@ class PagoCuotasController extends Controller
                 $monto = $value['monto'];
                 $fecha = Carbon::createFromFormat('Y-m-d', $fechaPago)->Format('d-m-Y');
 
+                // consulta de cuotas
                 $cuota = \App\ADMDEUDACUOTA::where('SECDEUDA', '=', $secuencial)
                     ->where('SALDO', '>', 0.001)
                     ->where('NUMCUOTA', '=', $numCuotaPagar)
@@ -952,6 +964,7 @@ class PagoCuotasController extends Controller
                     $deCuoDet->MAQUINA = "SERVER LARAVEL";
                     $deCuoDet->HORA = Carbon::now()->format('H:i:s');
 
+                    // guardado
                     try {
                         $deCuoDet->save();
                     } catch (\Throwable $th) {
@@ -1018,6 +1031,7 @@ class PagoCuotasController extends Controller
         } //end Try
     } //end Function
 
+    // Metodo NO IMPLEMENTADO para pagar cuotas con interes.
     public function pagarCuotasGenenrandointeres(int $secuencial, float $mon, int $pago, string $ope, string $observa, string $fechaPago, int $bodegaDeuda, string $fcPag, string $observacionNDB, string $vendedor,  $date, string $numeroPago, string $clienteData, String $serie, int $cajac, String $seriefac, $numerofac, $bodegafac, $fechafac, float $interesCuota, $credito)
     {
         // Seccion de Detección de Cuotas
@@ -1044,7 +1058,7 @@ class PagoCuotasController extends Controller
 
         DB::beginTransaction();
         try {
-
+            // recorrido de las cuotas a pagar
             foreach ($cuotas as $index => $val) {
                 $fechavenscic = $val['FECHAVEN'];
                 $saldoCuota = round($val['SALDO'], 2);
@@ -1052,8 +1066,6 @@ class PagoCuotasController extends Controller
                 $fechadevenciminetocuota = Carbon::parse($fechavenscic)->format('Y-m-d');
                 $fechadevencuota = Carbon::createFromFormat('Y-m-d', $fechadevenciminetocuota); //->format('d-m-Y');
                 $dias = $fechadepago->diffInDays($fechadevencuota, false);
-
-
 
                 $calculointeres = 0;
                 $valorinteres = 0;
@@ -1230,6 +1242,7 @@ class PagoCuotasController extends Controller
     }
 
 
+    // Correccion de Metodo de pago de Cuotas Con Interes IMPLEMENTADO
     public function PagarCuotasConInteres2022(int $secuencial, float $mon, int $pago, string $ope, string $observa, string $fechaPago, int $bodegaDeuda, string $fcPag, string $observacionNDB, string $vendedor,  $date, string $numeroPago, string $clienteData, String $serie, int $cajac, String $seriefac, $numerofac, $bodegafac, $fechafac, float $interesCuota, $credito, $secinvfac)
     {
         // Seccion de Detección de Cuotas
@@ -1445,6 +1458,7 @@ class PagoCuotasController extends Controller
         }
     }
 
+    // Metodo de Test
     public function PagarCuotaCompleta($secuencial, $numCuota, $fecha, $pago, $observa, $ope)
     {
 
@@ -1488,6 +1502,7 @@ class PagoCuotasController extends Controller
         }
     }
 
+    // Metodo de Test
     public function PagarCuotaParte($secuencial, $monto, $numCuota, $fecha, $pago, $observa, $ope)
     {
         # Abono a Cuota.
@@ -1534,6 +1549,7 @@ class PagoCuotasController extends Controller
         }
     }
 
+    // Metodo de Test
     public function GenerarNDBSolo()
     {
         $secDeuda = 113000;

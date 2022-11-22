@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class Item extends Controller
 {
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function ItemXBodega($bodega)
     {
        
@@ -29,6 +30,7 @@ class Item extends Controller
         return response()->json($data);
     }
 
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function ItemTodosBodega($bodega)
     {
         $data = DB::select(DB::raw("exec SP_ITEMS_APPMOVIL :Param1"),[
@@ -37,7 +39,7 @@ class Item extends Controller
         return response()->json($data);
     }
 
-
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function ItemBodegaXCategoria($bodega,$categoria)
     {
         
@@ -50,6 +52,7 @@ class Item extends Controller
 
     }
 
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function ItemXCodigo($codigo,$bodega)
     {
         // $item3 = \App\ADMITEM::where('ITEM','like', '%' . $codigo . '%')
@@ -138,6 +141,7 @@ class Item extends Controller
     }
    
 
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function ItemsXNombre($like,$bodega)
     {
         // $items4 = \App\ADMITEM::where('NOMBRE','like', '%' . $like . '%')
@@ -225,6 +229,7 @@ class Item extends Controller
         
     }
 
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function ItemsSinStock($bodega)
     {       
         $page = \Request::input('page', 1);  
@@ -241,13 +246,14 @@ class Item extends Controller
         return response()->json($data);
     }
 
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function itemsDeRegalo() {
         $items = \App\ADMITEM::where('REGALO','=','S')
         ->get();
         return response()->json($items);
     }
 
-
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function ItemBarCode(Request $r){
         
         $barr = trim($r['codigo']);

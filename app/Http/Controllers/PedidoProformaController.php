@@ -11,17 +11,20 @@ use Illuminate\Support\Facades\Log;
 
 class PedidoProformaController extends Controller
 {
+    // Metodo para generar pedidos proformas
     public function PostPedidoProforma(Request $r)
     {
-        ///return $r;
+        // obtencion de cabecera y detalles
         $cabecera = $r->cabecera[0];
         $detalles = $r->detalles;
 
+        // verificar existencia de detalles
         if (count($detalles) == 0) {
             Log::error("Cabecera Sin Detalles",['cabecera'=>$cabecera]);
             return response()->json(['error'=>'Cabecera Sin Detalles']);
         }
 
+        // obtiene instancias para el pedido
         $bodega = \App\ADMBODEGA::where('CODIGO','=',$cabecera['bodega'])->first();
         $parametrov = \App\ADMPARAMETROV::first();
         $cliente = \App\Cliente::where('CODIGO','=',$cabecera['cliente'])->first();
@@ -71,6 +74,7 @@ class PedidoProformaController extends Controller
         DB::beginTransaction();
         try {
 
+            // creacion, llenado y guradado de instancia
             $cabe = new ADMCABPEDIDO();
             $cabe->TIPO = "PED";
             $cabe->BODEGA = intval($cabecera['bodega']);
@@ -101,10 +105,12 @@ class PedidoProformaController extends Controller
 
             $linea = 1;
 
-            if (count($detalles) > 0) { //Cuando no trae detalles la cabecera.
+            //Cuando trae detalles la cabecera.
+            if (count($detalles) > 0) { 
                 
                 foreach ($detalles as $det){
 
+                    // crea, llena y guarada datos de la instancia
                     $d = new \App\ADMDETPEDIDO;
                     
                     $grabaIvadet = "N";
@@ -137,6 +143,8 @@ class PedidoProformaController extends Controller
                     $linea++;
                 } 
 
+
+                // se guarda registro de visita del cliente
                 $visita = new \App\ADMVISITACLI();
                 $visita->CLIENTE = $cabe->CLIENTE;
                 $visita->VENDEDOR = $cabe->VENDEDOR;

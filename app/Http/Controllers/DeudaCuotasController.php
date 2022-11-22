@@ -27,6 +27,7 @@ class DeudaCuotasController extends Controller
     *     )
     * )
     */
+    // Retorna las entidades de los modelos consultados de acuerdo al criterio de busqueda."
     public function GetDeudaCuotas(int $sec)
     {
         $cabecera = \App\ADMDEUDA::where('SECUENCIAL','=',$sec)->get();

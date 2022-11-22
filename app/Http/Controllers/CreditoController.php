@@ -27,6 +27,8 @@ class CreditoController extends Controller
     *     )
     * )
     */
+
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function GetCredito(int $numero)
     {
         $creditos = \App\ADMCREDITO::where('TIPOCR','=','PAG')

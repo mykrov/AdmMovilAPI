@@ -30,6 +30,7 @@ class DeudasCoutasDetController extends Controller
     *     )
     * )
     */
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function CuotasAfectadas($pago)
     {
         $cuotas = ADMDEUDACUOTADET::where('NUMPAGO',$pago)->get();
@@ -64,7 +65,7 @@ class DeudasCoutasDetController extends Controller
     *     )
     * )
     */
-
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function ItemDetGuia($guia,$secuencial)
     {
         $detalle = \App\ADMDETGUIACOB::where([['NUMGUIA','=',$guia],['SECUENCIAL','=',$secuencial]])->get();

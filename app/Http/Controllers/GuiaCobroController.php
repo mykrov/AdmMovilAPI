@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 class GuiaCobroController extends Controller
 {
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function GetGuiaCobro(int $numero)
     {
         $cabecera = \App\ADMCABGUIACOB::where('NUMGUIA','=',$numero)
@@ -21,6 +22,7 @@ class GuiaCobroController extends Controller
         return response()->json(['cabecera'=>$cabecera,'detalles'=>$detalles2]);
     }   
 
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function GetGuiaCobroUnificada(int $numero)
     {
         $numeroGuia = $numero;

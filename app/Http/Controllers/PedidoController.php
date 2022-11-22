@@ -20,15 +20,17 @@ use Barryvdh\DomPDF\Facade as PDF;
 
 class PedidoController extends Controller
 {
-    
+    // Metodo para creacion de Pedido
     public function PostPedido(Request $r)
     {
+        // obtencion de cabecera y detalles
         $cabecera = $r->cabecera[0];
         $detalles = $r->detalles;
         
-        //return response()->json(['CONTEO'=>COUNT($detalles)]);
+        
         $detallesContador = COUNT($detalles);
         
+        // verifica que existan detalles
         if($detallesContador == 0){
             return response()->json(['error'=>'Cabecera Sin Detalles']);
         }
@@ -66,6 +68,7 @@ class PedidoController extends Controller
 
         try {
         
+            // optiene instancias para el pedido
             $bodega = ADMBODEGA::where('CODIGO','=',$cabecera['bodega'])->first();
             $cliente = Cliente::where('CODIGO','=',$cabecera['cliente'])->first();
             $parametrobo = ADMPARAMETROBO::first();
@@ -78,6 +81,7 @@ class PedidoController extends Controller
             
             $date = Carbon::now()->subHours(5);
             
+            // creacion,llenado y guardado de la instancia
             $cab = new \App\ADMCABEGRESO();
             
             $cab->TIPO = $cabecera['tipo']; 
@@ -180,9 +184,9 @@ class PedidoController extends Controller
             $secuencial_str = strval($cab->NUMERO);
             $seC_cero = substr("000000000{$secuencial_str}",-$lengh_str);
             
+            // llamdo al metodo para general la clave calve de acceso
             $claveAcc = $this->GenerarClave($seC_cero,$cab->SERIE,$parametrobo->ruc,'01',1,2,$cab->FECHA);
             $cab->NUMAUTO = $claveAcc;
-
             $cab->save();
 
             //Generar Cabecera de Egreso.
@@ -203,7 +207,7 @@ class PedidoController extends Controller
             }else{
                 $bodega->NOFACTURA = $bodega->NOFACTURA + 1;
             }
-            
+            // actualizacion de los numero 
             $bodega->NUMGUIAREMISION = $cab->NUMGUIAREMISION;
             $bodega->NOEGR = $bodega->NOEGR + 1;
             
@@ -218,6 +222,7 @@ class PedidoController extends Controller
                     $grabaIvadet = "S";
                 }
 
+                // obtiene detalles de los items
                 $itemData = \App\ADMITEM::where('ITEM','=',trim($det['item']))->first();
 
                 $d->SECUENCIAL = intval($cab->SECUENCIAL);
@@ -384,6 +389,7 @@ class PedidoController extends Controller
             
             $nombreMail = env("MAIL_USERNAME","facturas@sistemas.com");
 
+            // envio del email
             if (filter_var($clienteEmail, FILTER_VALIDATE_EMAIL)) {
                 //Email Valido
                 try {
@@ -441,7 +447,6 @@ class PedidoController extends Controller
     }
 
     //envio de email de test
-
     public function TestEmail(){
         
         try {

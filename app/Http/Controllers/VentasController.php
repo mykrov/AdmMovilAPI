@@ -12,6 +12,7 @@ use Carbon\Carbon;
 
 class VentasController extends Controller
 {
+   // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
    public function GetCabeceras(Request $r)
     {
         $vendedor = $r['VENDEDOR'];
@@ -32,6 +33,7 @@ class VentasController extends Controller
         return response()->json($cabeceras);
     }
     
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function GetDetalles(Request $r)
     {
         $secuencial = $r['SECUENCIAL'];
@@ -47,6 +49,7 @@ class VentasController extends Controller
         return response()->json($detalles);
     }
 
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function GetCabeceras2(Request $r)
     {
         $vendedor1 = $r['VENDEDOR1'];

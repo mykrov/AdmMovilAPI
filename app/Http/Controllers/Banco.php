@@ -35,6 +35,7 @@ class Banco extends Controller
     */
 
 
+   // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
    public function GetBancos(){
 
       $bancos = \App\ADMBANCO::where('estado','=','A')->get();

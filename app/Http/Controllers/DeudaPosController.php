@@ -23,6 +23,7 @@ class DeudaPosController extends Controller
     *     )
     * )
     */
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function GetDeudas()
     {
         $deudas = DB::table('ADMDEUDAPOS')
@@ -56,6 +57,8 @@ class DeudaPosController extends Controller
     *     )
     * )
     */
+    
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function GetDeudaXCliente($codigo)
     {
         $deudas = DB::table('ADMDEUDAPOS')

@@ -21,6 +21,7 @@ class DiasCreditoController extends Controller
     *     )
     * )
     */
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function GetDiasCredito(){
         $dias =  \App\ADMDIASCREDITO::get();
         return response()->json($dias);

@@ -21,6 +21,7 @@ class CliPrecioController extends Controller
     *     )
     * )
     */
+     // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
    public function GetCliPrecio()
    {
        $cprecio = \App\ADMCLIPRECIO::get();

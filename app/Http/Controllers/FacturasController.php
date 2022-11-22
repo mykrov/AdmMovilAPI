@@ -35,6 +35,8 @@ class FacturasController extends Controller
     *     )
     * )
     */
+
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function GetCabeceras(Request $r)
     {
         $vendedor = $r['VENDEDOR'];
@@ -55,6 +57,7 @@ class FacturasController extends Controller
         return response()->json($cabeceras);
     }
     
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function GetDetalles(Request $r)
     {
         $secuencial = $r['SECUENCIAL'];

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 class RangoPrecio extends Controller
 {
+    // Verifica si un item siene rango de precios y retorna el resultado
     public function RangoPrecioItem($it)
     {
         $tienerango = 'si';
@@ -21,6 +22,7 @@ class RangoPrecio extends Controller
         return response()->json(['tieneRango'=>$tienerango,'data'=>$item]);
     }
 
+    // Verifica si un item por punto tiene rango de precios y retorna el resultado
     public function RangoPrecioItemPunto($it,$punto)
     {
         $tienerango = 'si';

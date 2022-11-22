@@ -21,6 +21,8 @@ class CantonController extends Controller
     *     )
     * )
     */
+    
+    // Retorna las entidades del modelo consultado de acuerdo al criterio de busqueda."
     public function GetCantones(){
         $cantones = \App\ADMCANTON::where('estado','=','A')->get();
 
