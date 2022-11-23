@@ -16,20 +16,22 @@ class Vendedor extends Controller
 {
     public $successStatus = 200;
 
-    
+    // proceso de login en la aplicación
     public function login(Request $request){
 
         Log::info('Login de:');
         Log::info($request);
         
+        // valida los campos en el request
         $credenciales = $request->validate([
             'codigo' => 'required|string',
             'password' => 'required|string'
         ]);
 
-        //Logueo para Operadores
+        //Logueo para Operadores longitud de 3 letras
         if(strlen(request('codigo')) == 3 ){
             
+            // consulta de existencia del operador.
             $operador = \App\ADMOPERADOR::where('codigo',request('codigo'))
             ->where('estado','A')
             ->first();
@@ -37,6 +39,7 @@ class Vendedor extends Controller
             $userInput = str_split($request['password']);
             $UpDown = []; 
             $sig = 1;
+            // decodificacián de la clave en base al estilo de BIROBID SA
             foreach ($userInput as $key => $value) {
                 if($sig == 1){
                     array_push($UpDown, chr(ord($value) - 1)); 
@@ -46,14 +49,15 @@ class Vendedor extends Controller
                     $sig = 1;
                 }
             }
-            //return(implode($UpDown));
-          
-            
+                      
+            // Evalua la clave con el usuario
             if ($operador && implode($UpDown) == trim($operador->clave)){
                 
+                // consulta el vendedor relacionado al Operador
                 $vendedorRel = \App\ADMVENDEDOR::where('operadormovil',$operador->codigo)
                 ->first();
 
+                // autentifica el usuario generando el token
                 try {
                     Auth::loginUsingId($operador->codigo, TRUE);
                     $user = Auth::user();
@@ -69,13 +73,15 @@ class Vendedor extends Controller
 
         }else{
                  
+            // el login es con una usuario Vendedor
+            // se consulta la existencia del vendedor
             $vendedor = \App\ADMVENDEDOR::where('CODIGO',request('codigo'))
             ->where('ESTADO','A')
             ->first();
             
-            //return response()->json($vendedorData);
-            //if ($vendedor &&  \Hash::check(request('password'), trim($vendedor->HASH))){
+            // evalua el vendedor y la clave
             if ($vendedor && trim($request['password']) == trim($vendedor->CLAVEWEB)){
+                // autoriza y crea el token
                 try {
                     Auth::loginUsingId($vendedor->CODIGO, TRUE);
                     $user = Auth::user();
