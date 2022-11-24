@@ -98,11 +98,14 @@ class Vendedor extends Controller
 
     }
 
+    // Obtiene las instancias del modelo seleccionado
     public function listado(){
         $vendedores = \App\ADMVENDEDOR::all();
         return response()->json($vendedores);
     }
 
+    // función para actualizar el campo HASH de los vendedores
+    // con un hash de su clave web siempre y cuando esté vacio(por primera vez)
     public function SetearPasswordHash(){
 
         $venderores = \App\ADMVENDEDOR::all();
